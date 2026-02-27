@@ -526,10 +526,32 @@ function rebuildMarkers(){
     const c=L.circleMarker([a.lat,a.lon],{radius:r,color:col,fillColor:col,fillOpacity:.7,weight:1});
     c.bindTooltip(makeTooltip(a,col),{sticky:true,direction:'top',opacity:1});
     c.on('click',()=>showDetail(a,col));
-    pLayers[rk].addLayer(c);  // ← correct z-bucket
+    pLayers[rk].addLayer(c);
     vis++;if((a.depth||0)>maxD)maxD=a.depth||0;
     if(a.location==='External')ext++;else if(a.location==='Internal')intC++;
   });
+
+  // ── CRITICAL Z-ORDER ENFORCEMENT ──────────────────────────────
+  // clearLayers() + addLayer() does NOT reset Leaflet's canvas
+  // paint order — the shared canvas repaints layers in the order
+  // their LayerGroup was last mounted on the map.
+  //
+  // Fix: after every rebuild, remove then re-add the critical
+  // (low-count) layers so they are mounted LAST = painted ON TOP.
+  //
+  //   >10yr stays mounted first → drawn at the BOTTOM (buried)
+  //   <=1yr re-mounted last     → drawn ON TOP (always visible)
+  //
+  const bringToFront = ['>10yr','monitored','7-10yr','5-7yr','<=1yr'];
+  bringToFront.forEach(k => {
+    map.removeLayer(pLayers[k]);
+    pLayers[k].addTo(map);   // re-mount in ascending criticality
+  });
+  // Dents always topmost
+  map.removeLayer(dentLayer);
+  dentLayer.addTo(map);
+  // ──────────────────────────────────────────────────────────────
+
   document.getElementById('stat-visible').textContent=vis.toLocaleString();
   document.getElementById('stat-deepest').textContent=maxD.toFixed(1)+'%';
   document.getElementById('stat-ext').textContent=ext.toLocaleString();
