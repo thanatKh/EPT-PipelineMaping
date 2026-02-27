@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SRC 18 Inch SebSea - ILI Pipeline Map</title>
+<title>18 ILI Pipeline Map — PTT SRC</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -24,7 +24,7 @@
 :root {
   --bg:      #000000;
   --glass:   rgba(28,28,35,0.72);
-  --glass2:  rgba(14,14,20,0.88);
+  --glass2:  rgba(0,40,60,0.88);
   --border:  rgba(255,255,255,0.08);
   --border2: rgba(255,255,255,0.14);
   --text:    #f5f5f7;
@@ -50,25 +50,66 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 #topbar{
   position:relative;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 20px;height:60px;flex-shrink:0;
+  padding:0 16px;height:60px;flex-shrink:0;
   background:var(--glass2);backdrop-filter:var(--blur);
   border-bottom:1px solid var(--border2);
   box-shadow:0 1px 0 rgba(255,255,255,.05);
 }
-#branding{display:flex;align-items:center;gap:12px;}
-#logo-img{height:36px;object-fit:contain;}
-#brand-text .dept{font-size:10px;font-weight:500;color:var(--blue2);letter-spacing:.8px;text-transform:uppercase;}
-#brand-text .company{font-size:12.5px;font-weight:600;color:var(--text);}
-#topbar-center{position:absolute;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;}
+#branding{display:flex;align-items:center;gap:10px;min-width:0;flex-shrink:1;}
+#logo-img{height:32px;object-fit:contain;flex-shrink:0;}
+#brand-text{min-width:0;}
+#brand-text .dept{font-size:10px;font-weight:500;color:var(--blue2);letter-spacing:.8px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#brand-text .company{font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#topbar-center{position:absolute;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;white-space:nowrap;}
 #topbar-center .t1{font-size:13px;font-weight:600;}
 #topbar-center .t2{font-size:11px;color:var(--text2);margin-top:1px;}
-#kpi-row{display:flex;gap:6px;}
-.kpi{display:flex;flex-direction:column;align-items:center;padding:5px 12px;min-width:68px;
+#kpi-row{display:flex;gap:5px;flex-shrink:0;}
+.kpi{display:flex;flex-direction:column;align-items:center;padding:5px 10px;min-width:56px;
      background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;}
-.kpi .v{font-size:16px;font-weight:700;letter-spacing:-.5px;line-height:1.1;}
+.kpi .v{font-size:15px;font-weight:700;letter-spacing:-.5px;line-height:1.1;}
 .kpi .l{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
 .kpi.red .v{color:var(--red);}.kpi.orange .v{color:var(--orange);}
 .kpi.yellow .v{color:var(--yellow);}.kpi.green .v{color:var(--green);}.kpi.blue .v{color:var(--blue2);}
+
+/* ── TABLET: hide center title, shrink KPIs ── */
+@media (max-width:1024px){
+  #topbar-center{display:none;}
+  .kpi{min-width:48px;padding:4px 8px;}
+  .kpi .v{font-size:13px;}
+  .kpi .l{font-size:8px;}
+  #brand-text .company{max-width:180px;}
+}
+
+/* ── MOBILE: stack topbar into two rows ── */
+@media (max-width:640px){
+  #topbar{
+    height:auto;flex-direction:column;align-items:stretch;
+    padding:10px 12px 8px;gap:8px;
+  }
+  #topbar-row1{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  #topbar-row2{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;padding-bottom:2px;}
+  #branding{flex:1;min-width:0;}
+  #logo-img{height:28px;}
+  #brand-text .dept{font-size:9px;letter-spacing:.4px;}
+  #brand-text .company{font-size:11px;max-width:200px;}
+  #kpi-row{gap:4px;flex-wrap:wrap;justify-content:center;}
+  .kpi{min-width:52px;padding:3px 8px;border-radius:8px;}
+  .kpi .v{font-size:13px;}
+  .kpi .l{font-size:8px;letter-spacing:.3px;}
+  #main{height:calc(100vh - 104px);}
+  /* Sidebar starts collapsed on mobile */
+  #sidebar{width:0;min-width:0;}
+  #sidebar-toggle{left:0;}
+  #sidebar-toggle.collapsed{left:0;}
+}
+
+/* ── SMALL MOBILE: even tighter ── */
+@media (max-width:380px){
+  #brand-text .dept{display:none;}
+  #brand-text .company{font-size:10.5px;}
+  .kpi{min-width:44px;padding:3px 6px;}
+  .kpi .v{font-size:12px;}
+}
 
 /* LAYOUT */
 #main{display:flex;flex:1;height:calc(100vh - 60px);overflow:hidden;position:relative;}
@@ -200,6 +241,10 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
   padding:16px;z-index:500;display:none;
   box-shadow:0 24px 48px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.07);
   animation:slideUp .2s cubic-bezier(.4,0,.2,1);
+  max-height:60vh;overflow-y:auto;
+}
+@media(max-width:640px){
+  #detail-panel{left:12px;right:12px;bottom:12px;width:auto;}
 }
 @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 #detail-panel .dp-close{
@@ -276,25 +321,29 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
 <body>
 
 <div id="topbar">
-  <div id="branding">
-    <img id="logo-img" src="https://uppic.cloud/ib/mVAAyQbB1nqbsyF_1772152846.png"
-         alt="PTT OR" onerror="this.style.display='none'">
-    <div id="brand-text">
-      <div class="dept">Engineering &amp; Maintenance Department</div>
-      <div class="company">PTT Oil and Retail Business Public Company Limited</div>
+  <div id="topbar-row1">
+    <div id="branding">
+      <img id="logo-img" src="https://uppic.cloud/ib/mVAAyQbB1nqbsyF_1772152846.png"
+           alt="PTT OR" onerror="this.style.display='none'">
+      <div id="brand-text">
+        <div class="dept">Central and Eastern Engineering and Maintenance Division</div>
+        <div class="company">PTT Oil and Retail Business Public Company Limited</div>
+      </div>
+    </div>
+    <div id="topbar-center">
+      <div class="t1">‎ </div>
+      <div class="t2">In-Line Inspection — Anomaly Map 18″ T61 → Sea Berth &nbsp;·&nbsp; 2.7 km &nbsp;·&nbsp; 22–23 Nov 2025</div>
     </div>
   </div>
-  <div id="topbar-center">
-    <div class="t1">In-Line Inspection — Anomaly Map</div>
-    <div class="t2">18″ T61 → Sea Berth &nbsp;·&nbsp; 2.7 km &nbsp;·&nbsp; 22–23 Nov 2025</div>
-  </div>
-  <div id="kpi-row">
-    <div class="kpi red">   <div class="v">1</div>     <div class="l">≤1 yr</div></div>
-    <div class="kpi orange"><div class="v">2</div>     <div class="l">&lt;10 yr</div></div>
-    <div class="kpi yellow"><div class="v">2,012</div> <div class="l">&gt;10 yr</div></div>
-    <div class="kpi blue">  <div class="v">2,014</div> <div class="l">Metal Loss</div></div>
-    <div class="kpi blue">  <div class="v">1,139</div> <div class="l">Laminations</div></div>
-    <div class="kpi green"> <div class="v">0</div>     <div class="l">ERF ≥ 1.0</div></div>
+  <div id="topbar-row2">
+    <div id="kpi-row">
+      <div class="kpi red">   <div class="v">1</div>     <div class="l">≤1 yr</div></div>
+      <div class="kpi orange"><div class="v">2</div>     <div class="l">&lt;10 yr</div></div>
+      <div class="kpi yellow"><div class="v">2,012</div> <div class="l">&gt;10 yr</div></div>
+      <div class="kpi blue">  <div class="v">2,014</div> <div class="l">Metal Loss</div></div>
+      <div class="kpi blue">  <div class="v">1,139</div> <div class="l">Laminations</div></div>
+      <div class="kpi green"> <div class="v">0</div>     <div class="l">ERF ≥ 1.0</div></div>
+    </div>
   </div>
 </div>
 
@@ -839,6 +888,15 @@ btnMeasureClear.addEventListener('click', e => {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && measuring) stopMeasuring();
 });
+
+// ── Dynamic topbar height (mobile two-row layout) ────────
+function fixMapHeight() {
+  const tbH = document.getElementById('topbar').offsetHeight;
+  document.getElementById('main').style.height = `calc(100vh - ${tbH}px)`;
+  map.invalidateSize();
+}
+fixMapHeight();
+window.addEventListener('resize', fixMapHeight);
 
 map.fitBounds(routeLine.getBounds(),{padding:[50,50]});
 
