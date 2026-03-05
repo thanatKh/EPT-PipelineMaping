@@ -437,22 +437,10 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
 
       <div class="card">
         <div class="card-title">Defect Type</div>
-        <div style="display:flex;flex-direction:column;gap:2px;">
-          <label class="filter-row" id="type-ext-row">
-            <div class="cb-track on" id="type-ext-track"></div>
-            <span class="pill" style="background:var(--orange);color:var(--orange)"></span>
-            <span>External Metal Loss</span><span class="filter-count">1,350</span>
-          </label>
-          <label class="filter-row" id="type-int-row">
-            <div class="cb-track on" id="type-int-track"></div>
-            <span class="pill" style="background:var(--blue2);color:var(--blue2)"></span>
-            <span>Internal Metal Loss</span><span class="filter-count">664</span>
-          </label>
-          <label class="filter-row" id="dent-row">
-            <div class="cb-track on" id="dent-track"></div>
-            <span class="pill pink"></span>
-            <span>Dent (Geometric)</span><span class="filter-count">1</span>
-          </label>
+        <div class="layer-row">
+          <button class="lpill on" id="btn-ext">External</button>
+          <button class="lpill on" id="btn-int">Internal</button>
+          <button class="lpill on" id="btn-dent">Dent</button>
         </div>
       </div>
 
@@ -653,6 +641,7 @@ function showDetail(a,col){
 const activeRepair   = new Set(['>10yr','monitored','7-10yr','5-7yr','<=1yr']);
 let   showExternal   = true;
 let   showInternal   = true;
+let   showDent       = true;   // ← tracks dent toggle state
 let   minDepth       = 0;
 
 // ═══════════════════════════════════════════════════════════════════
@@ -710,8 +699,9 @@ function rebuildMarkers(){
     map.removeLayer(pLayers[k]);
     pLayers[k].addTo(map);
   });
+  // Dent: respect both defect type toggle AND repair priority <=1yr
   map.removeLayer(dentLayer);
-  dentLayer.addTo(map);
+  if(dentShouldShow()) dentLayer.addTo(map);
 
   document.getElementById('stat-visible').textContent=vis.toLocaleString();
   document.getElementById('stat-deepest').textContent=maxD.toFixed(1)+'%';
@@ -733,6 +723,7 @@ document.querySelectorAll('.filter-row[data-repair]').forEach(row=>{
     const on=track.classList.toggle('on');
     on ? activeRepair.add(key) : activeRepair.delete(key);
     rebuildMarkers();
+    syncDentLayer();  // dent visibility depends on <=1yr being active
   });
 });
 
@@ -744,23 +735,27 @@ document.getElementById('depth-slider').addEventListener('input',e=>{
   rebuildMarkers();
 });
 
-// Defect Type — External Metal Loss
-document.getElementById('type-ext-row').addEventListener('click',()=>{
-  showExternal=document.getElementById('type-ext-track').classList.toggle('on');
+// ── Defect Type — lpill buttons ───────────────────────────
+// Dent visibility = repair <=1yr ON  AND  defect type Dent ON
+function dentShouldShow(){
+  return showDent && activeRepair.has('<=1yr');
+}
+function syncDentLayer(){
+  map.removeLayer(dentLayer);
+  if(dentShouldShow()) dentLayer.addTo(map);
+}
+
+document.getElementById('btn-ext').addEventListener('click',function(){
+  showExternal=this.classList.toggle('on');
   rebuildMarkers();
 });
-
-// Defect Type — Internal Metal Loss
-document.getElementById('type-int-row').addEventListener('click',()=>{
-  showInternal=document.getElementById('type-int-track').classList.toggle('on');
+document.getElementById('btn-int').addEventListener('click',function(){
+  showInternal=this.classList.toggle('on');
   rebuildMarkers();
 });
-
-// Defect Type — Dent
-document.getElementById('dent-row').addEventListener('click',()=>{
-  const t=document.getElementById('dent-track');
-  t.classList.toggle('on');
-  t.classList.contains('on') ? dentLayer.addTo(map) : map.removeLayer(dentLayer);
+document.getElementById('btn-dent').addEventListener('click',function(){
+  showDent=this.classList.toggle('on');
+  syncDentLayer();
 });
 
 // ── Layer buttons ─────────────────────────────────────────
@@ -962,8 +957,21 @@ function drawElev(){
   const W=canvas.width,H=canvas.height;
   const PAD={top:12,right:20,bottom:28,left:46};
   const cW=W-PAD.left-PAD.right,cH=H-PAD.top-PAD.bottom;
-  const minD=0,maxD=2400,minA=-30,maxA=10;
-  const toX=d=>PAD.left+(d-minD)/(maxD-minD)*cW;
+
+  // ── Sync visible distance range from current map bounds ──
+  const bounds=map.getBounds();
+  const visAnoms=ANOMALIES.filter(a=>bounds.contains([a.lat,a.lon]));
+  let viewMinD=0,viewMaxD=2400;
+  if(visAnoms.length>1){
+    viewMinD=Math.max(0,Math.min(...visAnoms.map(a=>a.dist))-30);
+    viewMaxD=Math.min(2400,Math.max(...visAnoms.map(a=>a.dist))+30);
+  }
+  canvas._viewMinD=viewMinD;canvas._viewMaxD=viewMaxD;
+
+  const minA=-30,maxA=10;
+  // Pipeline runs East→West on map: dist=0 (T61) is on the RIGHT, dist=max (Sea Berth) is LEFT
+  // Chart X-axis matches map: LEFT = Sea Berth end, RIGHT = T61 launcher
+  const toX=d=>PAD.left+(1-(d-viewMinD)/(viewMaxD-viewMinD))*cW;
   const toY=a=>PAD.top+(maxA-a)/(maxA-minA)*cH;
   ctx.clearRect(0,0,W,H);
 
@@ -972,66 +980,100 @@ function drawElev(){
     const y1=Math.max(PAD.top,toY(z.hi)),y2=Math.min(PAD.top+cH,toY(z.lo));
     if(y2>y1){ctx.fillStyle=z.color;ctx.fillRect(PAD.left,y1,cW,y2-y1);}
   });
-  // Sea level line
+
+  // Sea level dashed line
   const slY=toY(0);
   ctx.strokeStyle='rgba(90,200,250,0.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
   ctx.beginPath();ctx.moveTo(PAD.left,slY);ctx.lineTo(PAD.left+cW,slY);ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle='rgba(90,200,250,0.5)';ctx.font='9px DM Sans,sans-serif';ctx.textAlign='right';
+  ctx.fillStyle='rgba(90,200,250,0.55)';ctx.font='9px DM Sans,sans-serif';ctx.textAlign='right';
   ctx.fillText('0 m',PAD.left-4,slY+3);
-  // Y grid
+
+  // Y grid & labels
   [-5,-10,-15,-20,-25].forEach(alt=>{
     const y=toY(alt);if(y<PAD.top||y>PAD.top+cH)return;
-    ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
+    ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(PAD.left,y);ctx.lineTo(PAD.left+cW,y);ctx.stroke();
     ctx.fillStyle='rgba(235,235,245,0.3)';ctx.font='9px DM Sans,sans-serif';ctx.textAlign='right';
     ctx.fillText(`${alt}m`,PAD.left-4,y+3);
   });
-  // X labels
-  [0,500,1000,1500,2000,2400].forEach(d=>{
+
+  // X axis — auto step based on visible range + direction labels
+  const distRange=viewMaxD-viewMinD;
+  const step=distRange<=200?25:distRange<=500?50:distRange<=1000?100:distRange<=2000?200:500;
+  const firstTick=Math.ceil(viewMinD/step)*step;
+  for(let d=firstTick;d<=viewMaxD;d+=step){
     const x=toX(d);
     ctx.fillStyle='rgba(235,235,245,0.3)';ctx.font='9px DM Sans,sans-serif';ctx.textAlign='center';
-    ctx.fillText(d===2400?'2.4 km':`${d}m`,x,PAD.top+cH+16);
+    ctx.fillText(d>=1000?(d/1000).toFixed(1)+'km':d+'m',x,PAD.top+cH+16);
     ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(x,PAD.top);ctx.lineTo(x,PAD.top+cH);ctx.stroke();
-  });
-  // Fill area
-  const grad=ctx.createLinearGradient(0,PAD.top,0,PAD.top+cH);
-  grad.addColorStop(0,'rgba(10,132,255,0.35)');
-  grad.addColorStop(0.6,'rgba(10,132,255,0.10)');
-  grad.addColorStop(1,'rgba(10,132,255,0.02)');
-  ctx.beginPath();
-  ctx.moveTo(toX(ELEV_PROFILE[0].d),toY(ELEV_PROFILE[0].a));
-  ELEV_PROFILE.forEach(p=>ctx.lineTo(toX(p.d),toY(p.a)));
-  ctx.lineTo(toX(ELEV_PROFILE[ELEV_PROFILE.length-1].d),PAD.top+cH);
-  ctx.lineTo(toX(ELEV_PROFILE[0].d),PAD.top+cH);
-  ctx.closePath();ctx.fillStyle=grad;ctx.fill();
-  // Profile line
-  ctx.beginPath();ctx.strokeStyle='#0a84ff';ctx.lineWidth=2;ctx.lineJoin='round';
-  ELEV_PROFILE.forEach((p,i)=>i===0?ctx.moveTo(toX(p.d),toY(p.a)):ctx.lineTo(toX(p.d),toY(p.a)));
-  ctx.stroke();
-  // Anomaly dots
+  }
+  // End labels — Sea Berth on left, T61 on right (matching map orientation)
+  ctx.font='bold 9px DM Sans,sans-serif';ctx.fillStyle='rgba(90,200,250,0.6)';
+  ctx.textAlign='left'; ctx.fillText('⚓ Sea Berth',PAD.left+2,PAD.top+10);
+  ctx.textAlign='right';ctx.fillText('🏭 T61 →',PAD.left+cW-2,PAD.top+10);
+
+  // Profile fill + line (clip to visible range)
+  const visProfile=ELEV_PROFILE.filter(p=>p.d>=viewMinD-100&&p.d<=viewMaxD+100);
+  if(visProfile.length>1){
+    const grad=ctx.createLinearGradient(0,PAD.top,0,PAD.top+cH);
+    grad.addColorStop(0,'rgba(10,132,255,0.3)');
+    grad.addColorStop(0.6,'rgba(10,132,255,0.08)');
+    grad.addColorStop(1,'rgba(10,132,255,0.01)');
+    ctx.beginPath();
+    ctx.moveTo(toX(visProfile[0].d),toY(visProfile[0].a));
+    visProfile.forEach(p=>ctx.lineTo(toX(p.d),toY(p.a)));
+    ctx.lineTo(toX(visProfile[visProfile.length-1].d),PAD.top+cH);
+    ctx.lineTo(toX(visProfile[0].d),PAD.top+cH);
+    ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+    ctx.beginPath();ctx.strokeStyle='#0a84ff';ctx.lineWidth=2;ctx.lineJoin='round';
+    visProfile.forEach((p,i)=>i===0?ctx.moveTo(toX(p.d),toY(p.a)):ctx.lineTo(toX(p.d),toY(p.a)));
+    ctx.stroke();
+  }
+
+  // Anomaly dots — same colour as map, respect all active filters
   ANOMALIES.forEach(a=>{
-    if(a.alt===null) return;
+    if(a.alt===null||a.dist<viewMinD||a.dist>viewMaxD) return;
     if(a.location==='External'&&!showExternal) return;
     if(a.location==='Internal'&&!showInternal) return;
     if(!activeRepair.has(a.repair||'>10yr')) return;
     if((a.depth||0)<minDepth) return;
     const x=toX(a.dist),y=toY(a.alt);
     if(x<PAD.left||x>PAD.left+cW||y<PAD.top||y>PAD.top+cH) return;
+    const col=repairColor(a);
+    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);
+    ctx.fillStyle=col;ctx.globalAlpha=0.12;ctx.fill();ctx.globalAlpha=1;
     ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);
-    ctx.fillStyle=repairColor(a);ctx.globalAlpha=0.75;ctx.fill();ctx.globalAlpha=1;
+    ctx.fillStyle=col;ctx.globalAlpha=0.9;ctx.fill();ctx.globalAlpha=1;
   });
-  // Highlight point
+
+  // Dent dot — respects both defect type toggle AND repair <=1yr priority
+  if(dentShouldShow()){
+    DENTS.forEach(d=>{
+      if(d.alt===undefined||d.alt===null) return;
+      if(d.dist<viewMinD||d.dist>viewMaxD) return;
+      const x=toX(d.dist),y=toY(d.alt);
+      if(x<PAD.left||x>PAD.left+cW||y<PAD.top||y>PAD.top+cH) return;
+      // Same colour as map marker (#ff375f)
+      ctx.beginPath();ctx.arc(x,y,6,0,Math.PI*2);
+      ctx.fillStyle='#ff375f';ctx.globalAlpha=0.15;ctx.fill();ctx.globalAlpha=1;
+      ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);
+      ctx.fillStyle='#ff375f';ctx.strokeStyle='#fff';ctx.lineWidth=1.5;
+      ctx.fill();ctx.stroke();
+    });
+  }
+
+  // Clicked-anomaly highlight
   if(elevHighlightPt){
     const{dist,alt,col}=elevHighlightPt;
-    if(alt!==null){
+    if(alt!==null&&dist>=viewMinD&&dist<=viewMaxD){
       const x=toX(dist),y=toY(alt);
       ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.setLineDash([3,3]);
       ctx.beginPath();ctx.moveTo(x,PAD.top);ctx.lineTo(x,PAD.top+cH);ctx.stroke();
       ctx.setLineDash([]);
-      ctx.beginPath();ctx.arc(x,y,6,0,Math.PI*2);
-      ctx.fillStyle=col;ctx.globalAlpha=0.25;ctx.fill();ctx.globalAlpha=1;
+      ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);
+      ctx.fillStyle=col;ctx.globalAlpha=0.2;ctx.fill();ctx.globalAlpha=1;
       ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);
       ctx.fillStyle=col;ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.fill();ctx.stroke();
     }
@@ -1039,16 +1081,26 @@ function drawElev(){
   canvas._params={toX,toY,PAD,cW,cH,W,H};
 }
 
+// Redraw when map moves or zooms
+map.on('moveend zoomend',()=>{if(elevOpen)drawElev();});
+
 document.getElementById('elev-canvas').addEventListener('mousemove',function(e){
   if(!this._params)return;
   const{toX,PAD,cW,cH}=this._params;
+  const vMin=this._viewMinD||0,vMax=this._viewMaxD||2400;
   const rect=this.getBoundingClientRect();
   const mx=e.clientX-rect.left,my=e.clientY-rect.top;
   const cursor=document.getElementById('elev-cursor');
   const tip=document.getElementById('elev-tooltip');
-  if(mx<PAD.left||mx>PAD.left+cW||my<PAD.top||my>PAD.top+cH){cursor.style.display='none';tip.style.display='none';return;}
+  if(mx<PAD.left||mx>PAD.left+cW||my<PAD.top||my>PAD.top+cH){
+    cursor.style.display='none';tip.style.display='none';return;
+  }
   let nearest=null,nearestDx=Infinity;
-  ANOMALIES.forEach(a=>{const ax=toX(a.dist),dx=Math.abs(ax-mx);if(dx<40&&dx<nearestDx){nearest=a;nearestDx=dx;}});
+  ANOMALIES.forEach(a=>{
+    if(a.dist<vMin||a.dist>vMax) return;
+    const ax=toX(a.dist),dx=Math.abs(ax-mx);
+    if(dx<40&&dx<nearestDx){nearest=a;nearestDx=dx;}
+  });
   cursor.style.display='block';cursor.style.left=mx+'px';
   if(nearest){
     const zone=altZone(nearest.alt),col=repairColor(nearest);
@@ -1056,25 +1108,33 @@ document.getElementById('elev-canvas').addEventListener('mousemove',function(e){
     tip.innerHTML=`<div style="font-weight:600;color:${col};margin-bottom:3px;">#${nearest.id}</div>
       <div style="color:var(--text2);font-size:10px;">${(+nearest.dist).toFixed(0)} m · ${nearest.location}</div>
       <div style="color:${zone?zone.color:'var(--text2)'};font-size:11px;margin-top:2px;">${(+(nearest.alt||0)).toFixed(1)} m ${zone?'· '+zone.label:''}</div>
-      <div style="color:${depthColor(nearest.depth||0)};font-size:11px;">${nearest.depth||'?'}% WT</div>`;
+      <div style="color:${depthColor(nearest.depth||0)};font-size:11px;">${nearest.depth||'?'}% WT · ${repairLabel(nearest.repair||'>10yr').replace(/.*? /,'')}</div>`;
     const tipW=200;
     tip.style.left=(mx+12+tipW>this.width?mx-tipW-12:mx+12)+'px';
     tip.style.top=Math.max(4,my-40)+'px';
   } else {tip.style.display='none';}
 });
+
 document.getElementById('elev-canvas').addEventListener('mouseleave',()=>{
   document.getElementById('elev-cursor').style.display='none';
   document.getElementById('elev-tooltip').style.display='none';
 });
+
 document.getElementById('elev-canvas').addEventListener('click',function(e){
   if(!this._params)return;
-  const{toX,PAD,cW}=this._params;
+  const{toX,PAD}=this._params;
+  const vMin=this._viewMinD||0,vMax=this._viewMaxD||2400;
   const rect=this.getBoundingClientRect();
   const mx=e.clientX-rect.left;
   let nearest=null,nearestDx=Infinity;
-  ANOMALIES.forEach(a=>{const ax=toX(a.dist),dx=Math.abs(ax-mx);if(dx<40&&dx<nearestDx){nearest=a;nearestDx=dx;}});
+  ANOMALIES.forEach(a=>{
+    if(a.dist<vMin||a.dist>vMax) return;
+    const ax=toX(a.dist),dx=Math.abs(ax-mx);
+    if(dx<40&&dx<nearestDx){nearest=a;nearestDx=dx;}
+  });
   if(nearest)showDetail(nearest,repairColor(nearest));
 });
+
 window.addEventListener('resize',()=>{if(elevOpen)drawElev();});
 
 // ── Dynamic topbar height ─────────────────────────────────
