@@ -117,7 +117,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
 /* LAYOUT */
 #main{display:flex;flex:1;height:calc(100vh - 60px);overflow:hidden;position:relative;}
-#map{flex:1;z-index:1;}
+#map-col{display:flex;flex-direction:column;flex:1;min-width:0;position:relative;}
+#map{flex:1;z-index:1;min-height:0;}
 
 /* SIDEBAR */
 #sidebar{
@@ -289,13 +290,12 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
 /* LEGEND */
 /* ELEVATION PROFILE PANEL */
 #elev-panel{
-  position:absolute;bottom:0;left:0;right:0;
-  height:160px;z-index:400;
+  height:160px;flex-shrink:0;
   background:var(--glass2);backdrop-filter:var(--blur);
   border-top:1px solid var(--border2);
   display:none;flex-direction:column;
   box-shadow:0 -8px 32px rgba(0,0,0,.5);
-  transition:height .25s cubic-bezier(.4,0,.2,1);
+  position:relative;
 }
 #elev-panel.open{display:flex;}
 #elev-header{
@@ -316,13 +316,13 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
 }
 #elev-cursor{position:absolute;top:4px;bottom:8px;width:1px;background:rgba(10,132,255,.5);pointer-events:none;display:none;}
 
-/* Toggle button */
+/* Toggle button — anchored to bottom-right of #map-col */
 #btn-elev{
   position:absolute;bottom:0;right:80px;z-index:410;
   background:var(--glass2);backdrop-filter:var(--blur);
   border:1px solid var(--border2);border-bottom:none;
   border-radius:10px 10px 0 0;
-  color:var(--blue2);font-size:11px;font-weight:600;
+  color:var(--blue);font-size:11px;font-weight:600;
   padding:5px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;
   display:flex;align-items:center;gap:6px;transition:all .15s;
 }
@@ -494,7 +494,21 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
     </div>
   </div>
 
-  <div id="map"></div>
+  <div id="map-col">
+    <div id="map"></div>
+    <div id="elev-panel" class="open">
+      <div id="elev-header">
+        <div class="etitle">⛰ Elevation Profile — Pipe Altitude vs. Distance</div>
+        <button class="eclose" onclick="toggleElev()">✕</button>
+      </div>
+      <div id="elev-canvas-wrap">
+        <canvas id="elev-canvas"></canvas>
+        <div id="elev-cursor"></div>
+        <div id="elev-tooltip"></div>
+      </div>
+    </div>
+    <button id="btn-elev" onclick="toggleElev()">⛰ Elevation Profile</button>
+  </div>
 </div>
 
 <button id="sidebar-toggle">◀</button>
@@ -512,22 +526,6 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
   <div id="dp-title"></div>
   <div id="dp-content"></div>
 </div>
-
-<!-- ELEVATION PROFILE PANEL -->
-<div id="elev-panel">
-  <div id="elev-header">
-    <div class="etitle">⛰ Elevation Profile — Pipe Altitude vs. Distance</div>
-    <button class="eclose" onclick="toggleElev()">✕</button>
-  </div>
-  <div id="elev-canvas-wrap">
-    <canvas id="elev-canvas"></canvas>
-    <div id="elev-cursor"></div>
-    <div id="elev-tooltip"></div>
-  </div>
-</div>
-
-<!-- ELEVATION TOGGLE BUTTON -->
-<button id="btn-elev" onclick="toggleElev()">⛰ Elevation Profile</button>
 
 <script>
 // ═══════════════════════════════════════════════════════════════════
@@ -933,14 +931,14 @@ const ZONES=[
   {hi:-20,  lo:-999,color:'rgba(255,69,58,0.08)', label:'below −20 m'},
 ];
 
-let elevOpen=false;
+let elevOpen=true;   // open by default
 let elevHighlightPt=null;
 
 function toggleElev(){
   elevOpen=!elevOpen;
   document.getElementById('elev-panel').classList.toggle('open',elevOpen);
   document.getElementById('btn-elev').style.color=elevOpen?'var(--blue)':'var(--blue2)';
-  setTimeout(()=>{fixMapHeight();if(elevOpen)drawElev();},260);
+  setTimeout(()=>{ map.invalidateSize(); if(elevOpen) drawElev(); }, 50);
 }
 
 function elevHighlight(dist,alt,col){
@@ -1137,15 +1135,16 @@ document.getElementById('elev-canvas').addEventListener('click',function(e){
 
 window.addEventListener('resize',()=>{if(elevOpen)drawElev();});
 
-// ── Dynamic topbar height ─────────────────────────────────
+// Flex layout handles map/panel sizing automatically — just tell Leaflet
 function fixMapHeight(){
-  const tbH=document.getElementById('topbar').offsetHeight;
-  const epH=elevOpen?(document.getElementById('elev-panel').offsetHeight||160):0;
-  document.getElementById('main').style.height=`calc(100vh - ${tbH}px - ${epH}px)`;
   map.invalidateSize();
 }
 fixMapHeight();
 window.addEventListener('resize',fixMapHeight);
+
+// Initial state — elevation open by default
+document.getElementById('btn-elev').style.color='var(--blue)';
+setTimeout(()=>{ fixMapHeight(); drawElev(); }, 400);
 
 map.fitBounds(routeLine.getBounds(),{padding:[50,50]});
 </script>
