@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>18 ILI Pipeline Map — PTT SRC</title>
+<title>ILI Pipeline Map — PTT OR</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -60,9 +60,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 #brand-text{min-width:0;}
 #brand-text .dept{font-size:10px;font-weight:500;color:var(--blue2);letter-spacing:.8px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 #brand-text .company{font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-#topbar-center{position:absolute;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;white-space:nowrap;}
-#topbar-center .t1{font-size:13px;font-weight:600;}
-#topbar-center .t2{font-size:11px;color:var(--text2);margin-top:1px;}
+#topbar-center{
+  position:absolute;left:50%;top:50%;
+  transform:translateX(-50%) translateY(-50%);
+  text-align:center;pointer-events:none;white-space:nowrap;
+}
+#topbar-center .t1{font-size:13px;font-weight:600;line-height:1.3;}
+#topbar-center .t2{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.3;}
 #kpi-row{display:flex;gap:5px;flex-shrink:0;}
 .kpi{display:flex;flex-direction:column;align-items:center;padding:5px 10px;min-width:56px;
      background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;}
@@ -283,6 +287,51 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
 }
 
 /* LEGEND */
+/* ELEVATION PROFILE PANEL */
+#elev-panel{
+  position:absolute;bottom:0;left:0;right:0;
+  height:160px;z-index:400;
+  background:var(--glass2);backdrop-filter:var(--blur);
+  border-top:1px solid var(--border2);
+  display:none;flex-direction:column;
+  box-shadow:0 -8px 32px rgba(0,0,0,.5);
+  transition:height .25s cubic-bezier(.4,0,.2,1);
+}
+#elev-panel.open{display:flex;}
+#elev-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 14px 0;flex-shrink:0;
+}
+#elev-header .etitle{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:7px;}
+#elev-header .etitle::before{content:'';width:2px;height:11px;background:var(--blue);border-radius:2px;}
+#elev-header .eclose{background:rgba(255,255,255,.07);border:none;color:var(--text2);width:20px;height:20px;border-radius:10px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+#elev-header .eclose:hover{background:rgba(255,59,48,.2);color:var(--red);}
+#elev-canvas-wrap{flex:1;padding:4px 14px 8px;position:relative;min-height:0;}
+#elev-canvas{width:100%;height:100%;display:block;cursor:crosshair;}
+#elev-tooltip{
+  position:absolute;pointer-events:none;display:none;
+  background:var(--glass2);border:1px solid var(--border2);border-radius:8px;
+  padding:6px 10px;font-size:11px;white-space:nowrap;z-index:10;
+  box-shadow:0 4px 16px rgba(0,0,0,.5);
+}
+#elev-cursor{position:absolute;top:4px;bottom:8px;width:1px;background:rgba(10,132,255,.5);pointer-events:none;display:none;}
+
+/* Toggle button */
+#btn-elev{
+  position:absolute;bottom:0;right:80px;z-index:410;
+  background:var(--glass2);backdrop-filter:var(--blur);
+  border:1px solid var(--border2);border-bottom:none;
+  border-radius:10px 10px 0 0;
+  color:var(--blue2);font-size:11px;font-weight:600;
+  padding:5px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;
+  display:flex;align-items:center;gap:6px;transition:all .15s;
+}
+#btn-elev:hover{background:rgba(10,132,255,.12);}
+@media(max-width:640px){
+  #elev-panel{height:130px;}
+  #btn-elev{right:50px;font-size:10px;padding:4px 10px;}
+}
+
 /* MEASURE TOOL */
 #measure-bar{
   position:absolute;top:70px;left:50%;transform:translateX(-50%);
@@ -326,13 +375,13 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
       <img id="logo-img" src="https://uppic.cloud/ib/mVAAyQbB1nqbsyF_1772152846.png"
            alt="PTT OR" onerror="this.style.display='none'">
       <div id="brand-text">
-        <div class="dept">Central and Eastern Engineering and Maintenance Division</div>
+        <div class="dept">Engineering &amp; Maintenance Department</div>
         <div class="company">PTT Oil and Retail Business Public Company Limited</div>
       </div>
     </div>
     <div id="topbar-center">
-      <div class="t1">‎ </div>
-      <div class="t2">In-Line Inspection — Anomaly Map 18″ T61 → Sea Berth &nbsp;·&nbsp; 2.7 km &nbsp;·&nbsp; 22–23 Nov 2025</div>
+      <div class="t1">In-Line Inspection — Anomaly Map</div>
+      <div class="t2">18″ T61 → Sea Berth &nbsp;·&nbsp; 2.7 km &nbsp;·&nbsp; 22–23 Nov 2025</div>
     </div>
   </div>
   <div id="topbar-row2">
@@ -383,19 +432,27 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
             <div class="cb-track on"></div><span class="pill teal"></span>
             <span>Monitored</span><span class="filter-count">0</span>
           </label>
-          <label class="filter-row" id="dent-row">
-            <div class="cb-track on" id="dent-track"></div><span class="pill pink"></span>
-            <span>Dents</span><span class="filter-count">1</span>
-          </label>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">Surface Location</div>
-        <div class="chip-row">
-          <div class="chip active" data-loc="External"><span class="chip-dot" style="background:var(--orange)"></span>External</div>
-          <div class="chip active" data-loc="Internal"><span class="chip-dot" style="background:var(--blue2)"></span>Internal</div>
-          <div class="chip active" data-loc="Middle">  <span class="chip-dot" style="background:var(--purple)"></span>Mid-wall</div>
+        <div class="card-title">Defect Type</div>
+        <div style="display:flex;flex-direction:column;gap:2px;">
+          <label class="filter-row" id="type-ext-row">
+            <div class="cb-track on" id="type-ext-track"></div>
+            <span class="pill" style="background:var(--orange);color:var(--orange)"></span>
+            <span>External Metal Loss</span><span class="filter-count">1,350</span>
+          </label>
+          <label class="filter-row" id="type-int-row">
+            <div class="cb-track on" id="type-int-track"></div>
+            <span class="pill" style="background:var(--blue2);color:var(--blue2)"></span>
+            <span>Internal Metal Loss</span><span class="filter-count">664</span>
+          </label>
+          <label class="filter-row" id="dent-row">
+            <div class="cb-track on" id="dent-track"></div>
+            <span class="pill pink"></span>
+            <span>Dent (Geometric)</span><span class="filter-count">1</span>
+          </label>
         </div>
       </div>
 
@@ -468,6 +525,22 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
   <div id="dp-content"></div>
 </div>
 
+<!-- ELEVATION PROFILE PANEL -->
+<div id="elev-panel">
+  <div id="elev-header">
+    <div class="etitle">⛰ Elevation Profile — Pipe Altitude vs. Distance</div>
+    <button class="eclose" onclick="toggleElev()">✕</button>
+  </div>
+  <div id="elev-canvas-wrap">
+    <canvas id="elev-canvas"></canvas>
+    <div id="elev-cursor"></div>
+    <div id="elev-tooltip"></div>
+  </div>
+</div>
+
+<!-- ELEVATION TOGGLE BUTTON -->
+<button id="btn-elev" onclick="toggleElev()">⛰ Elevation Profile</button>
+
 <script>
 // ═══════════════════════════════════════════════════════════════════
 //  DATA comes from data.js  (ANOMALIES, DENTS, ROUTE, REFS)
@@ -521,6 +594,17 @@ function makeTooltip(a,col){
   </div>`;
 }
 
+// Altitude zone classifier
+function altZone(alt) {
+  if (alt === null || alt === undefined) return null;
+  if (alt > 0)    return { label:'Above Sea Level',  color:'#30d158', icon:'🟢' };
+  if (alt >= -5)  return { label:'Shallow (0 to −5 m)',    color:'#5ac8fa', icon:'🔵' };
+  if (alt >= -10) return { label:'Mid-depth (−5 to −10 m)',color:'#0a84ff', icon:'🔷' };
+  if (alt >= -15) return { label:'Deep (−10 to −15 m)',    color:'#bf5af2', icon:'🟣' };
+  if (alt >= -20) return { label:'Very Deep (−15 to −20 m)',color:'#ff9f0a',icon:'🟠' };
+  return           { label:'Deepest (below −20 m)',         color:'#ff453a', icon:'🔴' };
+}
+
 function showDetail(a,col){
   document.getElementById('dp-title').innerHTML=
     `<span style="color:${col}">#${a.id}</span>&nbsp;`+
@@ -531,20 +615,40 @@ function showDetail(a,col){
       <span>Wall Loss</span><span style="color:${depthColor(d)};font-weight:600;">${d}% WT</span></div>
     <div class="depth-bar-bg"><div class="depth-bar-fill" style="width:${Math.min(d,100)}%;background:${depthColor(d)};"></div></div>
   </div>`:'';
+
+  // Altitude zone badge
+  const zone = altZone(a.alt);
+  const zoneHtml = zone ? `
+    <div style="display:flex;align-items:center;gap:7px;margin:8px 0 6px;padding:7px 10px;
+      background:${zone.color}18;border:1px solid ${zone.color}44;border-radius:9px;">
+      <span style="font-size:14px;">${zone.icon}</span>
+      <div>
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:1px;">Elevation Zone</div>
+        <div style="font-size:12px;font-weight:600;color:${zone.color};">${zone.label}</div>
+      </div>
+      <div style="margin-left:auto;text-align:right;">
+        <div style="font-size:15px;font-weight:700;color:${zone.color};">${(+(a.alt||0)).toFixed(2)} m</div>
+        <div style="font-size:9px;color:var(--text3);">altitude</div>
+      </div>
+    </div>` : '';
+
   const rows=[
     ['Distance',(+a.dist).toFixed(2)+' m'],['Surface',a.location||''],
     ['Classification',a.dim||''],['Orientation',a.orient||''],
     ['WT',(+(a.wt||0)).toFixed(2)+' mm'],['Axial',(a.axLen||0)+' mm'],
     ['Width',(a.width||0)+' mm'],['Depth mm',a.depthMm?(+(a.depthMm)).toFixed(2)+' mm':''],
-    ['ERF',a.erf?(+(a.erf)).toFixed(3):''],['Altitude',(+(a.alt||0)).toFixed(2)+' m'],
-    ['GPS',(+a.lat).toFixed(6)+', '+(+a.lon).toFixed(6)],
+    ['ERF',a.erf?(+(a.erf)).toFixed(3):''],['GPS',(+a.lat).toFixed(6)+', '+(+a.lon).toFixed(6)],
   ].filter(([,v])=>v&&v!=='0.00 mm'&&v!=='0 mm'&&v!=='0');
   document.getElementById('dp-content').innerHTML=
-    barHtml+
+    barHtml + zoneHtml +
     rows.map(([l,v])=>`<div class="dp-row"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('')+
     `<div><span class="dp-badge" style="background:${col}1a;color:${col};border:1px solid ${col}44;">${repairLabel(a.repair||'>10yr')}</span></div>`+
-    (a.comment&&a.comment!=='None'?`<div style="margin-top:8px;font-size:10.5px;color:var(--text3);font-style:italic;">${a.comment}</div>`:'');
+    (a.comment&&a.comment!=='None'&&a.comment?`<div style="margin-top:8px;font-size:10.5px;color:var(--text3);font-style:italic;">${a.comment}</div>`:'');
   document.getElementById('detail-panel').style.display='block';
+
+  // Highlight this anomaly on the elevation chart
+  elevHighlight(a.dist, a.alt, col);
+
   map.panTo([a.lat,a.lon]);
 }
 
@@ -593,8 +697,7 @@ DENTS.forEach(d=>{
 });
 
 // Filter state
-const activeRepair   = new Set(['>10yr','monitored','7-10yr','5-7yr','<=1yr']);
-const activeLocation = new Set(['External','Internal','Middle']);
+const activeRepair = new Set(['>10yr','monitored','7-10yr','5-7yr','<=1yr']);
 let minDepth=0;
 
 function rebuildMarkers(){
@@ -602,8 +705,9 @@ function rebuildMarkers(){
   let vis=0,maxD=0,ext=0,intC=0;
   ANOMALIES.forEach(a=>{
     const rk=a.repair||'>10yr';
+    if(a.location==='External' && !showExternal) return;
+    if(a.location==='Internal' && !showInternal) return;
     if(!activeRepair.has(rk))           return;
-    if(!activeLocation.has(a.location)) return;
     if((a.depth||0)<minDepth)           return;
     const col=repairColor(a);
     const r=Math.max(4,Math.min(13,(a.depth||10)/6.5));
@@ -616,22 +720,11 @@ function rebuildMarkers(){
   });
 
   // ── CRITICAL Z-ORDER ENFORCEMENT ──────────────────────────────
-  // clearLayers() + addLayer() does NOT reset Leaflet's canvas
-  // paint order — the shared canvas repaints layers in the order
-  // their LayerGroup was last mounted on the map.
-  //
-  // Fix: after every rebuild, remove then re-add the critical
-  // (low-count) layers so they are mounted LAST = painted ON TOP.
-  //
-  //   >10yr stays mounted first → drawn at the BOTTOM (buried)
-  //   <=1yr re-mounted last     → drawn ON TOP (always visible)
-  //
   const bringToFront = ['>10yr','monitored','7-10yr','5-7yr','<=1yr'];
   bringToFront.forEach(k => {
     map.removeLayer(pLayers[k]);
-    pLayers[k].addTo(map);   // re-mount in ascending criticality
+    pLayers[k].addTo(map);
   });
-  // Dents always topmost
   map.removeLayer(dentLayer);
   dentLayer.addTo(map);
   // ──────────────────────────────────────────────────────────────
@@ -643,20 +736,12 @@ function rebuildMarkers(){
 }
 rebuildMarkers();
 
-// Filter controls
+// Filter controls — Repair Priority
 document.querySelectorAll('.filter-row[data-repair]').forEach(row=>{
   const key=row.dataset.repair, track=row.querySelector('.cb-track');
   row.addEventListener('click',()=>{
     const on=track.classList.toggle('on');
     on?activeRepair.add(key):activeRepair.delete(key);
-    rebuildMarkers();
-  });
-});
-document.querySelectorAll('.chip[data-loc]').forEach(chip=>{
-  chip.addEventListener('click',()=>{
-    chip.classList.toggle('active');
-    const loc=chip.dataset.loc;
-    chip.classList.contains('active')?activeLocation.add(loc):activeLocation.delete(loc);
     rebuildMarkers();
   });
 });
@@ -666,6 +751,20 @@ document.getElementById('depth-slider').addEventListener('input',e=>{
   document.getElementById('slider-fill').style.width=(minDepth/80*100)+'%';
   rebuildMarkers();
 });
+// ── Defect Type toggles ──────────────────────────────────
+let showExternal = true;
+let showInternal = true;
+
+document.getElementById('type-ext-row').addEventListener('click', () => {
+  showExternal = document.getElementById('type-ext-track').classList.toggle('on');
+  rebuildMarkers();
+});
+document.getElementById('type-int-row').addEventListener('click', () => {
+  showInternal = document.getElementById('type-int-track').classList.toggle('on');
+  rebuildMarkers();
+});
+
+// Defect type — dent toggle
 document.getElementById('dent-row').addEventListener('click',()=>{
   const t=document.getElementById('dent-track');
   t.classList.toggle('on');
@@ -888,6 +987,252 @@ btnMeasureClear.addEventListener('click', e => {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && measuring) stopMeasuring();
 });
+
+// ═══════════════════════════════════════════════════════════════════
+//  ELEVATION PROFILE CHART
+// ═══════════════════════════════════════════════════════════════════
+
+// Pre-built profile: 80 averaged points across 0–2400 m
+const ELEV_PROFILE = [{"d":15.0,"a":7.36},{"d":45.0,"a":5.16},{"d":75.0,"a":5.0},{"d":105.0,"a":4.65},{"d":135.0,"a":4.18},{"d":165.0,"a":3.85},{"d":195.0,"a":3.27},{"d":225.0,"a":2.95},{"d":255.0,"a":2.76},{"d":285.0,"a":2.59},{"d":315.0,"a":2.52},{"d":345.0,"a":2.41},{"d":375.0,"a":2.16},{"d":405.0,"a":1.91},{"d":435.0,"a":1.63},{"d":465.0,"a":1.29},{"d":495.0,"a":0.88},{"d":525.0,"a":0.38},{"d":555.0,"a":-0.21},{"d":585.0,"a":-0.93},{"d":615.0,"a":-1.62},{"d":645.0,"a":-2.4},{"d":675.0,"a":-3.17},{"d":705.0,"a":-3.89},{"d":735.0,"a":-4.52},{"d":765.0,"a":-5.15},{"d":795.0,"a":-5.78},{"d":825.0,"a":-6.35},{"d":855.0,"a":-6.82},{"d":885.0,"a":-7.2},{"d":915.0,"a":-7.53},{"d":945.0,"a":-7.8},{"d":975.0,"a":-7.99},{"d":1005.0,"a":-8.13},{"d":1035.0,"a":-8.21},{"d":1065.0,"a":-8.32},{"d":1095.0,"a":-8.39},{"d":1125.0,"a":-8.46},{"d":1155.0,"a":-8.5},{"d":1185.0,"a":-8.54},{"d":1215.0,"a":-8.55},{"d":1245.0,"a":-8.56},{"d":1275.0,"a":-8.57},{"d":1305.0,"a":-8.52},{"d":1335.0,"a":-8.43},{"d":1365.0,"a":-8.3},{"d":1395.0,"a":-8.2},{"d":1425.0,"a":-8.12},{"d":1455.0,"a":-8.06},{"d":1485.0,"a":-8.01},{"d":1515.0,"a":-8.0},{"d":1545.0,"a":-8.03},{"d":1575.0,"a":-8.09},{"d":1605.0,"a":-8.18},{"d":1635.0,"a":-8.31},{"d":1665.0,"a":-8.47},{"d":1695.0,"a":-8.65},{"d":1725.0,"a":-8.85},{"d":1755.0,"a":-9.08},{"d":1785.0,"a":-9.35},{"d":1815.0,"a":-9.67},{"d":1845.0,"a":-10.07},{"d":1875.0,"a":-10.55},{"d":1905.0,"a":-11.12},{"d":1935.0,"a":-12.0},{"d":1965.0,"a":-13.2},{"d":1995.0,"a":-14.62},{"d":2025.0,"a":-16.3},{"d":2055.0,"a":-18.1},{"d":2085.0,"a":-19.8},{"d":2115.0,"a":-21.3},{"d":2145.0,"a":-22.6},{"d":2175.0,"a":-23.7},{"d":2205.0,"a":-24.5},{"d":2235.0,"a":-25.2},{"d":2265.0,"a":-25.8},{"d":2295.0,"a":-26.5},{"d":2325.0,"a":-27.1}];
+
+// Sea level zones for background shading
+const ZONES = [
+  { hi:  999, lo:  0,   color:'rgba(48,209,88,0.08)',  label:'Above sea level' },
+  { hi:    0, lo: -5,   color:'rgba(90,200,250,0.08)', label:'0 to −5 m' },
+  { hi:   -5, lo: -10,  color:'rgba(10,132,255,0.08)', label:'−5 to −10 m' },
+  { hi:  -10, lo: -15,  color:'rgba(191,90,242,0.08)', label:'−10 to −15 m' },
+  { hi:  -15, lo: -20,  color:'rgba(255,159,10,0.08)', label:'−15 to −20 m' },
+  { hi:  -20, lo: -999, color:'rgba(255,69,58,0.08)',  label:'below −20 m' },
+];
+
+let elevOpen = false;
+let elevHighlightPt = null;  // {dist, alt, col}
+
+function toggleElev() {
+  elevOpen = !elevOpen;
+  const panel = document.getElementById('elev-panel');
+  panel.classList.toggle('open', elevOpen);
+  document.getElementById('btn-elev').style.color = elevOpen ? 'var(--blue)' : 'var(--blue2)';
+  setTimeout(() => { fixMapHeight(); if (elevOpen) drawElev(); }, 260);
+}
+
+function elevHighlight(dist, alt, col) {
+  elevHighlightPt = { dist, alt, col };
+  if (elevOpen) drawElev();
+}
+
+function drawElev() {
+  const canvas = document.getElementById('elev-canvas');
+  const wrap   = document.getElementById('elev-canvas-wrap');
+  canvas.width  = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  const PAD = { top:12, right:20, bottom:28, left:46 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top  - PAD.bottom;
+
+  const minD = 0, maxD = 2400;
+  const minA = -30, maxA = 10;
+
+  const toX = d => PAD.left + (d - minD) / (maxD - minD) * cW;
+  const toY = a => PAD.top  + (maxA - a) / (maxA - minA) * cH;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // ── Zone background bands ──────────────────────────────
+  ZONES.forEach(z => {
+    const y1 = Math.max(PAD.top,  toY(z.hi));
+    const y2 = Math.min(PAD.top + cH, toY(z.lo));
+    if (y2 > y1) {
+      ctx.fillStyle = z.color;
+      ctx.fillRect(PAD.left, y1, cW, y2 - y1);
+    }
+  });
+
+  // ── Sea level line ─────────────────────────────────────
+  const slY = toY(0);
+  ctx.strokeStyle = 'rgba(90,200,250,0.4)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.moveTo(PAD.left, slY); ctx.lineTo(PAD.left + cW, slY); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(90,200,250,0.5)';
+  ctx.font = '9px DM Sans, sans-serif';
+  ctx.fillText('0 m', PAD.left - 24, slY + 3);
+
+  // ── Y-axis grid lines & labels ─────────────────────────
+  [-5, -10, -15, -20, -25].forEach(alt => {
+    const y = toY(alt);
+    if (y < PAD.top || y > PAD.top + cH) return;
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + cW, y); ctx.stroke();
+    ctx.fillStyle = 'rgba(235,235,245,0.3)';
+    ctx.font = '9px DM Sans, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(`${alt}m`, PAD.left - 5, y + 3);
+  });
+
+  // ── X-axis labels ──────────────────────────────────────
+  [0, 500, 1000, 1500, 2000, 2400].forEach(d => {
+    const x = toX(d);
+    ctx.fillStyle = 'rgba(235,235,245,0.3)';
+    ctx.font = '9px DM Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(d === 2400 ? '2.4 km' : `${d}m`, x, PAD.top + cH + 16);
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + cH); ctx.stroke();
+  });
+
+  // ── Filled profile area ────────────────────────────────
+  const grad = ctx.createLinearGradient(0, PAD.top, 0, PAD.top + cH);
+  grad.addColorStop(0,   'rgba(10,132,255,0.35)');
+  grad.addColorStop(0.6, 'rgba(10,132,255,0.10)');
+  grad.addColorStop(1,   'rgba(10,132,255,0.02)');
+  ctx.beginPath();
+  ctx.moveTo(toX(ELEV_PROFILE[0].d), toY(ELEV_PROFILE[0].a));
+  ELEV_PROFILE.forEach(p => ctx.lineTo(toX(p.d), toY(p.a)));
+  ctx.lineTo(toX(ELEV_PROFILE[ELEV_PROFILE.length-1].d), PAD.top + cH);
+  ctx.lineTo(toX(ELEV_PROFILE[0].d), PAD.top + cH);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // ── Profile line ───────────────────────────────────────
+  ctx.beginPath();
+  ctx.strokeStyle = '#0a84ff';
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ELEV_PROFILE.forEach((p, i) => {
+    i === 0 ? ctx.moveTo(toX(p.d), toY(p.a)) : ctx.lineTo(toX(p.d), toY(p.a));
+  });
+  ctx.stroke();
+
+  // ── Anomaly dots (repair priority colour, small) ───────
+  const visibleA = ANOMALIES.filter(a => {
+    const rk = a.repair || '>10yr';
+    if (a.location === 'External' && !showExternal) return false;
+    if (a.location === 'Internal' && !showInternal) return false;
+    if (!activeRepair.has(rk)) return false;
+    if ((a.depth||0) < minDepth) return false;
+    return true;
+  });
+  visibleA.forEach(a => {
+    if (a.alt === null) return;
+    const x = toX(a.dist), y = toY(a.alt);
+    if (x < PAD.left || x > PAD.left + cW || y < PAD.top || y > PAD.top + cH) return;
+    ctx.beginPath();
+    ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = repairColor(a);
+    ctx.globalAlpha = 0.75;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  });
+
+  // ── Highlighted anomaly (clicked) ─────────────────────
+  if (elevHighlightPt) {
+    const { dist, alt, col } = elevHighlightPt;
+    if (alt !== null) {
+      const x = toX(dist), y = toY(alt);
+      // Vertical line
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + cH); ctx.stroke();
+      ctx.setLineDash([]);
+      // Dot
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.fillStyle = col;
+      ctx.globalAlpha = 0.25;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = col;
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+
+  // ── Store draw params for hover ────────────────────────
+  canvas._params = { toX, toY, PAD, cW, cH, W, H };
+}
+
+// ── Canvas hover ──────────────────────────────────────────
+document.getElementById('elev-canvas').addEventListener('mousemove', function(e) {
+  if (!this._params) return;
+  const { toX, toY, PAD, cW, cH } = this._params;
+  const rect = this.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  const cursor = document.getElementById('elev-cursor');
+  const tip    = document.getElementById('elev-tooltip');
+
+  if (mx < PAD.left || mx > PAD.left + cW || my < PAD.top || my > PAD.top + cH) {
+    cursor.style.display = 'none'; tip.style.display = 'none'; return;
+  }
+
+  // Convert mouse X → distance
+  const dist = (mx - PAD.left) / cW * 2400;
+
+  // Find nearest anomaly within ±40px
+  let nearest = null, nearestDx = Infinity;
+  ANOMALIES.forEach(a => {
+    const ax = toX(a.dist);
+    const dx = Math.abs(ax - mx);
+    if (dx < 40 && dx < nearestDx) { nearest = a; nearestDx = dx; }
+  });
+
+  cursor.style.display = 'block';
+  cursor.style.left = mx + 'px';
+
+  if (nearest) {
+    const zone = altZone(nearest.alt);
+    const col  = repairColor(nearest);
+    tip.style.display = 'block';
+    tip.innerHTML = `
+      <div style="font-weight:600;color:${col};margin-bottom:3px;">#${nearest.id}</div>
+      <div style="color:var(--text2);font-size:10px;">${(+nearest.dist).toFixed(0)} m · ${nearest.location}</div>
+      <div style="color:${zone?zone.color:'var(--text2)'};font-size:11px;margin-top:2px;">${(+(nearest.alt||0)).toFixed(1)} m ${zone?'· '+zone.label:''}</div>
+      <div style="color:${depthColor(nearest.depth||0)};font-size:11px;">${nearest.depth||'?'}% WT · ${repairLabel(nearest.repair||'>10yr').replace(/.*? /,'')}</div>`;
+    // Position tooltip
+    const tipW = 200;
+    tip.style.left = (mx + 12 + tipW > this.width ? mx - tipW - 12 : mx + 12) + 'px';
+    tip.style.top  = Math.max(4, my - 40) + 'px';
+  } else {
+    tip.style.display = 'none';
+  }
+});
+
+document.getElementById('elev-canvas').addEventListener('mouseleave', () => {
+  document.getElementById('elev-cursor').style.display = 'none';
+  document.getElementById('elev-tooltip').style.display = 'none';
+});
+
+// Click on chart → show full detail panel for nearest anomaly
+document.getElementById('elev-canvas').addEventListener('click', function(e) {
+  if (!this._params) return;
+  const { PAD, cW } = this._params;
+  const rect = this.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  let nearest = null, nearestDx = Infinity;
+  ANOMALIES.forEach(a => {
+    const ax = PAD.left + (a.dist / 2400) * cW;
+    const dx = Math.abs(ax - mx);
+    if (dx < 40 && dx < nearestDx) { nearest = a; nearestDx = dx; }
+  });
+  if (nearest) showDetail(nearest, repairColor(nearest));
+});
+
+// Redraw on resize
+window.addEventListener('resize', () => { if (elevOpen) drawElev(); });
 
 // ── Dynamic topbar height (mobile two-row layout) ────────
 function fixMapHeight() {
