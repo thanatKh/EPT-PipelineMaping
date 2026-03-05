@@ -546,6 +546,7 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
 //  DATA comes from data.js  (ANOMALIES, DENTS, ROUTE, REFS)
 // ═══════════════════════════════════════════════════════════════════
 
+// ── Map init ─────────────────────────────────────────────
 const map = L.map('map',{zoomControl:true,preferCanvas:true}).setView([13.1058,100.876],15);
 const tiles = {
   sat:    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19}),
@@ -554,7 +555,7 @@ const tiles = {
 tiles.sat.addTo(map);
 let activeTile = 'sat';
 
-// Route
+// ── Route ─────────────────────────────────────────────────
 const routePts = ROUTE.map(p=>[p.lat,p.lon]);
 let routeLine  = L.polyline(routePts,{color:'#0a84ff',weight:4,opacity:.85}).addTo(map);
 let routeGlow  = L.polyline(routePts,{color:'#0a84ff',weight:14,opacity:.06}).addTo(map);
@@ -562,7 +563,7 @@ const mkLbl = t => L.divIcon({html:`<div class="pipe-label">${t}</div>`,classNam
 L.marker(routePts[0],                {icon:mkLbl('🏭 T61 Launch')}).addTo(map);
 L.marker(routePts[routePts.length-1],{icon:mkLbl('⚓ Sea Berth')}).addTo(map);
 
-// Valves
+// ── Valves ────────────────────────────────────────────────
 const valveIco = L.divIcon({
   html:`<div style="width:10px;height:10px;background:#ffd60a;border:1.5px solid rgba(0,0,0,.5);border-radius:2px;box-shadow:0 0 8px rgba(255,214,10,.5);"></div>`,
   iconSize:[10,10],iconAnchor:[5,5],className:''
@@ -574,7 +575,7 @@ REFS.forEach(r=>{
   valveLayers.push(m); m.addTo(map);
 });
 
-// Colour helpers
+// ── Colour helpers ────────────────────────────────────────
 const RCOL={'<=1yr':'#ff453a','5-7yr':'#ff9f0a','7-10yr':'#ffd60a','>10yr':'#30d158','monitored':'#5ac8fa'};
 const repairColor = a => a.type==='dent smooth'?'#ff375f':(RCOL[a.repair||'>10yr']||'#30d158');
 const depthColor  = d => d>=60?'#ff453a':d>=40?'#ff9f0a':d>=20?'#ffd60a':'#30d158';
@@ -582,6 +583,18 @@ const repairLabel = r => ({'<=1yr':'🔴 Repair ≤ 1 year','5-7yr':'🟠 Repair
                            '7-10yr':'🟡 Repair 7–10 years','>10yr':'🟢 Repair > 10 years',
                            'monitored':'🩵 Monitored'}[r]||r);
 
+// ── Altitude zone ─────────────────────────────────────────
+function altZone(alt) {
+  if (alt === null || alt === undefined) return null;
+  if (alt >   0) return {label:'Above Sea Level',           color:'#30d158',icon:'🟢'};
+  if (alt >= -5) return {label:'Shallow (0 to −5 m)',       color:'#5ac8fa',icon:'🔵'};
+  if (alt >=-10) return {label:'Mid-depth (−5 to −10 m)',   color:'#0a84ff',icon:'🔷'};
+  if (alt >=-15) return {label:'Deep (−10 to −15 m)',       color:'#bf5af2',icon:'🟣'};
+  if (alt >=-20) return {label:'Very Deep (−15 to −20 m)',  color:'#ff9f0a',icon:'🟠'};
+  return                {label:'Deepest (below −20 m)',     color:'#ff453a',icon:'🔴'};
+}
+
+// ── Tooltip & detail ──────────────────────────────────────
 function makeTooltip(a,col){
   const d=a.depth;
   const bar=d?`<div style="background:rgba(255,255,255,.1);border-radius:2px;height:4px;width:100%;margin:4px 0;"><div style="height:100%;width:${Math.min(d,100)}%;background:${depthColor(d)};border-radius:2px;"></div></div>`:'';
@@ -594,17 +607,6 @@ function makeTooltip(a,col){
   </div>`;
 }
 
-// Altitude zone classifier
-function altZone(alt) {
-  if (alt === null || alt === undefined) return null;
-  if (alt > 0)    return { label:'Above Sea Level',  color:'#30d158', icon:'🟢' };
-  if (alt >= -5)  return { label:'Shallow (0 to −5 m)',    color:'#5ac8fa', icon:'🔵' };
-  if (alt >= -10) return { label:'Mid-depth (−5 to −10 m)',color:'#0a84ff', icon:'🔷' };
-  if (alt >= -15) return { label:'Deep (−10 to −15 m)',    color:'#bf5af2', icon:'🟣' };
-  if (alt >= -20) return { label:'Very Deep (−15 to −20 m)',color:'#ff9f0a',icon:'🟠' };
-  return           { label:'Deepest (below −20 m)',         color:'#ff453a', icon:'🔴' };
-}
-
 function showDetail(a,col){
   document.getElementById('dp-title').innerHTML=
     `<span style="color:${col}">#${a.id}</span>&nbsp;`+
@@ -615,23 +617,19 @@ function showDetail(a,col){
       <span>Wall Loss</span><span style="color:${depthColor(d)};font-weight:600;">${d}% WT</span></div>
     <div class="depth-bar-bg"><div class="depth-bar-fill" style="width:${Math.min(d,100)}%;background:${depthColor(d)};"></div></div>
   </div>`:'';
-
-  // Altitude zone badge
-  const zone = altZone(a.alt);
-  const zoneHtml = zone ? `
-    <div style="display:flex;align-items:center;gap:7px;margin:8px 0 6px;padding:7px 10px;
-      background:${zone.color}18;border:1px solid ${zone.color}44;border-radius:9px;">
-      <span style="font-size:14px;">${zone.icon}</span>
-      <div>
-        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:1px;">Elevation Zone</div>
-        <div style="font-size:12px;font-weight:600;color:${zone.color};">${zone.label}</div>
-      </div>
-      <div style="margin-left:auto;text-align:right;">
-        <div style="font-size:15px;font-weight:700;color:${zone.color};">${(+(a.alt||0)).toFixed(2)} m</div>
-        <div style="font-size:9px;color:var(--text3);">altitude</div>
-      </div>
-    </div>` : '';
-
+  const zone=altZone(a.alt);
+  const zoneHtml=zone?`<div style="display:flex;align-items:center;gap:7px;margin:8px 0 6px;padding:7px 10px;
+    background:${zone.color}18;border:1px solid ${zone.color}44;border-radius:9px;">
+    <span style="font-size:14px;">${zone.icon}</span>
+    <div>
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:1px;">Elevation Zone</div>
+      <div style="font-size:12px;font-weight:600;color:${zone.color};">${zone.label}</div>
+    </div>
+    <div style="margin-left:auto;text-align:right;">
+      <div style="font-size:15px;font-weight:700;color:${zone.color};">${(+(a.alt||0)).toFixed(2)} m</div>
+      <div style="font-size:9px;color:var(--text3);">altitude</div>
+    </div>
+  </div>`:'';
   const rows=[
     ['Distance',(+a.dist).toFixed(2)+' m'],['Surface',a.location||''],
     ['Classification',a.dim||''],['Orientation',a.orient||''],
@@ -640,50 +638,35 @@ function showDetail(a,col){
     ['ERF',a.erf?(+(a.erf)).toFixed(3):''],['GPS',(+a.lat).toFixed(6)+', '+(+a.lon).toFixed(6)],
   ].filter(([,v])=>v&&v!=='0.00 mm'&&v!=='0 mm'&&v!=='0');
   document.getElementById('dp-content').innerHTML=
-    barHtml + zoneHtml +
+    barHtml+zoneHtml+
     rows.map(([l,v])=>`<div class="dp-row"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('')+
     `<div><span class="dp-badge" style="background:${col}1a;color:${col};border:1px solid ${col}44;">${repairLabel(a.repair||'>10yr')}</span></div>`+
     (a.comment&&a.comment!=='None'&&a.comment?`<div style="margin-top:8px;font-size:10.5px;color:var(--text3);font-style:italic;">${a.comment}</div>`:'');
   document.getElementById('detail-panel').style.display='block';
-
-  // Highlight this anomaly on the elevation chart
-  elevHighlight(a.dist, a.alt, col);
-
+  elevHighlight(a.dist,a.alt,col);
   map.panTo([a.lat,a.lon]);
 }
 
 // ═══════════════════════════════════════════════════════════════════
-//  Z-ORDER FIX — HOW IT WORKS
-//
-//  Leaflet canvas renders layers in the exact order they were
-//  added to the map with .addTo().  Last added = drawn on TOP.
-//
-//  Rule:  most points  → added FIRST  → painted at the BOTTOM
-//         fewest points → added LAST   → painted ON TOP
-//
-//  So we create each priority group as its own LayerGroup and
-//  call addTo(map) in this sequence:
-//
-//    >10yr    (2,012 pts)  ← addTo 1st → sits at the BOTTOM
-//    monitored             ← addTo 2nd
-//    7-10yr   (    1 pt)   ← addTo 3rd
-//    5-7yr    (    1 pt)   ← addTo 4th
-//    <=1yr    (    1 pt)   ← addTo 5th → sits ON TOP of green
-//    dents    (    1 pt)   ← addTo 6th → topmost of all
-//
-//  When rebuildMarkers() runs, each marker is inserted into its
-//  correct bucket — the z-order is preserved because the buckets
-//  themselves never change their stack position.
+//  FILTER STATE  — ALL declared here before any use
 // ═══════════════════════════════════════════════════════════════════
+const activeRepair   = new Set(['>10yr','monitored','7-10yr','5-7yr','<=1yr']);
+let   showExternal   = true;
+let   showInternal   = true;
+let   minDepth       = 0;
 
-const RENDER_ORDER = ['>10yr', 'monitored', '7-10yr', '5-7yr', '<=1yr'];
+// ═══════════════════════════════════════════════════════════════════
+//  LAYER GROUPS — z-order: >10yr bottom, <=1yr top, dents topmost
+// ═══════════════════════════════════════════════════════════════════
+const RENDER_ORDER = ['>10yr','monitored','7-10yr','5-7yr','<=1yr'];
 const pLayers = {};
-RENDER_ORDER.forEach(k => {
-  pLayers[k] = L.layerGroup();
-  pLayers[k].addTo(map);   // ORDER MATTERS — do not rearrange
+RENDER_ORDER.forEach(k=>{
+  pLayers[k]=L.layerGroup();
+  pLayers[k].addTo(map);
 });
-let dentLayer = L.layerGroup().addTo(map);  // added last = topmost
+let dentLayer=L.layerGroup().addTo(map);
 
+// ── Dent markers ──────────────────────────────────────────
 DENTS.forEach(d=>{
   const m=L.circleMarker([d.lat,d.lon],{radius:11,color:'#ff375f',fillColor:'#ff375f',fillOpacity:.9,weight:2});
   m.bindTooltip(`<div style="font-family:'DM Sans',sans-serif;min-width:160px;">
@@ -696,110 +679,154 @@ DENTS.forEach(d=>{
   m.addTo(dentLayer);
 });
 
-// Filter state
-const activeRepair = new Set(['>10yr','monitored','7-10yr','5-7yr','<=1yr']);
-let minDepth=0;
-
+// ═══════════════════════════════════════════════════════════════════
+//  REBUILD MARKERS
+// ═══════════════════════════════════════════════════════════════════
 function rebuildMarkers(){
   RENDER_ORDER.forEach(k=>pLayers[k].clearLayers());
   let vis=0,maxD=0,ext=0,intC=0;
+
   ANOMALIES.forEach(a=>{
     const rk=a.repair||'>10yr';
     if(a.location==='External' && !showExternal) return;
     if(a.location==='Internal' && !showInternal) return;
-    if(!activeRepair.has(rk))           return;
-    if((a.depth||0)<minDepth)           return;
+    if(!activeRepair.has(rk)) return;
+    if((a.depth||0)<minDepth) return;
+
     const col=repairColor(a);
     const r=Math.max(4,Math.min(13,(a.depth||10)/6.5));
     const c=L.circleMarker([a.lat,a.lon],{radius:r,color:col,fillColor:col,fillOpacity:.7,weight:1});
     c.bindTooltip(makeTooltip(a,col),{sticky:true,direction:'top',opacity:1});
     c.on('click',()=>showDetail(a,col));
     pLayers[rk].addLayer(c);
-    vis++;if((a.depth||0)>maxD)maxD=a.depth||0;
-    if(a.location==='External')ext++;else if(a.location==='Internal')intC++;
+    vis++;
+    if((a.depth||0)>maxD) maxD=a.depth||0;
+    if(a.location==='External') ext++;
+    else if(a.location==='Internal') intC++;
   });
 
-  // ── CRITICAL Z-ORDER ENFORCEMENT ──────────────────────────────
-  const bringToFront = ['>10yr','monitored','7-10yr','5-7yr','<=1yr'];
-  bringToFront.forEach(k => {
+  // Re-mount in order so critical layers paint on top
+  RENDER_ORDER.forEach(k=>{
     map.removeLayer(pLayers[k]);
     pLayers[k].addTo(map);
   });
   map.removeLayer(dentLayer);
   dentLayer.addTo(map);
-  // ──────────────────────────────────────────────────────────────
 
   document.getElementById('stat-visible').textContent=vis.toLocaleString();
   document.getElementById('stat-deepest').textContent=maxD.toFixed(1)+'%';
   document.getElementById('stat-ext').textContent=ext.toLocaleString();
   document.getElementById('stat-int').textContent=intC.toLocaleString();
 }
+
 rebuildMarkers();
 
-// Filter controls — Repair Priority
+// ═══════════════════════════════════════════════════════════════════
+//  FILTER EVENT LISTENERS
+// ═══════════════════════════════════════════════════════════════════
+
+// Repair Priority toggles
 document.querySelectorAll('.filter-row[data-repair]').forEach(row=>{
-  const key=row.dataset.repair, track=row.querySelector('.cb-track');
+  const key=row.dataset.repair;
+  const track=row.querySelector('.cb-track');
   row.addEventListener('click',()=>{
     const on=track.classList.toggle('on');
-    on?activeRepair.add(key):activeRepair.delete(key);
+    on ? activeRepair.add(key) : activeRepair.delete(key);
     rebuildMarkers();
   });
 });
+
+// Depth slider
 document.getElementById('depth-slider').addEventListener('input',e=>{
   minDepth=+e.target.value;
   document.getElementById('depth-val').textContent=minDepth;
   document.getElementById('slider-fill').style.width=(minDepth/80*100)+'%';
   rebuildMarkers();
 });
-// ── Defect Type toggles ──────────────────────────────────
-let showExternal = true;
-let showInternal = true;
 
-document.getElementById('type-ext-row').addEventListener('click', () => {
-  showExternal = document.getElementById('type-ext-track').classList.toggle('on');
-  rebuildMarkers();
-});
-document.getElementById('type-int-row').addEventListener('click', () => {
-  showInternal = document.getElementById('type-int-track').classList.toggle('on');
+// Defect Type — External Metal Loss
+document.getElementById('type-ext-row').addEventListener('click',()=>{
+  showExternal=document.getElementById('type-ext-track').classList.toggle('on');
   rebuildMarkers();
 });
 
-// Defect type — dent toggle
+// Defect Type — Internal Metal Loss
+document.getElementById('type-int-row').addEventListener('click',()=>{
+  showInternal=document.getElementById('type-int-track').classList.toggle('on');
+  rebuildMarkers();
+});
+
+// Defect Type — Dent
 document.getElementById('dent-row').addEventListener('click',()=>{
   const t=document.getElementById('dent-track');
   t.classList.toggle('on');
-  t.classList.contains('on')?dentLayer.addTo(map):map.removeLayer(dentLayer);
+  t.classList.contains('on') ? dentLayer.addTo(map) : map.removeLayer(dentLayer);
 });
 
-// Layer buttons
+// ── Layer buttons ─────────────────────────────────────────
 document.getElementById('btn-sat').addEventListener('click',function(){
-  if(activeTile!=='sat'){map.removeLayer(tiles.street);tiles.sat.addTo(map);activeTile='sat';this.classList.add('on');document.getElementById('btn-street').classList.remove('on');}
+  if(activeTile!=='sat'){
+    map.removeLayer(tiles.street); tiles.sat.addTo(map);
+    activeTile='sat';
+    this.classList.add('on');
+    document.getElementById('btn-street').classList.remove('on');
+  }
 });
 document.getElementById('btn-street').addEventListener('click',function(){
-  if(activeTile!=='street'){map.removeLayer(tiles.sat);tiles.street.addTo(map);activeTile='street';this.classList.add('on');document.getElementById('btn-sat').classList.remove('on');}
+  if(activeTile!=='street'){
+    map.removeLayer(tiles.sat); tiles.street.addTo(map);
+    activeTile='street';
+    this.classList.add('on');
+    document.getElementById('btn-sat').classList.remove('on');
+  }
 });
 document.getElementById('btn-route').addEventListener('click',function(){
-  map.hasLayer(routeLine)?(map.removeLayer(routeLine),map.removeLayer(routeGlow),this.classList.remove('on')):(routeLine.addTo(map),routeGlow.addTo(map),this.classList.add('on'));
+  if(map.hasLayer(routeLine)){
+    map.removeLayer(routeLine); map.removeLayer(routeGlow);
+    this.classList.remove('on');
+  } else {
+    routeLine.addTo(map); routeGlow.addTo(map);
+    this.classList.add('on');
+  }
 });
 document.getElementById('btn-valves').addEventListener('click',function(){
-  this.classList.contains('on')?(valveLayers.forEach(v=>map.removeLayer(v)),this.classList.remove('on')):(valveLayers.forEach(v=>v.addTo(map)),this.classList.add('on'));
+  if(this.classList.contains('on')){
+    valveLayers.forEach(v=>map.removeLayer(v));
+    this.classList.remove('on');
+  } else {
+    valveLayers.forEach(v=>v.addTo(map));
+    this.classList.add('on');
+  }
 });
 
-// Search
+// ── Search ────────────────────────────────────────────────
 document.getElementById('search-input').addEventListener('input',function(){
-  const q=this.value.trim().toLowerCase(),sr=document.getElementById('search-results');
-  sr.innerHTML='';if(!q)return;
-  ANOMALIES.filter(a=>a.id.toLowerCase().includes(q)||String(Math.round(a.dist)).includes(q)||(a.type||'').toLowerCase().includes(q)).slice(0,10).forEach(a=>{
-    const col=repairColor(a),d=document.createElement('div');
+  const q=this.value.trim().toLowerCase();
+  const sr=document.getElementById('search-results');
+  sr.innerHTML='';
+  if(!q) return;
+  ANOMALIES.filter(a=>
+    a.id.toLowerCase().includes(q)||
+    String(Math.round(a.dist)).includes(q)||
+    (a.type||'').toLowerCase().includes(q)
+  ).slice(0,10).forEach(a=>{
+    const col=repairColor(a);
+    const d=document.createElement('div');
     d.className='sr-item';
     d.innerHTML=`<b style="color:${col}">#${a.id}</b><span style="opacity:.5"> · ${(+a.dist).toFixed(1)}m · ${a.location} · </span><b style="color:${depthColor(a.depth||0)}">${a.depth||'?'}%</b>`;
-    d.onclick=()=>{map.setView([a.lat,a.lon],19);showDetail(a,col);sr.innerHTML='';this.value='#'+a.id;};
+    d.onclick=()=>{
+      map.setView([a.lat,a.lon],19);
+      showDetail(a,col);
+      sr.innerHTML='';
+      this.value='#'+a.id;
+    };
     sr.appendChild(d);
   });
 });
 
-// Sidebar toggle
-const sb=document.getElementById('sidebar'),tb=document.getElementById('sidebar-toggle');
+// ── Sidebar toggle ────────────────────────────────────────
+const sb=document.getElementById('sidebar');
+const tb=document.getElementById('sidebar-toggle');
 tb.addEventListener('click',()=>{
   const c=sb.classList.toggle('collapsed');
   tb.classList.toggle('collapsed',c);
@@ -807,7 +834,7 @@ tb.addEventListener('click',()=>{
   setTimeout(()=>map.invalidateSize(),310);
 });
 
-// Legend
+// ── Legend ────────────────────────────────────────────────
 const legend=L.control({position:'bottomright'});
 legend.onAdd=()=>{
   const d=L.DomUtil.create('div','legend-box');
@@ -824,427 +851,243 @@ legend.onAdd=()=>{
   return d;
 };
 legend.addTo(map);
+
 // ═══════════════════════════════════════════════════════════════════
 //  MEASURE DISTANCE TOOL
-//
-//  Click to place point A → click again for point B → shows distance.
-//  Supports multi-segment polylines: keep clicking to chain segments.
-//  Click "✕ Clear" or press Escape to reset.
 // ═══════════════════════════════════════════════════════════════════
+let measuring=false, measurePts=[], measureMarkers=[], measureLines=[], measureLabels=[], totalDist=0;
+const measureBar=document.getElementById('measure-bar');
+const measureStatus=document.getElementById('measure-status');
+const measureResult=document.getElementById('measure-result');
+const btnMeasure=document.getElementById('btn-measure');
+const btnMeasureClear=document.getElementById('measure-clear');
 
-let measuring      = false;
-let measurePts     = [];       // array of L.LatLng
-let measureMarkers = [];       // dot markers
-let measureLines   = [];       // polyline segments
-let measureLabels  = [];       // distance label markers
-let totalDist      = 0;
+function haversine(a,b){
+  const R=6371000,φ1=a.lat*Math.PI/180,φ2=b.lat*Math.PI/180;
+  const Δφ=(b.lat-a.lat)*Math.PI/180,Δλ=(b.lng-a.lng)*Math.PI/180;
+  const s=Math.sin(Δφ/2)**2+Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+  return R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));
+}
+function formatDist(m){ return m>=1000?(m/1000).toFixed(3)+' km':Math.round(m)+' m'; }
 
-const measureBar    = document.getElementById('measure-bar');
-const measureStatus = document.getElementById('measure-status');
-const measureResult = document.getElementById('measure-result');
-const btnMeasure    = document.getElementById('btn-measure');
-const btnMeasureClear = document.getElementById('measure-clear');
-
-// Haversine formula — accurate great-circle distance in metres
-function haversine(a, b) {
-  const R = 6371000;
-  const φ1 = a.lat * Math.PI/180, φ2 = b.lat * Math.PI/180;
-  const Δφ = (b.lat - a.lat) * Math.PI/180;
-  const Δλ = (b.lng - a.lng) * Math.PI/180;
-  const s   = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
-  return R * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1-s));
+function measureDotIcon(color='#0a84ff'){
+  return L.divIcon({html:`<div style="width:12px;height:12px;border-radius:50%;background:${color};border:2px solid #fff;box-shadow:0 0 8px ${color}99;"></div>`,iconSize:[12,12],iconAnchor:[6,6],className:''});
+}
+function measureLabelIcon(text){
+  return L.divIcon({html:`<div style="background:rgba(14,14,20,.88);backdrop-filter:blur(8px);border:1px solid rgba(10,132,255,.5);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;color:#40a9ff;white-space:nowrap;font-family:'DM Sans',sans-serif;transform:translateX(-50%) translateY(-24px);">${text}</div>`,iconSize:[0,0],iconAnchor:[0,0],className:''});
 }
 
-function formatDist(m) {
-  return m >= 1000
-    ? (m/1000).toFixed(3) + ' km'
-    : Math.round(m) + ' m';
+function clearMeasure(){
+  measurePts=[];totalDist=0;
+  measureMarkers.forEach(m=>map.removeLayer(m));
+  measureLines.forEach(l=>map.removeLayer(l));
+  measureLabels.forEach(l=>map.removeLayer(l));
+  measureMarkers=[];measureLines=[];measureLabels=[];
+  measureStatus.textContent='Click first point on the map';
+  measureResult.style.display='none';
+  measureStatus.style.display='';
 }
-
-function measureDotIcon(label, color='#0a84ff') {
-  return L.divIcon({
-    html: `<div style="
-      width:12px;height:12px;border-radius:50%;
-      background:${color};border:2px solid #fff;
-      box-shadow:0 0 8px ${color}99;
-    "></div>`,
-    iconSize:[12,12], iconAnchor:[6,6], className:''
-  });
-}
-
-function measureLabelIcon(text) {
-  return L.divIcon({
-    html: `<div style="
-      background:rgba(14,14,20,.88);backdrop-filter:blur(8px);
-      border:1px solid rgba(10,132,255,.5);border-radius:6px;
-      padding:2px 8px;font-size:11px;font-weight:600;
-      color:#40a9ff;white-space:nowrap;font-family:'DM Sans',sans-serif;
-      transform:translateX(-50%) translateY(-24px);
-    ">${text}</div>`,
-    iconSize:[0,0], iconAnchor:[0,0], className:''
-  });
-}
-
-function clearMeasure() {
-  measurePts = []; totalDist = 0;
-  measureMarkers.forEach(m => map.removeLayer(m));
-  measureLines.forEach(l => map.removeLayer(l));
-  measureLabels.forEach(l => map.removeLayer(l));
-  measureMarkers = []; measureLines = []; measureLabels = [];
-  measureStatus.textContent = 'Click first point on the map';
-  measureResult.style.display = 'none';
-  measureStatus.style.display = '';
-}
-
-function stopMeasuring() {
-  measuring = false;
+function stopMeasuring(){
+  measuring=false;
   btnMeasure.classList.remove('on');
   document.getElementById('map').classList.remove('measuring');
   measureBar.classList.remove('active');
-  map.off('click', onMeasureClick);
+  map.off('click',onMeasureClick);
   clearMeasure();
 }
-
-function onMeasureClick(e) {
-  const pt = e.latlng;
+function onMeasureClick(e){
+  const pt=e.latlng;
   measurePts.push(pt);
-
-  // Place a dot marker at each point
-  const isFirst = measurePts.length === 1;
-  const dot = L.marker(pt, {
-    icon: measureDotIcon(isFirst ? '#30d158' : '#0a84ff'),
-    zIndexOffset: 9000
-  }).addTo(map);
+  const isFirst=measurePts.length===1;
+  const dot=L.marker(pt,{icon:measureDotIcon(isFirst?'#30d158':'#0a84ff'),zIndexOffset:9000}).addTo(map);
   measureMarkers.push(dot);
-
-  if (measurePts.length === 1) {
-    measureStatus.textContent = 'Click second point — or keep clicking to chain';
-    return;
-  }
-
-  // Draw segment line from previous point to this one
-  const prev = measurePts[measurePts.length - 2];
-  const segDist = haversine(prev, pt);
-  totalDist += segDist;
-
-  const line = L.polyline([prev, pt], {
-    color:'#0a84ff', weight:2.5, opacity:.9,
-    dashArray:'6 4'
-  }).addTo(map);
+  if(measurePts.length===1){measureStatus.textContent='Click second point — or keep clicking to chain';return;}
+  const prev=measurePts[measurePts.length-2];
+  const segDist=haversine(prev,pt);
+  totalDist+=segDist;
+  const line=L.polyline([prev,pt],{color:'#0a84ff',weight:2.5,opacity:.9,dashArray:'6 4'}).addTo(map);
   measureLines.push(line);
-
-  // Midpoint label showing this segment's distance
-  const mid = L.latLng((prev.lat+pt.lat)/2, (prev.lng+pt.lng)/2);
-  const segLabel = L.marker(mid, {
-    icon: measureLabelIcon(formatDist(segDist)),
-    zIndexOffset: 9001
-  }).addTo(map);
+  const mid=L.latLng((prev.lat+pt.lat)/2,(prev.lng+pt.lng)/2);
+  const segLabel=L.marker(mid,{icon:measureLabelIcon(formatDist(segDist)),zIndexOffset:9001}).addTo(map);
   measureLabels.push(segLabel);
-
-  // Update bar
-  if (measurePts.length === 2) {
-    // First full segment — show result area
-    measureStatus.style.display = 'none';
-    measureResult.style.display = '';
-  }
-  measureResult.textContent = measurePts.length > 2
-    ? `Total: ${formatDist(totalDist)}`
-    : formatDist(totalDist);
-
-  // Update last dot colour to blue (not green) since it's a midpoint now
-  if (measurePts.length > 2) {
-    const prev_dot = measureMarkers[measurePts.length - 2];
-    map.removeLayer(prev_dot);
-    const new_dot = L.marker(prev, {
-      icon: measureDotIcon('#0a84ff'),
-      zIndexOffset: 9000
-    }).addTo(map);
-    measureMarkers[measurePts.length - 2] = new_dot;
+  if(measurePts.length===2){measureStatus.style.display='none';measureResult.style.display='';}
+  measureResult.textContent=measurePts.length>2?`Total: ${formatDist(totalDist)}`:formatDist(totalDist);
+  if(measurePts.length>2){
+    map.removeLayer(measureMarkers[measurePts.length-2]);
+    measureMarkers[measurePts.length-2]=L.marker(prev,{icon:measureDotIcon('#0a84ff'),zIndexOffset:9000}).addTo(map);
   }
 }
-
-// Toggle measure mode
-btnMeasure.addEventListener('click', () => {
-  if (measuring) {
-    stopMeasuring();
-  } else {
-    measuring = true;
-    btnMeasure.classList.add('on');
-    document.getElementById('map').classList.add('measuring');
-    measureBar.classList.add('active');
-    clearMeasure();
-    map.on('click', onMeasureClick);
-  }
+btnMeasure.addEventListener('click',()=>{
+  if(measuring){stopMeasuring();}
+  else{measuring=true;btnMeasure.classList.add('on');document.getElementById('map').classList.add('measuring');measureBar.classList.add('active');clearMeasure();map.on('click',onMeasureClick);}
 });
-
-// Clear button
-btnMeasureClear.addEventListener('click', e => {
-  e.stopPropagation();
-  clearMeasure();
-});
-
-// Escape key exits measure mode
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && measuring) stopMeasuring();
-});
+btnMeasureClear.addEventListener('click',e=>{e.stopPropagation();clearMeasure();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&measuring)stopMeasuring();});
 
 // ═══════════════════════════════════════════════════════════════════
 //  ELEVATION PROFILE CHART
 // ═══════════════════════════════════════════════════════════════════
+const ELEV_PROFILE=[{"d":15.0,"a":7.36},{"d":45.0,"a":5.16},{"d":75.0,"a":5.0},{"d":105.0,"a":4.65},{"d":135.0,"a":4.18},{"d":165.0,"a":4.19},{"d":195.0,"a":4.09},{"d":225.0,"a":3.29},{"d":255.0,"a":2.61},{"d":285.0,"a":3.03},{"d":315.0,"a":2.64},{"d":345.0,"a":2.79},{"d":375.0,"a":2.7},{"d":405.0,"a":2.26},{"d":435.0,"a":2.43},{"d":465.0,"a":2.33},{"d":495.0,"a":2.54},{"d":525.0,"a":3.56},{"d":555.0,"a":3.91},{"d":585.0,"a":2.02},{"d":615.0,"a":1.87},{"d":645.0,"a":3.52},{"d":675.0,"a":3.52},{"d":705.0,"a":3.48},{"d":735.0,"a":3.28},{"d":765.0,"a":3.28},{"d":795.0,"a":3.28},{"d":825.0,"a":3.28},{"d":855.0,"a":3.21},{"d":885.0,"a":3.26},{"d":915.0,"a":3.27},{"d":945.0,"a":3.27},{"d":975.0,"a":0.53},{"d":1005.0,"a":-0.43},{"d":1035.0,"a":-1.98},{"d":1065.0,"a":-3.15},{"d":1095.0,"a":-4.17},{"d":1125.0,"a":-5.07},{"d":1155.0,"a":-6.04},{"d":1185.0,"a":-6.8},{"d":1215.0,"a":-7.62},{"d":1245.0,"a":-8.16},{"d":1275.0,"a":-8.79},{"d":1305.0,"a":-9.53},{"d":1335.0,"a":-9.97},{"d":1365.0,"a":-10.71},{"d":1395.0,"a":-11.43},{"d":1425.0,"a":-11.82},{"d":1455.0,"a":-12.23},{"d":1485.0,"a":-12.54},{"d":1515.0,"a":-13.01},{"d":1545.0,"a":-13.45},{"d":1575.0,"a":-14.14},{"d":1605.0,"a":-14.51},{"d":1635.0,"a":-14.97},{"d":1665.0,"a":-15.52},{"d":1695.0,"a":-16.09},{"d":1725.0,"a":-16.52},{"d":1755.0,"a":-17.23},{"d":1785.0,"a":-17.74},{"d":1815.0,"a":-18.29},{"d":1845.0,"a":-18.57},{"d":1875.0,"a":-18.93},{"d":1905.0,"a":-19.11},{"d":1935.0,"a":-19.38},{"d":1965.0,"a":-19.64},{"d":1995.0,"a":-19.9},{"d":2025.0,"a":-20.2},{"d":2055.0,"a":-20.24},{"d":2085.0,"a":-20.43},{"d":2115.0,"a":-21.05},{"d":2145.0,"a":-21.91},{"d":2175.0,"a":-22.86},{"d":2205.0,"a":-23.83},{"d":2235.0,"a":-25.29},{"d":2265.0,"a":-26.76},{"d":2295.0,"a":-27.54},{"d":2325.0,"a":-7.66}];
 
-// Pre-built profile: 80 averaged points across 0–2400 m
-const ELEV_PROFILE = [{"d":15.0,"a":7.36},{"d":45.0,"a":5.16},{"d":75.0,"a":5.0},{"d":105.0,"a":4.65},{"d":135.0,"a":4.18},{"d":165.0,"a":3.85},{"d":195.0,"a":3.27},{"d":225.0,"a":2.95},{"d":255.0,"a":2.76},{"d":285.0,"a":2.59},{"d":315.0,"a":2.52},{"d":345.0,"a":2.41},{"d":375.0,"a":2.16},{"d":405.0,"a":1.91},{"d":435.0,"a":1.63},{"d":465.0,"a":1.29},{"d":495.0,"a":0.88},{"d":525.0,"a":0.38},{"d":555.0,"a":-0.21},{"d":585.0,"a":-0.93},{"d":615.0,"a":-1.62},{"d":645.0,"a":-2.4},{"d":675.0,"a":-3.17},{"d":705.0,"a":-3.89},{"d":735.0,"a":-4.52},{"d":765.0,"a":-5.15},{"d":795.0,"a":-5.78},{"d":825.0,"a":-6.35},{"d":855.0,"a":-6.82},{"d":885.0,"a":-7.2},{"d":915.0,"a":-7.53},{"d":945.0,"a":-7.8},{"d":975.0,"a":-7.99},{"d":1005.0,"a":-8.13},{"d":1035.0,"a":-8.21},{"d":1065.0,"a":-8.32},{"d":1095.0,"a":-8.39},{"d":1125.0,"a":-8.46},{"d":1155.0,"a":-8.5},{"d":1185.0,"a":-8.54},{"d":1215.0,"a":-8.55},{"d":1245.0,"a":-8.56},{"d":1275.0,"a":-8.57},{"d":1305.0,"a":-8.52},{"d":1335.0,"a":-8.43},{"d":1365.0,"a":-8.3},{"d":1395.0,"a":-8.2},{"d":1425.0,"a":-8.12},{"d":1455.0,"a":-8.06},{"d":1485.0,"a":-8.01},{"d":1515.0,"a":-8.0},{"d":1545.0,"a":-8.03},{"d":1575.0,"a":-8.09},{"d":1605.0,"a":-8.18},{"d":1635.0,"a":-8.31},{"d":1665.0,"a":-8.47},{"d":1695.0,"a":-8.65},{"d":1725.0,"a":-8.85},{"d":1755.0,"a":-9.08},{"d":1785.0,"a":-9.35},{"d":1815.0,"a":-9.67},{"d":1845.0,"a":-10.07},{"d":1875.0,"a":-10.55},{"d":1905.0,"a":-11.12},{"d":1935.0,"a":-12.0},{"d":1965.0,"a":-13.2},{"d":1995.0,"a":-14.62},{"d":2025.0,"a":-16.3},{"d":2055.0,"a":-18.1},{"d":2085.0,"a":-19.8},{"d":2115.0,"a":-21.3},{"d":2145.0,"a":-22.6},{"d":2175.0,"a":-23.7},{"d":2205.0,"a":-24.5},{"d":2235.0,"a":-25.2},{"d":2265.0,"a":-25.8},{"d":2295.0,"a":-26.5},{"d":2325.0,"a":-27.1}];
-
-// Sea level zones for background shading
-const ZONES = [
-  { hi:  999, lo:  0,   color:'rgba(48,209,88,0.08)',  label:'Above sea level' },
-  { hi:    0, lo: -5,   color:'rgba(90,200,250,0.08)', label:'0 to −5 m' },
-  { hi:   -5, lo: -10,  color:'rgba(10,132,255,0.08)', label:'−5 to −10 m' },
-  { hi:  -10, lo: -15,  color:'rgba(191,90,242,0.08)', label:'−10 to −15 m' },
-  { hi:  -15, lo: -20,  color:'rgba(255,159,10,0.08)', label:'−15 to −20 m' },
-  { hi:  -20, lo: -999, color:'rgba(255,69,58,0.08)',  label:'below −20 m' },
+const ZONES=[
+  {hi:999,  lo:0,   color:'rgba(48,209,88,0.08)', label:'Above sea level'},
+  {hi:0,    lo:-5,  color:'rgba(90,200,250,0.08)',label:'0 to −5 m'},
+  {hi:-5,   lo:-10, color:'rgba(10,132,255,0.08)',label:'−5 to −10 m'},
+  {hi:-10,  lo:-15, color:'rgba(191,90,242,0.08)',label:'−10 to −15 m'},
+  {hi:-15,  lo:-20, color:'rgba(255,159,10,0.08)',label:'−15 to −20 m'},
+  {hi:-20,  lo:-999,color:'rgba(255,69,58,0.08)', label:'below −20 m'},
 ];
 
-let elevOpen = false;
-let elevHighlightPt = null;  // {dist, alt, col}
+let elevOpen=false;
+let elevHighlightPt=null;
 
-function toggleElev() {
-  elevOpen = !elevOpen;
-  const panel = document.getElementById('elev-panel');
-  panel.classList.toggle('open', elevOpen);
-  document.getElementById('btn-elev').style.color = elevOpen ? 'var(--blue)' : 'var(--blue2)';
-  setTimeout(() => { fixMapHeight(); if (elevOpen) drawElev(); }, 260);
+function toggleElev(){
+  elevOpen=!elevOpen;
+  document.getElementById('elev-panel').classList.toggle('open',elevOpen);
+  document.getElementById('btn-elev').style.color=elevOpen?'var(--blue)':'var(--blue2)';
+  setTimeout(()=>{fixMapHeight();if(elevOpen)drawElev();},260);
 }
 
-function elevHighlight(dist, alt, col) {
-  elevHighlightPt = { dist, alt, col };
-  if (elevOpen) drawElev();
+function elevHighlight(dist,alt,col){
+  elevHighlightPt={dist,alt,col};
+  if(elevOpen)drawElev();
 }
 
-function drawElev() {
-  const canvas = document.getElementById('elev-canvas');
-  const wrap   = document.getElementById('elev-canvas-wrap');
-  canvas.width  = wrap.clientWidth;
-  canvas.height = wrap.clientHeight;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
+function drawElev(){
+  const canvas=document.getElementById('elev-canvas');
+  const wrap=document.getElementById('elev-canvas-wrap');
+  canvas.width=wrap.clientWidth;
+  canvas.height=wrap.clientHeight;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  const PAD={top:12,right:20,bottom:28,left:46};
+  const cW=W-PAD.left-PAD.right,cH=H-PAD.top-PAD.bottom;
+  const minD=0,maxD=2400,minA=-30,maxA=10;
+  const toX=d=>PAD.left+(d-minD)/(maxD-minD)*cW;
+  const toY=a=>PAD.top+(maxA-a)/(maxA-minA)*cH;
+  ctx.clearRect(0,0,W,H);
 
-  const PAD = { top:12, right:20, bottom:28, left:46 };
-  const cW = W - PAD.left - PAD.right;
-  const cH = H - PAD.top  - PAD.bottom;
-
-  const minD = 0, maxD = 2400;
-  const minA = -30, maxA = 10;
-
-  const toX = d => PAD.left + (d - minD) / (maxD - minD) * cW;
-  const toY = a => PAD.top  + (maxA - a) / (maxA - minA) * cH;
-
-  ctx.clearRect(0, 0, W, H);
-
-  // ── Zone background bands ──────────────────────────────
-  ZONES.forEach(z => {
-    const y1 = Math.max(PAD.top,  toY(z.hi));
-    const y2 = Math.min(PAD.top + cH, toY(z.lo));
-    if (y2 > y1) {
-      ctx.fillStyle = z.color;
-      ctx.fillRect(PAD.left, y1, cW, y2 - y1);
-    }
+  // Zone bands
+  ZONES.forEach(z=>{
+    const y1=Math.max(PAD.top,toY(z.hi)),y2=Math.min(PAD.top+cH,toY(z.lo));
+    if(y2>y1){ctx.fillStyle=z.color;ctx.fillRect(PAD.left,y1,cW,y2-y1);}
   });
-
-  // ── Sea level line ─────────────────────────────────────
-  const slY = toY(0);
-  ctx.strokeStyle = 'rgba(90,200,250,0.4)';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([4, 4]);
-  ctx.beginPath(); ctx.moveTo(PAD.left, slY); ctx.lineTo(PAD.left + cW, slY); ctx.stroke();
+  // Sea level line
+  const slY=toY(0);
+  ctx.strokeStyle='rgba(90,200,250,0.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(PAD.left,slY);ctx.lineTo(PAD.left+cW,slY);ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle = 'rgba(90,200,250,0.5)';
-  ctx.font = '9px DM Sans, sans-serif';
-  ctx.fillText('0 m', PAD.left - 24, slY + 3);
-
-  // ── Y-axis grid lines & labels ─────────────────────────
-  [-5, -10, -15, -20, -25].forEach(alt => {
-    const y = toY(alt);
-    if (y < PAD.top || y > PAD.top + cH) return;
-    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + cW, y); ctx.stroke();
-    ctx.fillStyle = 'rgba(235,235,245,0.3)';
-    ctx.font = '9px DM Sans, sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText(`${alt}m`, PAD.left - 5, y + 3);
+  ctx.fillStyle='rgba(90,200,250,0.5)';ctx.font='9px DM Sans,sans-serif';ctx.textAlign='right';
+  ctx.fillText('0 m',PAD.left-4,slY+3);
+  // Y grid
+  [-5,-10,-15,-20,-25].forEach(alt=>{
+    const y=toY(alt);if(y<PAD.top||y>PAD.top+cH)return;
+    ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(PAD.left,y);ctx.lineTo(PAD.left+cW,y);ctx.stroke();
+    ctx.fillStyle='rgba(235,235,245,0.3)';ctx.font='9px DM Sans,sans-serif';ctx.textAlign='right';
+    ctx.fillText(`${alt}m`,PAD.left-4,y+3);
   });
-
-  // ── X-axis labels ──────────────────────────────────────
-  [0, 500, 1000, 1500, 2000, 2400].forEach(d => {
-    const x = toX(d);
-    ctx.fillStyle = 'rgba(235,235,245,0.3)';
-    ctx.font = '9px DM Sans, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(d === 2400 ? '2.4 km' : `${d}m`, x, PAD.top + cH + 16);
-    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + cH); ctx.stroke();
+  // X labels
+  [0,500,1000,1500,2000,2400].forEach(d=>{
+    const x=toX(d);
+    ctx.fillStyle='rgba(235,235,245,0.3)';ctx.font='9px DM Sans,sans-serif';ctx.textAlign='center';
+    ctx.fillText(d===2400?'2.4 km':`${d}m`,x,PAD.top+cH+16);
+    ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,PAD.top);ctx.lineTo(x,PAD.top+cH);ctx.stroke();
   });
-
-  // ── Filled profile area ────────────────────────────────
-  const grad = ctx.createLinearGradient(0, PAD.top, 0, PAD.top + cH);
-  grad.addColorStop(0,   'rgba(10,132,255,0.35)');
-  grad.addColorStop(0.6, 'rgba(10,132,255,0.10)');
-  grad.addColorStop(1,   'rgba(10,132,255,0.02)');
+  // Fill area
+  const grad=ctx.createLinearGradient(0,PAD.top,0,PAD.top+cH);
+  grad.addColorStop(0,'rgba(10,132,255,0.35)');
+  grad.addColorStop(0.6,'rgba(10,132,255,0.10)');
+  grad.addColorStop(1,'rgba(10,132,255,0.02)');
   ctx.beginPath();
-  ctx.moveTo(toX(ELEV_PROFILE[0].d), toY(ELEV_PROFILE[0].a));
-  ELEV_PROFILE.forEach(p => ctx.lineTo(toX(p.d), toY(p.a)));
-  ctx.lineTo(toX(ELEV_PROFILE[ELEV_PROFILE.length-1].d), PAD.top + cH);
-  ctx.lineTo(toX(ELEV_PROFILE[0].d), PAD.top + cH);
-  ctx.closePath();
-  ctx.fillStyle = grad;
-  ctx.fill();
-
-  // ── Profile line ───────────────────────────────────────
-  ctx.beginPath();
-  ctx.strokeStyle = '#0a84ff';
-  ctx.lineWidth = 2;
-  ctx.lineJoin = 'round';
-  ELEV_PROFILE.forEach((p, i) => {
-    i === 0 ? ctx.moveTo(toX(p.d), toY(p.a)) : ctx.lineTo(toX(p.d), toY(p.a));
-  });
+  ctx.moveTo(toX(ELEV_PROFILE[0].d),toY(ELEV_PROFILE[0].a));
+  ELEV_PROFILE.forEach(p=>ctx.lineTo(toX(p.d),toY(p.a)));
+  ctx.lineTo(toX(ELEV_PROFILE[ELEV_PROFILE.length-1].d),PAD.top+cH);
+  ctx.lineTo(toX(ELEV_PROFILE[0].d),PAD.top+cH);
+  ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+  // Profile line
+  ctx.beginPath();ctx.strokeStyle='#0a84ff';ctx.lineWidth=2;ctx.lineJoin='round';
+  ELEV_PROFILE.forEach((p,i)=>i===0?ctx.moveTo(toX(p.d),toY(p.a)):ctx.lineTo(toX(p.d),toY(p.a)));
   ctx.stroke();
-
-  // ── Anomaly dots (repair priority colour, small) ───────
-  const visibleA = ANOMALIES.filter(a => {
-    const rk = a.repair || '>10yr';
-    if (a.location === 'External' && !showExternal) return false;
-    if (a.location === 'Internal' && !showInternal) return false;
-    if (!activeRepair.has(rk)) return false;
-    if ((a.depth||0) < minDepth) return false;
-    return true;
+  // Anomaly dots
+  ANOMALIES.forEach(a=>{
+    if(a.alt===null) return;
+    if(a.location==='External'&&!showExternal) return;
+    if(a.location==='Internal'&&!showInternal) return;
+    if(!activeRepair.has(a.repair||'>10yr')) return;
+    if((a.depth||0)<minDepth) return;
+    const x=toX(a.dist),y=toY(a.alt);
+    if(x<PAD.left||x>PAD.left+cW||y<PAD.top||y>PAD.top+cH) return;
+    ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);
+    ctx.fillStyle=repairColor(a);ctx.globalAlpha=0.75;ctx.fill();ctx.globalAlpha=1;
   });
-  visibleA.forEach(a => {
-    if (a.alt === null) return;
-    const x = toX(a.dist), y = toY(a.alt);
-    if (x < PAD.left || x > PAD.left + cW || y < PAD.top || y > PAD.top + cH) return;
-    ctx.beginPath();
-    ctx.arc(x, y, 2.5, 0, Math.PI * 2);
-    ctx.fillStyle = repairColor(a);
-    ctx.globalAlpha = 0.75;
-    ctx.fill();
-    ctx.globalAlpha = 1;
-  });
-
-  // ── Highlighted anomaly (clicked) ─────────────────────
-  if (elevHighlightPt) {
-    const { dist, alt, col } = elevHighlightPt;
-    if (alt !== null) {
-      const x = toX(dist), y = toY(alt);
-      // Vertical line
-      ctx.strokeStyle = col;
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([3, 3]);
-      ctx.beginPath(); ctx.moveTo(x, PAD.top); ctx.lineTo(x, PAD.top + cH); ctx.stroke();
+  // Highlight point
+  if(elevHighlightPt){
+    const{dist,alt,col}=elevHighlightPt;
+    if(alt!==null){
+      const x=toX(dist),y=toY(alt);
+      ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.setLineDash([3,3]);
+      ctx.beginPath();ctx.moveTo(x,PAD.top);ctx.lineTo(x,PAD.top+cH);ctx.stroke();
       ctx.setLineDash([]);
-      // Dot
-      ctx.beginPath();
-      ctx.arc(x, y, 6, 0, Math.PI * 2);
-      ctx.fillStyle = col;
-      ctx.globalAlpha = 0.25;
-      ctx.fill();
-      ctx.globalAlpha = 1;
-      ctx.beginPath();
-      ctx.arc(x, y, 4, 0, Math.PI * 2);
-      ctx.fillStyle = col;
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 1.5;
-      ctx.fill();
-      ctx.stroke();
+      ctx.beginPath();ctx.arc(x,y,6,0,Math.PI*2);
+      ctx.fillStyle=col;ctx.globalAlpha=0.25;ctx.fill();ctx.globalAlpha=1;
+      ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);
+      ctx.fillStyle=col;ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.fill();ctx.stroke();
     }
   }
-
-  // ── Store draw params for hover ────────────────────────
-  canvas._params = { toX, toY, PAD, cW, cH, W, H };
+  canvas._params={toX,toY,PAD,cW,cH,W,H};
 }
 
-// ── Canvas hover ──────────────────────────────────────────
-document.getElementById('elev-canvas').addEventListener('mousemove', function(e) {
-  if (!this._params) return;
-  const { toX, toY, PAD, cW, cH } = this._params;
-  const rect = this.getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  const my = e.clientY - rect.top;
-
-  const cursor = document.getElementById('elev-cursor');
-  const tip    = document.getElementById('elev-tooltip');
-
-  if (mx < PAD.left || mx > PAD.left + cW || my < PAD.top || my > PAD.top + cH) {
-    cursor.style.display = 'none'; tip.style.display = 'none'; return;
-  }
-
-  // Convert mouse X → distance
-  const dist = (mx - PAD.left) / cW * 2400;
-
-  // Find nearest anomaly within ±40px
-  let nearest = null, nearestDx = Infinity;
-  ANOMALIES.forEach(a => {
-    const ax = toX(a.dist);
-    const dx = Math.abs(ax - mx);
-    if (dx < 40 && dx < nearestDx) { nearest = a; nearestDx = dx; }
-  });
-
-  cursor.style.display = 'block';
-  cursor.style.left = mx + 'px';
-
-  if (nearest) {
-    const zone = altZone(nearest.alt);
-    const col  = repairColor(nearest);
-    tip.style.display = 'block';
-    tip.innerHTML = `
-      <div style="font-weight:600;color:${col};margin-bottom:3px;">#${nearest.id}</div>
+document.getElementById('elev-canvas').addEventListener('mousemove',function(e){
+  if(!this._params)return;
+  const{toX,PAD,cW,cH}=this._params;
+  const rect=this.getBoundingClientRect();
+  const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  const cursor=document.getElementById('elev-cursor');
+  const tip=document.getElementById('elev-tooltip');
+  if(mx<PAD.left||mx>PAD.left+cW||my<PAD.top||my>PAD.top+cH){cursor.style.display='none';tip.style.display='none';return;}
+  let nearest=null,nearestDx=Infinity;
+  ANOMALIES.forEach(a=>{const ax=toX(a.dist),dx=Math.abs(ax-mx);if(dx<40&&dx<nearestDx){nearest=a;nearestDx=dx;}});
+  cursor.style.display='block';cursor.style.left=mx+'px';
+  if(nearest){
+    const zone=altZone(nearest.alt),col=repairColor(nearest);
+    tip.style.display='block';
+    tip.innerHTML=`<div style="font-weight:600;color:${col};margin-bottom:3px;">#${nearest.id}</div>
       <div style="color:var(--text2);font-size:10px;">${(+nearest.dist).toFixed(0)} m · ${nearest.location}</div>
       <div style="color:${zone?zone.color:'var(--text2)'};font-size:11px;margin-top:2px;">${(+(nearest.alt||0)).toFixed(1)} m ${zone?'· '+zone.label:''}</div>
-      <div style="color:${depthColor(nearest.depth||0)};font-size:11px;">${nearest.depth||'?'}% WT · ${repairLabel(nearest.repair||'>10yr').replace(/.*? /,'')}</div>`;
-    // Position tooltip
-    const tipW = 200;
-    tip.style.left = (mx + 12 + tipW > this.width ? mx - tipW - 12 : mx + 12) + 'px';
-    tip.style.top  = Math.max(4, my - 40) + 'px';
-  } else {
-    tip.style.display = 'none';
-  }
+      <div style="color:${depthColor(nearest.depth||0)};font-size:11px;">${nearest.depth||'?'}% WT</div>`;
+    const tipW=200;
+    tip.style.left=(mx+12+tipW>this.width?mx-tipW-12:mx+12)+'px';
+    tip.style.top=Math.max(4,my-40)+'px';
+  } else {tip.style.display='none';}
 });
-
-document.getElementById('elev-canvas').addEventListener('mouseleave', () => {
-  document.getElementById('elev-cursor').style.display = 'none';
-  document.getElementById('elev-tooltip').style.display = 'none';
+document.getElementById('elev-canvas').addEventListener('mouseleave',()=>{
+  document.getElementById('elev-cursor').style.display='none';
+  document.getElementById('elev-tooltip').style.display='none';
 });
-
-// Click on chart → show full detail panel for nearest anomaly
-document.getElementById('elev-canvas').addEventListener('click', function(e) {
-  if (!this._params) return;
-  const { PAD, cW } = this._params;
-  const rect = this.getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  let nearest = null, nearestDx = Infinity;
-  ANOMALIES.forEach(a => {
-    const ax = PAD.left + (a.dist / 2400) * cW;
-    const dx = Math.abs(ax - mx);
-    if (dx < 40 && dx < nearestDx) { nearest = a; nearestDx = dx; }
-  });
-  if (nearest) showDetail(nearest, repairColor(nearest));
+document.getElementById('elev-canvas').addEventListener('click',function(e){
+  if(!this._params)return;
+  const{toX,PAD,cW}=this._params;
+  const rect=this.getBoundingClientRect();
+  const mx=e.clientX-rect.left;
+  let nearest=null,nearestDx=Infinity;
+  ANOMALIES.forEach(a=>{const ax=toX(a.dist),dx=Math.abs(ax-mx);if(dx<40&&dx<nearestDx){nearest=a;nearestDx=dx;}});
+  if(nearest)showDetail(nearest,repairColor(nearest));
 });
+window.addEventListener('resize',()=>{if(elevOpen)drawElev();});
 
-// Redraw on resize
-window.addEventListener('resize', () => { if (elevOpen) drawElev(); });
-
-// ── Dynamic topbar height (mobile two-row layout) ────────
-function fixMapHeight() {
-  const tbH = document.getElementById('topbar').offsetHeight;
-  document.getElementById('main').style.height = `calc(100vh - ${tbH}px)`;
+// ── Dynamic topbar height ─────────────────────────────────
+function fixMapHeight(){
+  const tbH=document.getElementById('topbar').offsetHeight;
+  const epH=elevOpen?(document.getElementById('elev-panel').offsetHeight||160):0;
+  document.getElementById('main').style.height=`calc(100vh - ${tbH}px - ${epH}px)`;
   map.invalidateSize();
 }
 fixMapHeight();
-window.addEventListener('resize', fixMapHeight);
+window.addEventListener('resize',fixMapHeight);
 
 map.fitBounds(routeLine.getBounds(),{padding:[50,50]});
-
 </script>
 </body>
 </html>
