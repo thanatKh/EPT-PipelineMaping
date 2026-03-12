@@ -359,7 +359,20 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
   border:1px solid var(--border);border-radius:var(--r-sm);
   padding:12px 14px;font-family:'DM Sans',sans-serif;min-width:170px;
 }
-.legend-title{font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:9px;}
+.legend-box.collapsed{min-width:0;padding:8px 12px;}
+.legend-box.collapsed .legend-body{display:none;}
+.legend-title{
+  font-size:10px;font-weight:600;color:var(--text2);
+  text-transform:uppercase;letter-spacing:1px;
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;user-select:none;gap:10px;margin-bottom:9px;
+}
+.legend-box.collapsed .legend-title{margin-bottom:0;}
+.legend-toggle{
+  font-size:10px;color:var(--text3);line-height:1;
+  transition:transform .2s;flex-shrink:0;
+}
+.legend-box.collapsed .legend-toggle{transform:rotate(180deg);}
 .leg-row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text);margin-bottom:5px;}
 .leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 .leg-line{width:18px;height:3px;border-radius:2px;flex-shrink:0;}
@@ -831,16 +844,23 @@ tb.addEventListener('click',()=>{
 const legend=L.control({position:'bottomright'});
 legend.onAdd=()=>{
   const d=L.DomUtil.create('div','legend-box');
-  d.innerHTML=`<div class="legend-title">Anomaly Legend</div>
-    <div class="leg-row"><span class="leg-dot" style="background:#ff453a;box-shadow:0 0 5px #ff453a66;"></span>Repair ≤ 1 year</div>
-    <div class="leg-row"><span class="leg-dot" style="background:#ff9f0a;box-shadow:0 0 5px #ff9f0a66;"></span>Repair 5–7 years</div>
-    <div class="leg-row"><span class="leg-dot" style="background:#ffd60a;box-shadow:0 0 5px #ffd60a66;"></span>Repair 7–10 years</div>
-    <div class="leg-row"><span class="leg-dot" style="background:#30d158;box-shadow:0 0 5px #30d15866;"></span>Repair &gt; 10 years</div>
-    <div class="leg-row"><span class="leg-dot" style="background:#5ac8fa;box-shadow:0 0 5px #5ac8fa66;"></span>Monitored</div>
-    <div class="leg-row"><span class="leg-sq"  style="background:#ff375f;box-shadow:0 0 5px #ff375f66;"></span>Dent</div>
-    <div class="leg-row"><span class="leg-sq"  style="background:#ffd60a;box-shadow:0 0 5px #ffd60a66;"></span>Valve</div>
-    <div class="leg-row"><span class="leg-line"style="background:#0a84ff;box-shadow:0 0 5px #0a84ff66;"></span>Pipeline Route</div>
-    <div class="legend-note">Marker size ∝ depth % WT<br>Click any marker for details</div>`;
+  d.innerHTML=`
+    <div class="legend-title" onclick="this.closest('.legend-box').classList.toggle('collapsed')">
+      Anomaly Legend
+      <span class="legend-toggle">▲</span>
+    </div>
+    <div class="legend-body">
+      <div class="leg-row"><span class="leg-dot" style="background:#ff453a;box-shadow:0 0 5px #ff453a66;"></span>Repair ≤ 1 year</div>
+      <div class="leg-row"><span class="leg-dot" style="background:#ff9f0a;box-shadow:0 0 5px #ff9f0a66;"></span>Repair 5–7 years</div>
+      <div class="leg-row"><span class="leg-dot" style="background:#ffd60a;box-shadow:0 0 5px #ffd60a66;"></span>Repair 7–10 years</div>
+      <div class="leg-row"><span class="leg-dot" style="background:#30d158;box-shadow:0 0 5px #30d15866;"></span>Repair &gt; 10 years</div>
+      <div class="leg-row"><span class="leg-dot" style="background:#5ac8fa;box-shadow:0 0 5px #5ac8fa66;"></span>Monitored</div>
+      <div class="leg-row"><span class="leg-sq"  style="background:#ff375f;box-shadow:0 0 5px #ff375f66;"></span>Dent</div>
+      <div class="leg-row"><span class="leg-sq"  style="background:#ffd60a;box-shadow:0 0 5px #ffd60a66;"></span>Valve</div>
+      <div class="leg-row"><span class="leg-line"style="background:#0a84ff;box-shadow:0 0 5px #0a84ff66;"></span>Pipeline Route</div>
+      <div class="legend-note">Marker size ∝ depth % WT<br>Click any marker for details</div>
+    </div>`;
+  L.DomEvent.disableClickPropagation(d);
   return d;
 };
 legend.addTo(map);
@@ -956,20 +976,62 @@ function drawElev(){
   const PAD={top:12,right:20,bottom:28,left:46};
   const cW=W-PAD.left-PAD.right,cH=H-PAD.top-PAD.bottom;
 
-  // ── Sync visible distance range from current map bounds ──
-  const bounds=map.getBounds();
-  const visAnoms=ANOMALIES.filter(a=>bounds.contains([a.lat,a.lon]));
-  let viewMinD=0,viewMaxD=2400;
-  if(visAnoms.length>1){
-    viewMinD=Math.max(0,Math.min(...visAnoms.map(a=>a.dist))-30);
-    viewMaxD=Math.min(2400,Math.max(...visAnoms.map(a=>a.dist))+30);
+  // ── True pixel projection: use Leaflet's own map→screen transform ──
+  // For each ROUTE_PROFILE point, project lat/lon → map container pixel X,
+  // then linearly map that pixel range onto the chart canvas width.
+  // This is geometrically exact: if a point is at the map center, it will be
+  // at the chart center — regardless of zoom, pan, or projection warping.
+
+  // Get map container pixel width for normalisation
+  const mapW = map.getSize().x;
+
+  // Project every ROUTE_PROFILE point to a map pixel X
+  const rpProjected = ROUTE_PROFILE.map(p => {
+    const px = map.latLngToContainerPoint([p.lat, p.lon]).x;
+    return { dist: p.dist, alt: p.alt, px };
+  });
+
+  // Chart X: linearly map [0, mapW] → [PAD.left+cW, PAD.left]
+  // (reversed because pipeline goes East→West: T61 right, Sea Berth left)
+  function toX(dist) {
+    // Find this dist's map pixel X by interpolating rpProjected
+    let px;
+    for(let i=0;i<rpProjected.length-1;i++){
+      const a=rpProjected[i],b=rpProjected[i+1];
+      if(dist>=Math.min(a.dist,b.dist)&&dist<=Math.max(a.dist,b.dist)){
+        const t=(dist-a.dist)/(b.dist-a.dist);
+        px=a.px+t*(b.px-a.px);
+        break;
+      }
+    }
+    if(px===undefined){
+      // Clamp: extrapolate from nearest end
+      if(dist<=rpProjected[0].dist) px=rpProjected[0].px;
+      else px=rpProjected[rpProjected.length-1].px;
+    }
+    // Map pixel X [0,mapW] → canvas X [PAD.left, PAD.left+cW]
+    return PAD.left + (px/mapW)*cW;
   }
-  canvas._viewMinD=viewMinD;canvas._viewMaxD=viewMaxD;
+
+  // For hover/click: need dist from canvas X — build reverse lookup
+  function xToDist(canvasX) {
+    const targetPx = ((canvasX-PAD.left)/cW)*mapW;
+    let best=null,bestD=Infinity;
+    rpProjected.forEach(p=>{
+      const d=Math.abs(p.px-targetPx);
+      if(d<bestD){bestD=d;best=p.dist;}
+    });
+    return best||0;
+  }
+
+  // viewMinD/viewMaxD for clip/filter — from visible ROUTE_PROFILE points
+  const visRP = rpProjected.filter(p=>p.px>=0&&p.px<=mapW);
+  let viewMinD = visRP.length ? Math.min(...visRP.map(p=>p.dist)) : 0;
+  let viewMaxD = visRP.length ? Math.max(...visRP.map(p=>p.dist)) : 2400;
+  canvas._viewMinD=viewMinD; canvas._viewMaxD=viewMaxD;
+  canvas._xToDist=xToDist;
 
   const minA=-30,maxA=10;
-  // Pipeline runs East→West on map: dist=0 (T61) is on the RIGHT, dist=max (Sea Berth) is LEFT
-  // Chart X-axis matches map: LEFT = Sea Berth end, RIGHT = T61 launcher
-  const toX=d=>PAD.left+(1-(d-viewMinD)/(viewMaxD-viewMinD))*cW;
   const toY=a=>PAD.top+(maxA-a)/(maxA-minA)*cH;
   ctx.clearRect(0,0,W,H);
 
@@ -996,38 +1058,42 @@ function drawElev(){
     ctx.fillText(`${alt}m`,PAD.left-4,y+3);
   });
 
-  // X axis — auto step based on visible range + direction labels
+  // X axis ticks — derived from route dist values
   const distRange=viewMaxD-viewMinD;
   const step=distRange<=200?25:distRange<=500?50:distRange<=1000?100:distRange<=2000?200:500;
   const firstTick=Math.ceil(viewMinD/step)*step;
-  for(let d=firstTick;d<=viewMaxD;d+=step){
+  for(let d=firstTick;d<=viewMaxD+1;d+=step){
     const x=toX(d);
+    if(x<PAD.left-1||x>PAD.left+cW+1) continue;
     ctx.fillStyle='rgba(235,235,245,0.3)';ctx.font='9px DM Sans,sans-serif';ctx.textAlign='center';
     ctx.fillText(d>=1000?(d/1000).toFixed(1)+'km':d+'m',x,PAD.top+cH+16);
     ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(x,PAD.top);ctx.lineTo(x,PAD.top+cH);ctx.stroke();
   }
-  // End labels — Sea Berth on left, T61 on right (matching map orientation)
+  // End labels
   ctx.font='bold 9px DM Sans,sans-serif';ctx.fillStyle='rgba(90,200,250,0.6)';
   ctx.textAlign='left'; ctx.fillText('⚓ Sea Berth',PAD.left+2,PAD.top+10);
   ctx.textAlign='right';ctx.fillText('🏭 T61 →',PAD.left+cW-2,PAD.top+10);
 
-  // Profile fill + line (clip to visible range)
-  const visProfile=ELEV_PROFILE.filter(p=>p.d>=viewMinD-100&&p.d<=viewMaxD+100);
-  if(visProfile.length>1){
+  // Profile fill + line — drawn from ROUTE_PROFILE using true pixel projection
+  const visPts=ROUTE_PROFILE.filter(p=>{ const x=toX(p.dist); return x>=PAD.left-2&&x<=PAD.left+cW+2; });
+  if(visPts.length>1){
     const grad=ctx.createLinearGradient(0,PAD.top,0,PAD.top+cH);
     grad.addColorStop(0,'rgba(10,132,255,0.3)');
     grad.addColorStop(0.6,'rgba(10,132,255,0.08)');
     grad.addColorStop(1,'rgba(10,132,255,0.01)');
+    ctx.save();
+    ctx.beginPath();ctx.rect(PAD.left,PAD.top,cW,cH);ctx.clip();
     ctx.beginPath();
-    ctx.moveTo(toX(visProfile[0].d),toY(visProfile[0].a));
-    visProfile.forEach(p=>ctx.lineTo(toX(p.d),toY(p.a)));
-    ctx.lineTo(toX(visProfile[visProfile.length-1].d),PAD.top+cH);
-    ctx.lineTo(toX(visProfile[0].d),PAD.top+cH);
+    ctx.moveTo(toX(visPts[0].dist),toY(visPts[0].alt));
+    visPts.forEach(p=>ctx.lineTo(toX(p.dist),toY(p.alt)));
+    ctx.lineTo(toX(visPts[visPts.length-1].dist),PAD.top+cH);
+    ctx.lineTo(toX(visPts[0].dist),PAD.top+cH);
     ctx.closePath();ctx.fillStyle=grad;ctx.fill();
     ctx.beginPath();ctx.strokeStyle='#0a84ff';ctx.lineWidth=2;ctx.lineJoin='round';
-    visProfile.forEach((p,i)=>i===0?ctx.moveTo(toX(p.d),toY(p.a)):ctx.lineTo(toX(p.d),toY(p.a)));
+    visPts.forEach((p,i)=>i===0?ctx.moveTo(toX(p.dist),toY(p.alt)):ctx.lineTo(toX(p.dist),toY(p.alt)));
     ctx.stroke();
+    ctx.restore();
   }
 
   // Anomaly dots — same colour as map, respect all active filters
@@ -1096,6 +1162,10 @@ document.getElementById('elev-canvas').addEventListener('mousemove',function(e){
   let nearest=null,nearestDx=Infinity;
   ANOMALIES.forEach(a=>{
     if(a.dist<vMin||a.dist>vMax) return;
+    if(a.location==='External'&&!showExternal) return;
+    if(a.location==='Internal'&&!showInternal) return;
+    if(!activeRepair.has(a.repair||'>10yr')) return;
+    if((a.depth||0)<minDepth) return;
     const ax=toX(a.dist),dx=Math.abs(ax-mx);
     if(dx<40&&dx<nearestDx){nearest=a;nearestDx=dx;}
   });
@@ -1127,6 +1197,10 @@ document.getElementById('elev-canvas').addEventListener('click',function(e){
   let nearest=null,nearestDx=Infinity;
   ANOMALIES.forEach(a=>{
     if(a.dist<vMin||a.dist>vMax) return;
+    if(a.location==='External'&&!showExternal) return;
+    if(a.location==='Internal'&&!showInternal) return;
+    if(!activeRepair.has(a.repair||'>10yr')) return;
+    if((a.depth||0)<minDepth) return;
     const ax=toX(a.dist),dx=Math.abs(ax-mx);
     if(dx<40&&dx<nearestDx){nearest=a;nearestDx=dx;}
   });
