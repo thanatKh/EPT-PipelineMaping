@@ -636,9 +636,19 @@ function showDetail(a,col){
     ['Width',(a.width||0)+' mm'],['Depth mm',a.depthMm?(+(a.depthMm)).toFixed(2)+' mm':''],
     ['ERF',a.erf?(+(a.erf)).toFixed(3):''],['GPS',(+a.lat).toFixed(6)+', '+(+a.lon).toFixed(6)],
   ].filter(([,v])=>v&&v!=='0.00 mm'&&v!=='0 mm'&&v!=='0');
+
+  // Remaining life — raw from FFP assessment (PIPECARE Repairs Excel)
+  let rlHtml = '';
+  if(a.remainLife !== null && a.remainLife !== undefined){
+    const rl = a.remainLife;
+    const rlVal = typeof rl === 'number' ? rl + ' years' : rl;
+    rlHtml = `<div class="dp-row"><span class="lbl">Remaining Life</span><span class="val">${rlVal}</span></div>`;
+  }
+
   document.getElementById('dp-content').innerHTML=
     barHtml+zoneHtml+
     rows.map(([l,v])=>`<div class="dp-row"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('')+
+    rlHtml+
     `<div><span class="dp-badge" style="background:${col}1a;color:${col};border:1px solid ${col}44;">${repairLabel(a.repair||'>10yr')}</span></div>`+
     (a.comment&&a.comment!=='None'&&a.comment?`<div style="margin-top:8px;font-size:10.5px;color:var(--text3);font-style:italic;">${a.comment}</div>`:'');
   document.getElementById('detail-panel').style.display='block';
