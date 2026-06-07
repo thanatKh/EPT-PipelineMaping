@@ -6,6 +6,12 @@
       "sourceType": "github",
       "skillPath": "skills/emil-design-eng/SKILL.md",
       "computedHash": "433b5a239cda18e0576e4e558532e7e53512e21fafe5b85db4894c28ec399b72"
+    },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "b81e2ff87ed8fa4d6c377ccb127a7254c9e6a77e3ae94f21e6b514f7bb2945a0"
     }
   }
 }

@@ -3,7 +3,7 @@
 **Engineering & Maintenance Department**  
 PTT Oil and Retail Business Public Company Limited
 
-An interactive web-based map for visualising In-Line Inspection (ILI) anomaly data from the 18-inch T61 to Sea Berth pipeline (2.7 km). Built for internal engineering reviews and meeting presentations — no server or internet connection required beyond the initial tile load.
+An interactive web-based map for visualising In-Line Inspection (ILI) anomaly data from the 18-inch T61 to Sea Berth pipeline (2.7 km). Built for internal engineering reviews and meeting presentations — fully self-hosted (Leaflet + fonts are vendored locally), so the only network dependency is the live map tile imagery.
 
 ---
 
@@ -26,14 +26,27 @@ The app plots all **2,014 metal loss anomalies** and **1 geometric dent** on a r
 
 ```
 repository/
-  pipeline_map.html   -- UI: map interface, filters, sidebar, elevation chart
-  data.js             -- Data: all anomaly GPS coordinates and route profile (~635 KB)
+  index.html          -- UI: map interface, filters, sidebar, elevation chart (all CSS/JS inline)
+  data.js             -- Data: all anomaly GPS coordinates and route profile (~588 KB)
+  logo.png            -- Company logo used in the top bar (2033x827px, displayed at 103x42)
+  vendor/             -- Self-hosted Leaflet 1.9.4 + Google Sans webfont (no CDN/internet needed)
+    leaflet/leaflet.js, leaflet.css
+    fonts/google-sans.css, google-sans-normal.woff2, google-sans-italic.woff2
   README.md           -- This file
 ```
 
-Both files must be in the same folder. `data.js` is loaded by `pipeline_map.html` via `<script src="data.js"></script>`.
+All files must stay in the same relative layout. `data.js` is loaded by `index.html` via `<script src="data.js">`, and `vendor/` is loaded via local `<link>`/`<script>` tags — there is no CDN dependency for the app shell, only for the live satellite/street map tiles.
 
 To update anomaly data for a future ILI run, **only edit `data.js`** — the HTML never needs to change.
+
+### Refreshing vendored Leaflet / fonts
+
+If Leaflet or the Google Sans font ever need to be updated, re-fetch them with:
+```bash
+curl -L https://cdnjs.cloudflare.com/ajax/libs/leaflet/<version>/leaflet.js   -o vendor/leaflet/leaflet.js
+curl -L https://cdnjs.cloudflare.com/ajax/libs/leaflet/<version>/leaflet.css  -o vendor/leaflet/leaflet.css
+```
+Note: only `leaflet.js`/`leaflet.css` are vendored — the default Leaflet marker/shadow/layers-control images are **not** included because this app supplies its own custom icons everywhere (`mkLbl`, `valveIco`, `measureDotIcon`, etc.) and never uses `L.Icon.Default` or `L.control.layers`, so those image assets would never be loaded. For the Google Sans woff2 files, regenerate the latin subset from [Google Fonts](https://fonts.google.com/specimen/Google+Sans) (or fonts.gstatic.com) and update `vendor/fonts/google-sans.css` accordingly.
 
 ---
 
@@ -44,17 +57,17 @@ To update anomaly data for a future ILI run, **only edit `data.js`** — the HTM
 cd /path/to/folder
 python3 -m http.server 8080
 ```
-Then open: http://localhost:8080/pipeline_map.html
+Then open: http://localhost:8080/index.html
 
 ### Option 2 — VS Code Live Server
-Install the Live Server extension, right-click `pipeline_map.html`, then select Open with Live Server.
+Install the Live Server extension, right-click `index.html`, then select Open with Live Server.
 
 ### Option 3 — Node.js
 ```bash
 npx serve .
 ```
 
-**Important:** Do not open `pipeline_map.html` by double-clicking (file:// protocol). Browsers block local `<script src="data.js">` imports for security reasons. A local HTTP server is required.
+**Important:** Do not open `index.html` by double-clicking (file:// protocol). Browsers block local `<script src="data.js">` imports for security reasons. A local HTTP server is required.
 
 ---
 
@@ -68,7 +81,8 @@ npx serve .
 | Repair priority filter | Toggle each priority layer on/off independently |
 | Defect type filter | Filter by External corrosion, Internal corrosion, or Dent |
 | Depth slider | Show only anomalies at or above a chosen wall thickness percentage |
-| Live statistics | Visible count, max depth, and external/internal split — updates on every filter change |
+| Live statistics — Current View | Visible count, max depth, and external/internal split for the *currently filtered* view — updates on every filter change. Distinct from the fixed "Survey Totals" KPI row in the top bar, which always reflects the full 22-23 Nov 2025 ILI report regardless of filters |
+| Export Filtered (CSV) | One click downloads exactly the anomalies currently passing all active filters (repair priority, location, depth) as a timestamped CSV — same `passesActiveFilters()` predicate drives the map, chart, and export so all three always agree |
 | Search | Find anomaly by Feature ID, chainage (m), or defect type |
 | Hover tooltip | Depth bar, ERF, and repair classification on hover |
 | Click detail panel | Full data card with animated wall-loss bar and elevation zone badge |
@@ -79,10 +93,11 @@ npx serve .
 
 | Feature | Description |
 |---|---|
-| Synchronised viewport | Profile X-axis tracks the map in real time — pan or zoom the map and the profile updates instantly |
-| True pixel projection | X-axis positions are derived from Leaflet's own map projection, giving geometrically exact alignment between the map route and the profile curve |
+| Synchronised viewport | Profile X-axis tracks the map pan/zoom in real time, **and** redraws on every filter change (repair priority, location, depth, dent toggle) so the chart always mirrors exactly what the map is showing |
+| True pixel projection | X-axis positions are derived from Leaflet's own `latLngToContainerPoint` projection of `ROUTE_PROFILE`, interpolated by chainage — geometrically exact alignment between the map route and the profile curve (sub-pixel agreement verified). The canvas bitmap is sized to its own rendered box (not its padded wrapper) so drawing coordinates and mouse hit-testing coordinates use the same pixel scale |
 | Bathymetric zone bands | Colour-coded depth bands: above sea level, 0 to -5 m, -5 to -10 m, -10 to -15 m, -15 to -20 m, below -20 m |
-| Anomaly dots | Coloured by repair priority; respects all active filters |
+| Anomaly dots | Coloured by repair priority and sized by depth (`depthScale`, shared with map markers); drawn in `RENDER_ORDER` so rare critical (`<=1yr`) points are never masked by the much larger `>10yr` green mass — same z-order logic as the map's layer groups; respects all active filters |
+| Click-to-highlight crosshair | Clicking a marker on the map draws a synced dashed crosshair + dot on the chart at the exact projected chainage/altitude (`elevHighlight`) |
 | Hover tooltip | Shows Feature ID, chainage, altitude, zone, and depth % WT for visible (filtered) anomalies only |
 | Click to detail | Click any anomaly dot to open its full data card and pan the map to its location |
 | Open by default | Profile panel is shown on load; can be toggled with the button above it |
@@ -157,12 +172,12 @@ To update for a future inspection, replace `ANOMALIES`, `DENTS`, `ROUTE`, and `R
 
 | Library | Version | Purpose |
 |---|---|---|
-| Leaflet.js | 1.9.4 | Map rendering, markers, tooltips, coordinate projection |
-| Esri World Imagery | -- | Satellite tile layer |
-| OpenStreetMap | -- | Street map tile layer |
-| DM Sans (Google Fonts) | -- | UI typography |
+| Leaflet.js | 1.9.4 | Map rendering, markers, tooltips, coordinate projection — vendored locally in `vendor/leaflet/` |
+| Esri World Imagery | -- | Satellite tile layer (live, requires internet) |
+| OpenStreetMap | -- | Street map tile layer (live, requires internet) |
+| Google Sans | -- | UI typography — vendored locally in `vendor/fonts/` (latin-subset variable woff2, ~70 KB total) |
 
-No build tools, no frameworks, no npm. Pure HTML, CSS, and JavaScript.
+No build tools, no frameworks, no npm. Pure HTML, CSS, and JavaScript — everything except the live map tiles is self-hosted, so the app keeps working with no internet access (e.g. aboard a survey vessel or in a site office).
 
 ---
 
