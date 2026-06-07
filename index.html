@@ -112,13 +112,18 @@ html,body{height:100%;overflow:hidden;background:
   #logo-img{height:34px;}
   #brand-text .dept{font-size:9px;letter-spacing:.4px;}
   #brand-text .company{font-size:11px;max-width:200px;}
-  #kpi-row{gap:4px;flex-wrap:wrap;justify-content:center;}
+  #kpi-row{gap:4px;flex-wrap:wrap;justify-content:center;flex-shrink:1;min-width:0;max-width:100%;}
+  #kpi-row-label{margin-right:4px;}
   .kpi{min-width:52px;padding:3px 8px;border-radius:8px;}
   .kpi .v{font-size:13px;}
   .kpi .l{font-size:8px;letter-spacing:.3px;}
   #main{height:calc(100vh - 104px);}
-  /* Sidebar starts collapsed on mobile */
-  #sidebar{width:0;min-width:0;}
+  /* Sidebar floats over the map as a drawer on mobile (rather than
+     squeezing it to a sliver) — taken out of flex flow via absolute
+     positioning, #map-col then naturally fills the full width. */
+  #sidebar{position:absolute;top:0;left:0;height:100%;z-index:150;box-shadow:16px 0 48px rgba(0,0,0,.55);}
+  #sidebar-backdrop{position:absolute;inset:0;z-index:140;background:rgba(0,0,0,.4);}
+  #sidebar-backdrop.show{display:block;}
   #sidebar-toggle{left:0;}
   #sidebar-toggle.collapsed{left:0;}
 }
@@ -137,6 +142,7 @@ html,body{height:100%;overflow:hidden;background:
 #map{flex:1;z-index:1;min-height:0;}
 
 /* SIDEBAR */
+#sidebar-backdrop{display:none;}
 #sidebar{
   width:280px;min-width:280px;
   background:var(--glass);backdrop-filter:var(--blur);
@@ -455,6 +461,7 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
 </div>
 
 <div id="main">
+  <div id="sidebar-backdrop"></div>
   <div id="sidebar">
     <div id="sidebar-inner">
 
@@ -669,9 +676,12 @@ function showDetail(a,col){
     `<span style="color:${col}">#${a.id}</span>&nbsp;`+
     `<span style="font-weight:400;color:var(--text2);font-size:11px;">${a.type||'Corrosion'}</span>`;
   const d=a.depth;
+  const isDent=a.type==='dent smooth';
+  const barLabel=isDent?'Dent Depth':'Wall Loss';
+  const barUnit=isDent?'% OD':'% WT';
   const barHtml=d?`<div style="margin:8px 0 6px;">
     <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text2);margin-bottom:4px;">
-      <span>Wall Loss</span><span style="color:${depthColor(d)};font-weight:600;">${d}% WT</span></div>
+      <span>${barLabel}</span><span style="color:${depthColor(d)};font-weight:600;">${d}${barUnit}</span></div>
     <div class="depth-bar-bg"><div class="depth-bar-fill" style="width:${Math.min(d,100)}%;background:${depthColor(d)};"></div></div>
   </div>`:'';
   const zone=altZone(a.alt);
@@ -919,11 +929,19 @@ document.getElementById('search-input').addEventListener('input',function(){
   const sr=document.getElementById('search-results');
   sr.innerHTML='';
   if(!q) return;
-  ANOMALIES.filter(a=>
+  const matches=ANOMALIES.filter(a=>
     a.id.toLowerCase().includes(q)||
     String(Math.round(a.dist)).includes(q)||
     (a.type||'').toLowerCase().includes(q)
-  ).slice(0,10).forEach(a=>{
+  );
+  if(!matches.length){
+    const empty=document.createElement('div');
+    empty.style.cssText='padding:8px;font-size:11px;color:var(--text3);';
+    empty.textContent=`No matches for "${this.value.trim()}"`;
+    sr.appendChild(empty);
+    return;
+  }
+  matches.slice(0,10).forEach(a=>{
     const col=repairColor(a);
     const d=document.createElement('div');
     d.className='sr-item';
@@ -941,12 +959,21 @@ document.getElementById('search-input').addEventListener('input',function(){
 // ── Sidebar toggle ────────────────────────────────────────
 const sb=document.getElementById('sidebar');
 const tb=document.getElementById('sidebar-toggle');
-tb.addEventListener('click',()=>{
-  const c=sb.classList.toggle('collapsed');
+const sbBackdrop=document.getElementById('sidebar-backdrop');
+const setSidebar=c=>{
+  sb.classList.toggle('collapsed',c);
   tb.classList.toggle('collapsed',c);
   tb.textContent=c?'▶':'◀';
+  // On mobile the sidebar floats over the map as a drawer — dim the map
+  // behind it (and let a tap on the dimmed area close it) instead of
+  // squeezing the map into an unusable sliver.
+  sbBackdrop.classList.toggle('show',!c && window.innerWidth<=640);
   setTimeout(()=>map.invalidateSize(),310);
-});
+};
+// Starts collapsed on mobile (narrow viewports) so the map gets full width on load
+if(window.innerWidth<=640) setSidebar(true);
+tb.addEventListener('click',()=>setSidebar(!sb.classList.contains('collapsed')));
+sbBackdrop.addEventListener('click',()=>setSidebar(true));
 
 // ── Legend ────────────────────────────────────────────────
 const legend=L.control({position:'bottomright'});
