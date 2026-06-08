@@ -248,6 +248,15 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
   font-size:12px;outline:none;font-family:var(--mono);transition:border-color .2s,background .2s;
 }
 #search-input:focus-visible{border-color:var(--blue);background:rgba(47,155,214,.06);box-shadow:0 0 0 3px rgba(47,155,214,.25);}
+#btn-reports{display:flex;align-items:center;gap:11px;width:100%;text-align:left;cursor:pointer;
+  padding:12px 13px;border-radius:3px;border:1px solid var(--blue);font-family:var(--mono);
+  background:linear-gradient(180deg,rgba(47,155,214,.20),rgba(47,155,214,.09));transition:.18s;}
+#btn-reports:hover{background:linear-gradient(180deg,rgba(47,155,214,.30),rgba(47,155,214,.15));
+  box-shadow:0 0 0 1px var(--blue),0 4px 16px rgba(47,155,214,.18);}
+#btn-reports:active{transform:scale(.985);}
+#btn-reports .br-ico{font-size:20px;flex-shrink:0;filter:drop-shadow(0 0 6px rgba(47,155,214,.5));}
+#btn-reports .br-txt{display:flex;flex-direction:column;font-size:13px;font-weight:600;color:var(--blue2);letter-spacing:.2px;line-height:1.2;}
+#btn-reports .br-txt small{font-weight:400;font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-top:3px;}
 #search-results{max-height:140px;overflow-y:auto;margin-top:6px;}
 .sr-item{padding:6px 8px;font-size:11px;cursor:pointer;border-radius:2px;border-bottom:1px solid var(--border);transition:background .1s;}
 .sr-item:hover{background:rgba(47,155,214,.06);}
@@ -419,6 +428,117 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
 .leg-sq{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
 .legend-note{font-size:9.5px;color:var(--text3);margin-top:7px;padding-top:7px;border-top:1px solid var(--border);line-height:1.5;}
 
+/* ═══ REPORTS & ANALYTICS MODAL ═══════════════════════════════ */
+#reports-overlay{position:fixed;inset:0;z-index:4000;display:none;
+  background:rgba(4,6,10,.62);backdrop-filter:blur(3px);
+  padding:12px;}
+#reports-overlay.show{display:flex;}
+#reports-modal{margin:auto;width:100%;max-width:none;height:100%;max-height:none;
+  display:flex;flex-direction:column;background:var(--glass2);backdrop-filter:var(--blur);
+  border:1px solid var(--border2);border-radius:4px;box-shadow:0 24px 80px rgba(0,0,0,.6);
+  overflow:hidden;}
+#reports-head{display:flex;align-items:center;gap:14px;padding:14px 18px;
+  border-bottom:1px solid var(--border);flex-shrink:0;}
+#reports-head .rtitle{font-family:var(--display);font-size:16px;font-weight:600;color:var(--text);
+  display:flex;align-items:center;gap:9px;letter-spacing:.2px;}
+#reports-head .rtitle::before{content:'';width:13px;height:1px;background:var(--blue);
+  box-shadow:0 0 6px var(--blue);}
+#reports-head .rsub{font-size:10.5px;color:var(--text2);letter-spacing:.5px;}
+#reports-fs,#reports-close{width:30px;height:30px;flex-shrink:0;border-radius:3px;
+  background:rgba(255,255,255,.04);border:1px solid var(--border2);color:var(--text2);
+  font-size:14px;line-height:1;cursor:pointer;transition:.18s;
+  display:flex;align-items:center;justify-content:center;}
+#reports-fs{margin-left:auto;}
+#reports-fs:hover{background:rgba(47,155,214,.16);color:var(--blue2);border-color:var(--blue);}
+#reports-close:hover{background:rgba(255,59,48,.16);color:var(--red);border-color:var(--red);}
+#reports-fs:active,#reports-close:active{transform:scale(.94);}
+#reports-modal:fullscreen{width:100%;height:100%;max-width:none;max-height:none;border-radius:0;background:var(--bg);}
+.rtabs{display:flex;gap:4px;padding:10px 18px 0;border-bottom:1px solid var(--border);flex-shrink:0;}
+.rtab{padding:8px 16px;font-family:var(--mono);font-size:12px;color:var(--text2);cursor:pointer;
+  background:none;border:1px solid transparent;border-bottom:none;border-radius:3px 3px 0 0;
+  transition:.18s;display:flex;align-items:center;gap:7px;}
+.rtab:hover{color:var(--text);background:rgba(47,155,214,.06);}
+.rtab.active{color:var(--blue2);background:rgba(47,155,214,.10);border-color:var(--border2);
+  box-shadow:inset 0 -2px 0 var(--blue);}
+.rpane{flex:1;overflow:auto;display:none;padding:16px 18px;}
+.rpane.active{display:block;}
+.rpane::-webkit-scrollbar{width:9px;height:9px;}
+.rpane::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+/* ── table pane ── */
+#rtable-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+#rtable-toolbar .rchips{display:flex;gap:5px;flex-wrap:wrap;}
+#rtable-count{font-size:11px;color:var(--text2);font-variant-numeric:tabular-nums;}
+#rexport-btn{margin-left:auto;display:flex;align-items:center;gap:6px;padding:7px 14px;
+  font-family:var(--mono);font-size:11px;color:var(--blue2);cursor:pointer;
+  background:rgba(47,155,214,.10);border:1px solid var(--blue);border-radius:3px;transition:.18s;}
+#rexport-btn:hover{background:rgba(47,155,214,.20);}
+#rexport-btn:active{transform:scale(.97);}
+.rtable-wrap{border:1px solid var(--border);border-radius:3px;overflow:auto;max-height:calc(100% - 50px);}
+table.rtable{width:100%;border-collapse:collapse;font-size:11px;font-variant-numeric:tabular-nums;}
+table.rtable thead th{position:sticky;top:0;z-index:2;background:#0c121b;color:var(--text2);
+  font-weight:600;text-align:right;padding:9px 10px;white-space:nowrap;cursor:pointer;
+  border-bottom:1px solid var(--border2);user-select:none;letter-spacing:.3px;}
+table.rtable thead th:first-child,table.rtable thead th.tl{text-align:left;}
+table.rtable thead th:hover{color:var(--blue2);}
+table.rtable thead th .arrow{color:var(--blue);margin-left:3px;font-size:9px;}
+table.rtable tbody td{text-align:right;padding:7px 10px;white-space:nowrap;color:var(--text);
+  border-bottom:1px solid rgba(94,169,217,.05);}
+table.rtable tbody td.tl{text-align:left;}
+table.rtable tbody tr:hover{background:rgba(47,155,214,.06);}
+table.rtable tbody tr{cursor:pointer;}
+.rprio-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;
+  vertical-align:middle;box-shadow:0 0 5px currentColor;}
+.rcell-comment{max-width:260px;overflow:hidden;text-overflow:ellipsis;color:var(--text2);}
+/* ── charts pane ── */
+#rchart-filters{display:flex;align-items:center;gap:18px;flex-wrap:wrap;flex-shrink:0;
+  padding:11px 18px;border-bottom:1px solid var(--border);}
+#rchart-filters.hidden{display:none;}
+.rchart-depth{display:flex;align-items:center;gap:11px;}
+.rchart-types{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1 1 100%;
+  margin-top:4px;padding-top:9px;border-top:1px solid var(--border);}
+.rchart-types #chip-types{display:flex;flex-wrap:wrap;gap:6px;}
+.rchart-types .chip{padding:4px 9px;font-size:10px;}
+.rcd-label{font-size:11px;color:var(--text2);white-space:nowrap;}
+.rcd-label b{color:var(--blue2);font-variant-numeric:tabular-nums;}
+.rchart-grid{display:grid;grid-template-columns:1fr;gap:16px;}
+.rchart-card{background:rgba(47,155,214,.025);border:1px solid var(--border);border-radius:3px;
+  padding:12px 14px 14px;display:flex;flex-direction:column;position:relative;}
+.rchart-card .rc-title{font-size:12px;color:var(--text);font-weight:600;margin-bottom:2px;}
+.rchart-card .rc-sub{font-size:9.5px;color:var(--text3);margin-bottom:10px;line-height:1.4;padding-right:30px;}
+.rchart-card canvas{width:100%;height:200px;display:block;}
+/* Pipe development (unrolled) damage map — overview strip + detail section */
+#pm-overview{height:72px;cursor:ew-resize;}
+#pm-detail{height:min(520px,72vh);}
+.pm-toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:9px 0 2px;}
+.pm-w{font-size:10px;padding:4px 9px;}
+.pm-card:fullscreen #pm-overview{flex:0 0 72px;height:72px;}
+.pm-card:fullscreen #pm-detail{flex:1 1 auto;height:auto;min-height:0;}
+.rc-tip{position:absolute;display:none;pointer-events:none;z-index:6;
+  background:var(--glass2);border:1px solid var(--border2);border-radius:4px;
+  padding:6px 9px;font-size:11px;color:var(--text);white-space:nowrap;line-height:1.5;
+  box-shadow:0 6px 20px rgba(0,0,0,.5);font-variant-numeric:tabular-nums;}
+.rc-tip b{color:var(--blue2);}
+.rc-fs{position:absolute;top:10px;right:10px;width:24px;height:24px;border-radius:3px;
+  background:rgba(255,255,255,.04);border:1px solid var(--border2);color:var(--text2);
+  font-size:11px;line-height:1;cursor:pointer;transition:.18s;z-index:3;
+  display:flex;align-items:center;justify-content:center;}
+.rc-fs:hover{background:rgba(47,155,214,.16);color:var(--blue2);border-color:var(--blue);}
+.rc-fs:active{transform:scale(.92);}
+.rchart-card:fullscreen{background:var(--bg);padding:24px 34px 22px;justify-content:flex-start;}
+.rchart-card:fullscreen .rc-title{font-size:16px;}
+.rchart-card:fullscreen .rc-sub{font-size:11px;}
+.rchart-card:fullscreen canvas{flex:1;height:auto;min-height:0;}
+.rchart-card:fullscreen .rc-fs{top:18px;right:18px;width:30px;height:30px;font-size:14px;}
+.rc-legend{display:flex;gap:14px;margin-top:8px;font-size:10px;color:var(--text2);flex-wrap:wrap;}
+.rc-legend span{display:flex;align-items:center;gap:5px;}
+.rc-legend i{width:10px;height:10px;border-radius:2px;display:inline-block;}
+@media (max-width:880px){
+  .rchart-grid{grid-template-columns:1fr;}
+  #reports-overlay{padding:0;}
+  #reports-modal{max-height:none;border-radius:0;}
+  .rcell-comment{max-width:140px;}
+}
+
 /* REDUCED MOTION — keep opacity fades, drop transform-based motion */
 @media (prefers-reduced-motion: reduce){
   #detail-panel,#detail-panel.closing,#measure-bar,.sidebar,#sidebar{transition-duration:.01ms!important;}
@@ -464,6 +584,11 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
   <div id="sidebar-backdrop"></div>
   <div id="sidebar">
     <div id="sidebar-inner">
+
+      <button id="btn-reports" aria-label="Open repair action list and corrosion analytics">
+        <span class="br-ico">📊</span>
+        <span class="br-txt">Reports &amp; Analytics<small>Action list · damage map · charts</small></span>
+      </button>
 
       <div class="card">
         <div class="card-title">Search</div>
@@ -593,6 +718,175 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
   <button class="dp-close" onclick="closeDetailPanel()" aria-label="Close detail panel">✕</button>
   <div id="dp-title"></div>
   <div id="dp-content" aria-live="polite"></div>
+</div>
+
+<!-- REPORTS & ANALYTICS MODAL -->
+<div id="reports-overlay" role="dialog" aria-modal="true" aria-label="Reports and Analytics">
+  <div id="reports-modal">
+    <div id="reports-head">
+      <div>
+        <div class="rtitle">Reports &amp; Analytics</div>
+      </div>
+      <div class="rsub">18T64T61 · ILI 22–23 Nov 2025</div>
+      <button id="reports-fs" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+      <button id="reports-close" aria-label="Close">✕</button>
+    </div>
+    <div class="rtabs">
+      <button class="rtab active" data-pane="pane-table">📋 Repair Action List</button>
+      <button class="rtab" data-pane="pane-pipemap">🗺 Damage Map</button>
+      <button class="rtab" data-pane="pane-distance">📈 Along Distance</button>
+      <button class="rtab" data-pane="pane-profiles">📊 Distributions</button>
+    </div>
+
+    <!-- Shared chart filter bar — one instance, applies to BOTH chart tabs, hidden on the table tab -->
+    <div id="rchart-filters" class="hidden">
+      <div class="rchips">
+        <button class="chip active" id="chip-ext"><span class="rprio-dot" style="color:#ff9f0a"></span>External</button>
+        <button class="chip active" id="chip-int"><span class="rprio-dot" style="color:#6cc4ee"></span>Internal</button>
+      </div>
+      <div class="rchart-depth">
+        <span class="rcd-label">Min Depth <b id="chart-depth-val">0</b>% WT</span>
+        <div class="slider-track" style="width:170px;margin:0;">
+          <div class="slider-fill" id="chart-slider-fill" style="width:0%"></div>
+          <input type="range" id="chart-depth-slider" min="0" max="80" value="0" step="5" aria-label="Minimum wall-loss depth filter for charts">
+        </div>
+      </div>
+      <div class="rchart-types">
+        <span class="rcd-label">Type:</span>
+        <div class="rchips" id="chip-types"></div>
+      </div>
+    </div>
+
+    <!-- TABLE PANE -->
+    <div class="rpane active" id="pane-table">
+      <div id="rtable-toolbar">
+        <div class="rchips" id="rtable-chips"></div>
+        <span id="rtable-count">—</span>
+        <button id="rexport-btn" aria-label="Export the listed features as CSV"><span>⬇</span> Export Full (CSV)</button>
+      </div>
+      <div class="rtable-wrap">
+        <table class="rtable">
+          <thead id="rtable-head"></thead>
+          <tbody id="rtable-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CHART: PIPE DEVELOPMENT (own tab) -->
+    <div class="rpane" id="pane-pipemap">
+      <div class="rchart-grid">
+        <div class="rchart-card pm-card">
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <div class="rc-title">Pipe Development — Unrolled Damage Map</div>
+          <div class="rc-sub">The pipe skin unrolled: axial distance × clock position. Each box is a real-scale corrosion feature (true axial length × circumferential width), coloured by depth (% WT). Drag the blue window on the overview to scan a section. (Note: shows feature footprint &amp; depth — a true river-bottom profile needs the detailed Pipetally grid export.)</div>
+          <canvas id="pm-overview"></canvas>
+          <div class="pm-toolbar">
+            <span class="rcd-label">Window:</span>
+            <button class="chip pm-w" data-w="50">50 m</button>
+            <button class="chip pm-w active" data-w="100">100 m</button>
+            <button class="chip pm-w" data-w="250">250 m</button>
+            <button class="chip pm-w" data-w="full">Full line</button>
+            <button class="chip" id="pm-measure" aria-label="Measure separation between two points">📏 Measure</button>
+            <span class="rcd-label" style="margin-left:auto;">Repair list:</span>
+            <button class="chip" id="pm-prev" aria-label="Previous repair item">◀ Prev</button>
+            <span id="pm-step-label" class="rcd-label" style="min-width:148px;text-align:center;color:var(--blue2);">—</span>
+            <button class="chip" id="pm-next" aria-label="Next repair item">Next ▶</button>
+          </div>
+          <canvas id="pm-detail"></canvas>
+          <div class="rc-legend">
+            <span><i style="background:#30d158"></i>&lt;20%</span>
+            <span><i style="background:#ffd60a"></i>20–40%</span>
+            <span><i style="background:#ff9f0a"></i>40–60%</span>
+            <span><i style="background:#ff453a"></i>≥60% WT</span>
+            <span><i style="background:#ff375f"></i>Dent (full-height)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS: ALONG DISTANCE (everything plotted against chainage) -->
+    <div class="rpane" id="pane-distance">
+      <div class="rchart-grid">
+        <div class="rchart-card">
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <div class="rc-title">Wall Loss vs. Distance</div>
+          <div class="rc-sub">Peak depth (% WT) of every metal-loss feature along the line. Dashed lines mark 20 / 40 / 60 % thresholds.</div>
+          <canvas id="chart-depth"></canvas>
+          <div class="rc-legend">
+            <span><i style="background:#ff9f0a"></i>External</span>
+            <span><i style="background:#6cc4ee"></i>Internal</span>
+          </div>
+        </div>
+        <div class="rchart-card">
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <div class="rc-title">ERF vs. Distance</div>
+          <div class="rc-sub">Estimated Repair Factor (failure-pressure ratio) of each feature. ERF ≥ 1.0 would require repair — all features sit far below, confirming adequate remaining strength.</div>
+          <canvas id="chart-erf"></canvas>
+          <div class="rc-legend">
+            <span><i style="background:#ff9f0a"></i>External</span>
+            <span><i style="background:#6cc4ee"></i>Internal</span>
+          </div>
+        </div>
+        <div class="rchart-card">
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <div class="rc-title">Metal-Loss Density vs. Distance</div>
+          <div class="rc-sub">Number of features per 50 m segment — reveals corrosion clustering and hot-spots.</div>
+          <canvas id="chart-density"></canvas>
+          <div class="rc-legend">
+            <span><i style="background:#ff9f0a"></i>External</span>
+            <span><i style="background:#6cc4ee"></i>Internal</span>
+          </div>
+        </div>
+        <div class="rchart-card">
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <div class="rc-title">Orientation vs. Distance</div>
+          <div class="rc-sub">Clock position of each feature (6:00 = pipe bottom, center). Bottom-clustering suggests water / sediment-driven corrosion.</div>
+          <canvas id="chart-orient"></canvas>
+          <div class="rc-legend">
+            <span><i style="background:#ff9f0a"></i>External</span>
+            <span><i style="background:#6cc4ee"></i>Internal</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS: DISTRIBUTIONS (plotted against depth / size / orientation, not distance) -->
+    <div class="rpane" id="pane-profiles">
+      <div class="rchart-grid">
+        <div class="rchart-card">
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <div class="rc-title">Depth Distribution (Severity Profile)</div>
+          <div class="rc-sub">Feature count per 10 % WT depth band, External vs. Internal — the overall health profile: how many features are shallow vs. deep.</div>
+          <canvas id="chart-depthhist"></canvas>
+          <div class="rc-legend">
+            <span><i style="background:#ff9f0a"></i>External</span>
+            <span><i style="background:#6cc4ee"></i>Internal</span>
+          </div>
+        </div>
+        <div class="rchart-card">
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <div class="rc-title">Circumferential Distribution</div>
+          <div class="rc-sub">Feature count per clock hour — overall circumferential pattern, External vs. Internal.</div>
+          <canvas id="chart-rose"></canvas>
+          <div class="rc-legend">
+            <span><i style="background:#ff9f0a"></i>External</span>
+            <span><i style="background:#6cc4ee"></i>Internal</span>
+          </div>
+        </div>
+        <div class="rchart-card">
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <div class="rc-title">Defect Type (POF Classification)</div>
+          <div class="rc-sub">Feature count per Pipeline-Operators-Forum corrosion class — what kind of metal loss dominates, External vs. Internal.</div>
+          <canvas id="chart-type"></canvas>
+          <div class="rc-legend">
+            <span><i style="background:#ff9f0a"></i>External</span>
+            <span><i style="background:#6cc4ee"></i>Internal</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script>
@@ -1358,6 +1652,620 @@ window.addEventListener('resize',fixMapHeight);
 // Initial state — elevation open by default
 document.getElementById('btn-elev').style.color='var(--blue)';
 setTimeout(()=>{ fixMapHeight(); drawElev(); }, 400);
+
+// ═══════════════════════════════════════════════════════════════════
+//  REPORTS & ANALYTICS MODAL
+//  — Tab 1: sortable/filterable repair action list (full Pipetally export)
+//  — Tab 2: corrosion-distribution charts (canvas, same style as elev)
+// ═══════════════════════════════════════════════════════════════════
+const REPORT_FEATURES = ANOMALIES.concat(DENTS);   // dents carry repair='<=1yr'
+const EXT_COL='#ff9f0a', INT_COL='#6cc4ee';
+const locColor = a => a.location==='Internal'?INT_COL:EXT_COL;
+const PRIO_RANK = {'<=1yr':0,'5-7yr':1,'7-10yr':2,'monitored':3,'>10yr':4};
+
+// "HH:MM:SS" clock position → decimal hours in [0,12); 12:00→0 (top), 6:00→6 (bottom)
+function orientClock(o){
+  if(!o) return null;
+  const m=/^(\d{1,2}):(\d{2})/.exec(o); if(!m) return null;
+  return (parseInt(m[1],10)%12)+parseInt(m[2],10)/60;
+}
+
+// ── Table ─────────────────────────────────────────────────
+const RCOLS=[
+  {k:'id',     l:'ID',         a:'l'},
+  {k:'dist',   l:'Dist (m)',   fmt:v=>(+v).toFixed(1)},
+  {k:'type',   l:'Type',       a:'l'},
+  {k:'location',l:'Surface',   a:'l'},
+  {k:'depth',  l:'Depth %',    fmt:v=>v==null?'—':v},
+  {k:'depthMm',l:'Depth mm',   fmt:v=>v==null?'—':v},
+  {k:'wt',     l:'WT mm',      fmt:v=>v==null?'—':v},
+  {k:'axLen',  l:'Axial mm',   fmt:v=>v==null?'—':v},
+  {k:'width',  l:'Width mm',   fmt:v=>v==null?'—':v},
+  {k:'erf',    l:'ERF',        fmt:v=>v==null?'—':(+v).toFixed(3)},
+  {k:'orient', l:'Orient',     a:'l', fmt:v=>v||'—'},
+  {k:'remainLife',l:'Life yr', fmt:v=>v==null?'—':v},
+  {k:'repair', l:'Priority',   a:'l', fmt:(v,a)=>`<span class="rprio-dot" style="color:${repairColor(a)}"></span>${(v||'>10yr')}`},
+  {k:'comment',l:'Comment',    a:'l', cls:'rcell-comment', fmt:v=>v||''}
+];
+const PRIOS=['<=1yr','5-7yr','7-10yr','monitored','>10yr'].filter(p=>REPORT_FEATURES.some(a=>(a.repair||'>10yr')===p));
+let rActivePrios=new Set(PRIOS);
+let rSort={k:'repair',dir:1};   // worst priority first by default
+
+function rFiltered(){
+  return REPORT_FEATURES.filter(a=>rActivePrios.has(a.repair||'>10yr'));
+}
+function rSorted(){
+  const rows=rFiltered();
+  const {k,dir}=rSort;
+  rows.sort((x,y)=>{
+    let xv,yv;
+    if(k==='repair'){ // primary = priority rank, tiebreak = depth desc
+      xv=PRIO_RANK[x.repair||'>10yr']; yv=PRIO_RANK[y.repair||'>10yr'];
+      if(xv!==yv) return (xv-yv)*dir;
+      return (y.depth||0)-(x.depth||0);
+    }
+    xv=x[k]; yv=y[k];
+    const xn=(xv==null||xv===''), yn=(yv==null||yv==='');
+    if(xn&&yn) return 0; if(xn) return 1; if(yn) return -1;
+    if(typeof xv==='number'&&typeof yv==='number') return (xv-yv)*dir;
+    return String(xv).localeCompare(String(yv))*dir;
+  });
+  return rows;
+}
+function buildTableHead(){
+  const tr=document.createElement('tr');
+  RCOLS.forEach(c=>{
+    const th=document.createElement('th');
+    if(c.a==='l') th.className='tl';
+    th.textContent=c.l;
+    if(rSort.k===c.k){
+      const ar=document.createElement('span');
+      ar.className='arrow'; ar.textContent=rSort.dir>0?'▲':'▼';
+      th.appendChild(ar);
+    }
+    th.addEventListener('click',()=>{
+      if(rSort.k===c.k) rSort.dir=-rSort.dir;
+      else { rSort.k=c.k; rSort.dir=(c.k==='repair'||c.k==='id'||c.k==='type'||c.k==='location'||c.k==='orient'||c.k==='comment')?1:-1; }
+      renderTable();
+    });
+    tr.appendChild(th);
+  });
+  const head=document.getElementById('rtable-head');
+  head.innerHTML=''; head.appendChild(tr);
+}
+function renderTable(){
+  buildTableHead();
+  const rows=rSorted();
+  const body=document.getElementById('rtable-body');
+  const frag=document.createDocumentFragment();
+  rows.forEach(a=>{
+    const tr=document.createElement('tr');
+    RCOLS.forEach(c=>{
+      const td=document.createElement('td');
+      if(c.a==='l') td.classList.add('tl');
+      if(c.cls) td.classList.add(c.cls);
+      const raw=a[c.k];
+      const val=c.fmt?c.fmt(raw,a):(raw==null?'':raw);
+      if(c.fmt && /<[a-z]/i.test(String(val))) td.innerHTML=val; // trusted markup (priority dot)
+      else td.textContent=val;
+      if(c.k==='depth'&&raw!=null) td.style.color=depthColor(raw);
+      if(c.k==='comment'&&raw) td.title=raw;
+      tr.appendChild(td);
+    });
+    tr.addEventListener('click',()=>showFeatureOnPipeMap(a));
+    frag.appendChild(tr);
+  });
+  body.innerHTML=''; body.appendChild(frag);
+  document.getElementById('rtable-count').textContent=`${rows.length} of ${REPORT_FEATURES.length} features`;
+}
+function buildChips(){
+  const wrap=document.getElementById('rtable-chips');
+  wrap.innerHTML='';
+  PRIOS.forEach(p=>{
+    const b=document.createElement('button');
+    b.className='chip'+(rActivePrios.has(p)?' active':'');
+    b.innerHTML=`<span class="rprio-dot" style="color:${RCOL[p]||'#30d158'}"></span>${repairLabel(p).replace(/^[^\sA-Za-z0-9]+\s*/,'')}`;
+    b.addEventListener('click',()=>{
+      if(rActivePrios.has(p)) rActivePrios.delete(p); else rActivePrios.add(p);
+      if(!rActivePrios.size) rActivePrios=new Set(PRIOS); // never empty
+      buildChips(); renderTable();
+    });
+    wrap.appendChild(b);
+  });
+}
+function exportReportCSV(){
+  const rows=rSorted();
+  const cols=['id','dist','location','type','dim','depth','depthMm','wt','axLen','width','erf','orient','remainLife','repair','lat','lon','alt','comment'];
+  const header=['Feature ID','Distance (m)','Surface','Type','Classification','Depth (% WT/OD)','Depth (mm)','Wall Thickness (mm)','Axial Length (mm)','Width (mm)','ERF','Orientation','Remaining Life (yr)','Repair Priority','Latitude','Longitude','Altitude (m)','Comment'];
+  const lines=[header.map(csvCell).join(',')];
+  rows.forEach(a=>lines.push(cols.map(c=>csvCell(a[c])).join(',')));
+  const blob=new Blob([lines.join('\r\n')],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const el=document.createElement('a');
+  el.href=url; el.download=`ILI-repair-action-list-${rows.length}feat_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(el); el.click(); el.remove(); URL.revokeObjectURL(url);
+}
+
+// ── Charts ────────────────────────────────────────────────
+let chExt=true, chInt=true, chMinDepth=0, chTypes=null;
+const featType = a => a.type==='dent smooth' ? 'Dent' : a.dim;   // dents have no POF dim
+const chPass = a => (a.location==='External'?chExt:a.location==='Internal'?chInt:true)
+                 && (a.type==='dent smooth' || (a.depth||0)>=chMinDepth)   // dent depth is % OD, not % WT
+                 && (!featType(a) || !chTypes || chTypes.has(featType(a)));
+function cvSetup(cv){
+  const dpr=window.devicePixelRatio||1;
+  const w=cv.clientWidth, h=cv.clientHeight;
+  cv.width=w*dpr; cv.height=h*dpr;
+  const ctx=cv.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+  return {ctx,w,h};
+}
+const GRID='rgba(94,169,217,0.10)', AXTX='rgba(236,230,217,0.42)';
+function axisFrame(ctx,P,w,h){
+  ctx.strokeStyle=GRID; ctx.lineWidth=1;
+  ctx.strokeRect(P.l+.5,P.t+.5,w-P.l-P.r-1,h-P.t-P.b-1);
+}
+// Axis titles: x centered below the tick row, y rotated up the left edge
+function axisTitles(ctx,P,w,h,xt,yt){
+  ctx.save();
+  ctx.fillStyle='rgba(236,230,217,0.6)'; ctx.font='600 9px monospace';
+  ctx.textAlign='center'; ctx.textBaseline='bottom';
+  ctx.fillText(xt, P.l+(w-P.l-P.r)/2, h-3);
+  ctx.translate(11, P.t+(h-P.t-P.b)/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(yt, 0, 0);
+  ctx.restore();
+}
+const distExtent=()=>{const ds=REPORT_FEATURES.map(a=>a.dist);return [Math.min(...ds),Math.max(...ds)];};
+
+function drawDepthChart(){
+  const cv=document.getElementById('chart-depth'); const {ctx,w,h}=cvSetup(cv);
+  const P={l:46,r:12,t:10,b:36}; const [d0,d1]=distExtent(); const yMax=80;
+  const X=d=>P.l+(d-d0)/(d1-d0)*(w-P.l-P.r);
+  const Y=v=>P.t+(1-Math.min(v,yMax)/yMax)*(h-P.t-P.b);
+  // y gridlines + threshold dashes
+  ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  [0,20,40,60,80].forEach(v=>{
+    const y=Y(v); ctx.strokeStyle=(v===20||v===40||v===60)?'rgba(255,159,10,.22)':GRID;
+    ctx.setLineDash(v===20||v===40||v===60?[3,3]:[]);
+    ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();
+    ctx.fillStyle=AXTX; ctx.fillText(v,P.l-5,y);
+  });
+  ctx.setLineDash([]);
+  // x labels
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  for(let d=Math.ceil(d0/500)*500; d<=d1; d+=500){ctx.fillStyle=AXTX;ctx.fillText(d,X(d),h-P.b+4);}
+  // points (internal under external so the deeper-external set reads on top isn't critical; draw both)
+  const pts=[];
+  REPORT_FEATURES.forEach(a=>{
+    if(a.depth==null||a.type==='dent smooth'||!chPass(a)) return;
+    const px=X(a.dist), py=Y(a.depth);
+    ctx.fillStyle=locColor(a); ctx.globalAlpha=.62;
+    ctx.beginPath();ctx.arc(px,py,2.1,0,7);ctx.fill();
+    pts.push({x:px,y:py,a});
+  });
+  chartHit['chart-depth']=pts;
+  ctx.globalAlpha=1; axisFrame(ctx,P,w,h); axisTitles(ctx,P,w,h,'Distance (m)','Wall Loss (% WT)');
+}
+
+function drawDepthHistChart(){
+  const cv=document.getElementById('chart-depthhist'); const {ctx,w,h}=cvSetup(cv);
+  const P={l:46,r:12,t:10,b:36}; const NB=8;   // 0–10 … 70–80 % WT
+  const ext=new Array(NB).fill(0), int=new Array(NB).fill(0);
+  REPORT_FEATURES.forEach(a=>{ if(a.depth==null||a.type==='dent smooth'||!chPass(a))return; const i=Math.min(NB-1,Math.floor(a.depth/10)); (a.location==='Internal'?int:ext)[i]++; });
+  const yMax=Math.max(1,...ext.map((e,i)=>e+int[i]));
+  const Y=v=>P.t+(1-v/yMax)*(h-P.t-P.b);
+  ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  const ticks=4;
+  for(let t=0;t<=ticks;t++){const v=Math.round(yMax*t/ticks);const y=Y(v);ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();ctx.fillStyle=AXTX;ctx.fillText(v,P.l-5,y);}
+  const bw=(w-P.l-P.r)/NB;
+  for(let i=0;i<NB;i++){
+    const x=P.l+i*bw;
+    const he=Y(0)-Y(ext[i]); ctx.fillStyle=EXT_COL; ctx.globalAlpha=.85; ctx.fillRect(x+2.5,Y(ext[i]),bw-5,he);
+    const hi=Y(0)-Y(int[i]); ctx.fillStyle=INT_COL; ctx.fillRect(x+2.5,Y(ext[i])-hi,bw-5,hi);
+  }
+  ctx.globalAlpha=1;
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  for(let i=0;i<NB;i++){ctx.fillStyle=AXTX;ctx.fillText((i*10)+'–'+(i*10+10),P.l+i*bw+bw/2,h-P.b+4);}
+  axisFrame(ctx,P,w,h); axisTitles(ctx,P,w,h,'Depth (% WT)','Feature Count');
+}
+
+const DIM_SHORT={'General':'General','Pitting':'Pitting','Pinhole':'Pinhole','Axial grooving':'Axial groove','Circumferential grooving':'Circ. groove','Axial slotting':'Axial slot','Circumferential slotting':'Circ. slot'};
+const ALL_DIMS=Object.keys(DIM_SHORT).filter(k=>REPORT_FEATURES.some(a=>a.dim===k));
+if(DENTS.length) ALL_DIMS.push('Dent');
+chTypes=new Set(ALL_DIMS);
+function buildTypeChips(){
+  const wrap=document.getElementById('chip-types'); if(!wrap) return; wrap.innerHTML='';
+  const mk=(label,active,on)=>{ const b=document.createElement('button'); b.className='chip'+(active?' active':''); b.textContent=label; b.addEventListener('click',on); wrap.appendChild(b); };
+  mk('All', chTypes.size===ALL_DIMS.length, ()=>{ chTypes=new Set(ALL_DIMS); buildTypeChips(); drawAllCharts(); });
+  ALL_DIMS.forEach(k=> mk(DIM_SHORT[k]||k, chTypes.has(k), ()=>{
+    chTypes.has(k)?chTypes.delete(k):chTypes.add(k);
+    if(!chTypes.size) chTypes=new Set(ALL_DIMS);   // never empty
+    buildTypeChips(); drawAllCharts();
+  }));
+}
+function drawTypeChart(){
+  const cv=document.getElementById('chart-type'); const {ctx,w,h}=cvSetup(cv);
+  const P={l:92,r:34,t:8,b:34};
+  const ext={},int={};
+  REPORT_FEATURES.forEach(a=>{ if(a.type==='dent smooth'||!chPass(a)||!a.dim)return;
+    const m=a.location==='Internal'?int:ext; m[a.dim]=(m[a.dim]||0)+1; });
+  const cats=Object.keys(DIM_SHORT).filter(k=>(ext[k]||0)+(int[k]||0)>0)
+    .sort((x,y)=>((ext[y]||0)+(int[y]||0))-((ext[x]||0)+(int[x]||0)));
+  const xMax=Math.max(1,...cats.map(k=>(ext[k]||0)+(int[k]||0)));
+  const X=v=>P.l+v/xMax*(w-P.l-P.r);
+  ctx.font='9px monospace';
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  for(let t=0;t<=4;t++){const v=Math.round(xMax*t/4);const x=X(v);ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,h-P.b);ctx.stroke();ctx.fillStyle=AXTX;ctx.fillText(v,x,h-P.b+4);}
+  const plotH=h-P.t-P.b, rowH=plotH/Math.max(1,cats.length), barH=Math.min(24,rowH*0.6);
+  ctx.textBaseline='middle';
+  cats.forEach((k,i)=>{
+    const cy=P.t+rowH*(i+0.5), e=ext[k]||0, n=int[k]||0;
+    ctx.fillStyle=AXTX; ctx.textAlign='right'; ctx.fillText(DIM_SHORT[k],P.l-6,cy);
+    const we=X(e)-P.l, wn=X(n)-P.l;
+    ctx.fillStyle=EXT_COL; ctx.globalAlpha=.85; ctx.fillRect(P.l,cy-barH/2,we,barH);
+    ctx.fillStyle=INT_COL; ctx.fillRect(P.l+we,cy-barH/2,wn,barH);
+    ctx.globalAlpha=1;
+    ctx.fillStyle='rgba(236,230,217,.6)'; ctx.textAlign='left'; ctx.fillText(e+n,P.l+we+wn+5,cy);
+  });
+  axisFrame(ctx,P,w,h); axisTitles(ctx,P,w,h,'Feature Count','');
+}
+
+function drawErfChart(){
+  const cv=document.getElementById('chart-erf'); const {ctx,w,h}=cvSetup(cv);
+  const P={l:46,r:12,t:10,b:36}; const [d0,d1]=distExtent();
+  let maxErf=0; REPORT_FEATURES.forEach(a=>{ if(a.erf!=null&&chPass(a)&&a.erf>maxErf)maxErf=a.erf; });
+  const yMax=Math.max(0.3,Math.ceil(maxErf*10)/10);
+  const X=d=>P.l+(d-d0)/(d1-d0)*(w-P.l-P.r);
+  const Y=v=>P.t+(1-Math.min(v,yMax)/yMax)*(h-P.t-P.b);
+  ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  const ticks=Math.max(3,Math.round(yMax/0.1));
+  for(let t=0;t<=ticks;t++){const v=yMax*t/ticks;const y=Y(v);ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();ctx.fillStyle=AXTX;ctx.fillText(v.toFixed(2),P.l-5,y);}
+  const pts=[];
+  REPORT_FEATURES.forEach(a=>{
+    if(a.erf==null||a.type==='dent smooth'||!chPass(a)) return;
+    const px=X(a.dist), py=Y(a.erf);
+    ctx.fillStyle=locColor(a); ctx.globalAlpha=.62;
+    ctx.beginPath();ctx.arc(px,py,2.1,0,7);ctx.fill();
+    pts.push({x:px,y:py,a});
+  });
+  chartHit['chart-erf']=pts;
+  ctx.globalAlpha=1;
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  for(let d=Math.ceil(d0/500)*500; d<=d1; d+=500){ctx.fillStyle=AXTX;ctx.fillText(d,X(d),h-P.b+4);}
+  axisFrame(ctx,P,w,h); axisTitles(ctx,P,w,h,'Distance (m)','ERF (P_fail ratio)');
+}
+
+function drawDensityChart(){
+  const cv=document.getElementById('chart-density'); const {ctx,w,h}=cvSetup(cv);
+  const P={l:46,r:12,t:10,b:36}; const [d0,d1]=distExtent(); const BIN=50;
+  const n=Math.ceil((d1-d0)/BIN); const ext=new Array(n).fill(0), int=new Array(n).fill(0);
+  REPORT_FEATURES.forEach(a=>{ if(a.type==='dent smooth'||!chPass(a))return; const i=Math.min(n-1,Math.floor((a.dist-d0)/BIN)); (a.location==='Internal'?int:ext)[i]++; });
+  const yMax=Math.max(1,...ext.map((e,i)=>e+int[i]));
+  const X=d=>P.l+(d-d0)/(d1-d0)*(w-P.l-P.r);
+  const Y=v=>P.t+(1-v/yMax)*(h-P.t-P.b);
+  ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  const ticks=yMax<=5?yMax:4;
+  for(let t=0;t<=ticks;t++){const v=Math.round(yMax*t/ticks);const y=Y(v);ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();ctx.fillStyle=AXTX;ctx.fillText(v,P.l-5,y);}
+  const bw=(w-P.l-P.r)/n;
+  for(let i=0;i<n;i++){
+    const x=P.l+i*bw, b0=Y(0);
+    const he=b0-Y(ext[i]); ctx.fillStyle=EXT_COL; ctx.globalAlpha=.85; ctx.fillRect(x+.4,Y(ext[i]),bw-.8,he);
+    const hi=b0-Y(int[i]); ctx.fillStyle=INT_COL; ctx.fillRect(x+.4,Y(ext[i])-hi,bw-.8,hi);
+  }
+  ctx.globalAlpha=1;
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  for(let d=Math.ceil(d0/500)*500; d<=d1; d+=500){ctx.fillStyle=AXTX;ctx.fillText(d,X(d),h-P.b+4);}
+  axisFrame(ctx,P,w,h); axisTitles(ctx,P,w,h,'Distance (m)','Feature Count / 50 m');
+}
+
+function drawOrientChart(){
+  const cv=document.getElementById('chart-orient'); const {ctx,w,h}=cvSetup(cv);
+  const P={l:46,r:12,t:10,b:36}; const [d0,d1]=distExtent();
+  const X=d=>P.l+(d-d0)/(d1-d0)*(w-P.l-P.r);
+  const Y=c=>P.t+(c/12)*(h-P.t-P.b);   // 0=12:00 top, 6=6:00 center, 12=12:00 bottom
+  ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  [[0,'12'],[3,'3'],[6,'6'],[9,'9'],[12,'12']].forEach(([c,lbl])=>{
+    const y=Y(c); ctx.strokeStyle=c===6?'rgba(94,169,217,.22)':GRID;
+    ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();
+    ctx.fillStyle=c===6?'rgba(236,230,217,.6)':AXTX; ctx.fillText(lbl,P.l-5,y);
+  });
+  REPORT_FEATURES.forEach(a=>{
+    const c=orientClock(a.orient); if(c==null||!chPass(a)) return;
+    ctx.fillStyle=locColor(a); ctx.globalAlpha=.55;
+    ctx.beginPath();ctx.arc(X(a.dist),Y(c),2,0,7);ctx.fill();
+  });
+  ctx.globalAlpha=1;
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  for(let d=Math.ceil(d0/500)*500; d<=d1; d+=500){ctx.fillStyle=AXTX;ctx.fillText(d,X(d),h-P.b+4);}
+  axisFrame(ctx,P,w,h); axisTitles(ctx,P,w,h,'Distance (m)','Clock Position (o’clock)');
+}
+
+function drawRoseChart(){
+  const cv=document.getElementById('chart-rose'); const {ctx,w,h}=cvSetup(cv);
+  const P={l:46,r:12,t:10,b:36};
+  const ext=new Array(12).fill(0), int=new Array(12).fill(0);
+  REPORT_FEATURES.forEach(a=>{ const c=orientClock(a.orient); if(c==null||!chPass(a))return; const i=Math.floor(c)%12; (a.location==='Internal'?int:ext)[i]++; });
+  const yMax=Math.max(1,...ext.map((e,i)=>e+int[i]));
+  const Y=v=>P.t+(1-v/yMax)*(h-P.t-P.b);
+  ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  const ticks=4;
+  for(let t=0;t<=ticks;t++){const v=Math.round(yMax*t/ticks);const y=Y(v);ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();ctx.fillStyle=AXTX;ctx.fillText(v,P.l-5,y);}
+  const bw=(w-P.l-P.r)/12;
+  for(let i=0;i<12;i++){
+    const x=P.l+i*bw;
+    const he=Y(0)-Y(ext[i]); ctx.fillStyle=EXT_COL; ctx.globalAlpha=.85; ctx.fillRect(x+1.5,Y(ext[i]),bw-3,he);
+    const hi=Y(0)-Y(int[i]); ctx.fillStyle=INT_COL; ctx.fillRect(x+1.5,Y(ext[i])-hi,bw-3,hi);
+  }
+  ctx.globalAlpha=1;
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  for(let i=0;i<12;i++){ctx.fillStyle=AXTX;ctx.fillText(i===0?'12':i,P.l+i*bw+bw/2,h-P.b+4);}
+  axisFrame(ctx,P,w,h); axisTitles(ctx,P,w,h,'Clock Hour (o’clock)','Feature Count');
+}
+// ── Pipe development (unrolled) damage map ────────────────
+const PIPE_CIRC=Math.PI*457.2;     // 18" OD circumference (mm) ≈ 1436 — width maps to clock
+const PM_L=46, PM_R=12;
+let pmWinStart=1000, pmWinWidth=100;   // m — default centred on the hot-spot
+let pmHighlight=null;                   // feature object selected from the action list
+let pmBoxes=[];                         // [{x0,y0,x1,y1,a}] for damage-map hit-testing
+const chartHit={};                      // canvasId -> [{x,y,a}] for scatter hover
+let pmMeasure=false, pmMeasurePts=[];   // measure tool: [{dist,clock}] (max 2)
+function pmClamp(){ const [d0,d1]=distExtent(); pmWinWidth=Math.min(pmWinWidth,d1-d0); pmWinStart=Math.max(d0,Math.min(pmWinStart,d1-pmWinWidth)); }
+function drawPipeOverview(){
+  const cv=document.getElementById('pm-overview'); const {ctx,w,h}=cvSetup(cv);
+  const [d0,d1]=distExtent(); const P={l:PM_L,r:PM_R,t:6,b:15};
+  const X=d=>P.l+(d-d0)/(d1-d0)*(w-P.l-P.r), Yc=c=>P.t+(c/12)*(h-P.t-P.b);
+  ctx.strokeStyle=GRID; ctx.beginPath();ctx.moveTo(P.l,Yc(6));ctx.lineTo(w-P.r,Yc(6));ctx.stroke();
+  REPORT_FEATURES.filter(a=>a.type!=='dent smooth'&&chPass(a)).sort((a,b)=>(a.depth||0)-(b.depth||0)).forEach(a=>{
+    const c=orientClock(a.orient); if(c==null)return;
+    ctx.fillStyle=depthColor(a.depth||0); ctx.globalAlpha=.8; ctx.fillRect(X(a.dist)-.5,Yc(c)-1.1,1.3,2.2);
+  });
+  ctx.globalAlpha=1;
+  REPORT_FEATURES.forEach(a=>{ if(a.type!=='dent smooth'||!chPass(a))return;   // dents span full circumference (no clock)
+    const x=X(a.dist); ctx.strokeStyle='#ff375f'; ctx.lineWidth=1.5; ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,h-P.b);ctx.stroke(); });
+  pmClamp();
+  const x0=X(pmWinStart), x1=X(pmWinStart+pmWinWidth);
+  ctx.fillStyle='rgba(108,196,238,0.14)'; ctx.fillRect(x0,P.t,x1-x0,h-P.t-P.b);
+  ctx.strokeStyle='#6cc4ee'; ctx.lineWidth=1.5; ctx.strokeRect(x0+.5,P.t+.5,Math.max(1,x1-x0-1),h-P.t-P.b-1);
+  if(pmHighlight){ const hx=X(pmHighlight.dist); ctx.strokeStyle='#fff'; ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(hx,P.t-2);ctx.lineTo(hx,h-P.b+1);ctx.stroke(); }
+  ctx.font='9px monospace'; ctx.fillStyle=AXTX; ctx.textAlign='center'; ctx.textBaseline='top';
+  for(let d=Math.ceil(d0/500)*500; d<=d1; d+=500) ctx.fillText(d,X(d),h-P.b+2);
+}
+function drawPipeDetail(){
+  const cv=document.getElementById('pm-detail'); const {ctx,w,h}=cvSetup(cv);
+  pmClamp(); const ws=pmWinStart, we=pmWinStart+pmWinWidth; const P={l:PM_L,r:PM_R,t:10,b:36};
+  const X=d=>P.l+(d-ws)/(we-ws)*(w-P.l-P.r), Yc=c=>P.t+(c/12)*(h-P.t-P.b);
+  ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  [[0,'12'],[3,'3'],[6,'6'],[9,'9'],[12,'12']].forEach(([c,l])=>{ const y=Yc(c);
+    ctx.strokeStyle=c===6?'rgba(94,169,217,.22)':GRID; ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();
+    ctx.fillStyle=c===6?'rgba(236,230,217,.6)':AXTX; ctx.fillText(l,P.l-5,y); });
+  const inWin=REPORT_FEATURES.filter(a=>a.type!=='dent smooth'&&chPass(a)&&(a.dist+a.axLen/2000)>=ws&&(a.dist-a.axLen/2000)<=we);
+  let hl=null; pmBoxes=[];
+  inWin.sort((a,b)=>(a.depth||0)-(b.depth||0)).forEach(a=>{
+    const c=orientClock(a.orient); if(c==null)return;
+    const hAx=a.axLen/2000, hCl=(a.width/PIPE_CIRC)*6;   // m / clock-hours
+    const x0=X(a.dist-hAx), bw=Math.max(2,X(a.dist+hAx)-x0);
+    const y0=Yc(Math.max(0,c-hCl)), bh=Math.max(2,Yc(Math.min(12,c+hCl))-y0);
+    ctx.fillStyle=depthColor(a.depth||0); ctx.globalAlpha=.78; ctx.fillRect(x0,y0,bw,bh);
+    ctx.globalAlpha=1; ctx.strokeStyle='rgba(0,0,0,.4)'; ctx.lineWidth=.5; ctx.strokeRect(x0+.25,y0+.25,bw-.5,bh-.5);
+    pmBoxes.push({x0,y0,x1:x0+bw,y1:y0+bh,a});
+    if(a===pmHighlight) hl={x0,y0,bw,bh,a};
+  });
+  REPORT_FEATURES.forEach(a=>{   // dents: no clock → draw as a full-height band at their chainage
+    if(a.type!=='dent smooth'||!chPass(a)||a.dist<ws||a.dist>we) return;
+    const x=X(a.dist);
+    ctx.fillStyle='rgba(255,55,95,0.16)'; ctx.fillRect(x-3,P.t,6,h-P.t-P.b);
+    ctx.strokeStyle='#ff375f'; ctx.lineWidth=1.5; ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,h-P.b);ctx.stroke();
+    pmBoxes.push({x0:x-4,y0:P.t,x1:x+4,y1:h-P.b,a});
+    if(a===pmHighlight) hl={x0:x-4,y0:P.t,bw:8,bh:h-P.t-P.b,a};
+  });
+  if(hl){  // selected feature — bright ring + id label, drawn on top of everything
+    const unit=hl.a.type==='dent smooth'?'% OD':'% WT';
+    ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.strokeRect(hl.x0-3,hl.y0-3,hl.bw+6,hl.bh+6);
+    ctx.strokeStyle='rgba(108,196,238,0.9)'; ctx.lineWidth=1; ctx.strokeRect(hl.x0-5.5,hl.y0-5.5,hl.bw+11,hl.bh+11);
+    ctx.fillStyle='#fff'; ctx.font='600 11px monospace'; ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText('#'+hl.a.id+'  ·  '+(hl.a.depth||'?')+unit, hl.x0+hl.bw/2, Math.max(P.t+12,hl.y0-7));
+  }
+  axisFrame(ctx,P,w,h);
+  axisTitles(ctx,P,w,h,`Distance (m)  ·  ${ws.toFixed(0)}–${we.toFixed(0)} m  ·  ${inWin.length} features in window`,'Clock Position (o’clock)');
+  if(pmMeasure){
+    ctx.font='10px monospace';
+    if(pmMeasurePts.length<2){
+      ctx.fillStyle='rgba(108,196,238,.8)'; ctx.textAlign='center'; ctx.textBaseline='top';
+      ctx.fillText('Click two points to measure axial / circumferential separation', P.l+(w-P.l-P.r)/2, P.t+2);
+    }
+    pmMeasurePts.forEach(p=>{ const x=X(p.dist), y=Yc(p.clock);
+      ctx.strokeStyle='#6cc4ee'; ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(x-6,y);ctx.lineTo(x+6,y);ctx.moveTo(x,y-6);ctx.lineTo(x,y+6);ctx.stroke();
+      ctx.fillStyle='#6cc4ee'; ctx.beginPath();ctx.arc(x,y,2.6,0,7);ctx.fill(); });
+    if(pmMeasurePts.length===2){
+      const [p,q]=pmMeasurePts, x1=X(p.dist),y1=Yc(p.clock),x2=X(q.dist),y2=Yc(q.clock);
+      ctx.strokeStyle='#6cc4ee'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke(); ctx.setLineDash([]);
+      const axM=Math.abs(q.dist-p.dist), dC=Math.abs(q.clock-p.clock);
+      const circMm=Math.min(dC,12-dC)/12*PIPE_CIRC, surf=Math.sqrt((axM*1000)**2+circMm**2);
+      const lines=['Δaxial  '+(axM<1?(axM*1000).toFixed(0)+' mm':axM.toFixed(2)+' m'),
+                   'Δcircum '+circMm.toFixed(0)+' mm',
+                   'surface '+(surf<1000?surf.toFixed(0)+' mm':(surf/1000).toFixed(2)+' m')];
+      ctx.textAlign='left'; ctx.textBaseline='top';
+      const lw=Math.max(...lines.map(t=>ctx.measureText(t).width))+12, lh=lines.length*13+8;
+      let bx=(x1+x2)/2+10, by=(y1+y2)/2+8; if(bx+lw>w-P.r)bx=(x1+x2)/2-lw-10; if(by+lh>h-P.b)by=h-P.b-lh-2;
+      ctx.fillStyle='rgba(8,11,17,0.94)'; ctx.fillRect(bx,by,lw,lh);
+      ctx.strokeStyle='rgba(108,196,238,.55)'; ctx.lineWidth=1; ctx.strokeRect(bx+.5,by+.5,lw-1,lh-1);
+      ctx.fillStyle='#dfeefb'; lines.forEach((t,i)=>ctx.fillText(t,bx+6,by+6+i*13));
+    }
+  }
+}
+function drawPipeMap(){ drawPipeOverview(); drawPipeDetail(); updateStepLabel(); }
+// Action-list → Damage Map: highlight the feature and centre the window on it
+// (so its nearby neighbours are visible), then switch to the Damage Map tab.
+function showFeatureOnPipeMap(a){
+  pmHighlight=a;
+  const [d0,d1]=distExtent();
+  if(pmWinWidth<(d1-d0)) pmWinStart=a.dist-pmWinWidth/2;   // keep current zoom unless "Full line"
+  pmClamp();
+  if(document.getElementById('pane-pipemap').classList.contains('active')) drawPipeMap();
+  else document.querySelector('.rtab[data-pane="pane-pipemap"]').click();   // activates tab + redraws
+}
+// Prev/Next walk the action-list order (worst-first), auto-centring each item
+function pmStep(dir){
+  const list=rSorted(); if(!list.length) return;
+  let idx=list.indexOf(pmHighlight);
+  idx = idx<0 ? (dir>0?0:list.length-1) : Math.max(0,Math.min(list.length-1,idx+dir));
+  showFeatureOnPipeMap(list[idx]);
+}
+function updateStepLabel(){
+  const el=document.getElementById('pm-step-label'); if(!el) return;
+  const list=rSorted(), idx=list.indexOf(pmHighlight);
+  el.textContent = idx<0 ? `${list.length} items` : `#${list[idx].id} · ${list[idx].depth||'?'}% (${idx+1}/${list.length})`;
+}
+
+function drawAllCharts(){ drawPipeMap(); drawDepthChart(); drawDepthHistChart(); drawErfChart(); drawDensityChart(); drawOrientChart(); drawRoseChart(); drawTypeChart(); }
+
+// ── Modal wiring ──────────────────────────────────────────
+const reportsOverlay=document.getElementById('reports-overlay');
+let reportsBuilt=false, chartsBuilt=false;
+function openReports(){
+  reportsOverlay.classList.add('show');
+  if(!reportsBuilt){ buildChips(); renderTable(); reportsBuilt=true; }
+}
+function closeReports(){ reportsOverlay.classList.remove('show'); }
+document.getElementById('btn-reports').addEventListener('click',openReports);
+document.getElementById('reports-close').addEventListener('click',closeReports);
+reportsOverlay.addEventListener('click',e=>{ if(e.target===reportsOverlay) closeReports(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&reportsOverlay.classList.contains('show')) closeReports(); });
+document.getElementById('rexport-btn').addEventListener('click',exportReportCSV);
+document.querySelectorAll('.rtab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.rtab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.rpane').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.pane).classList.add('active');
+    const isChart=tab.dataset.pane!=='pane-table';
+    document.getElementById('rchart-filters').classList.toggle('hidden',!isChart);
+    if(isChart){ chartsBuilt=true; requestAnimationFrame(drawAllCharts); }
+  });
+});
+window.addEventListener('resize',()=>{ if(chartsBuilt&&reportsOverlay.classList.contains('show')&&!document.getElementById('pane-table').classList.contains('active')) drawAllCharts(); });
+// chart surface + depth filters
+document.getElementById('chip-ext').addEventListener('click',function(){
+  chExt=!chExt; this.classList.toggle('active',chExt);
+  if(!chExt&&!chInt){chInt=true;document.getElementById('chip-int').classList.add('active');} // never both off
+  drawAllCharts();
+});
+document.getElementById('chip-int').addEventListener('click',function(){
+  chInt=!chInt; this.classList.toggle('active',chInt);
+  if(!chExt&&!chInt){chExt=true;document.getElementById('chip-ext').classList.add('active');}
+  drawAllCharts();
+});
+document.getElementById('chart-depth-slider').addEventListener('input',e=>{
+  chMinDepth=+e.target.value;
+  document.getElementById('chart-depth-val').textContent=chMinDepth;
+  document.getElementById('chart-slider-fill').style.width=(chMinDepth/80*100)+'%';
+  drawAllCharts();
+});
+buildTypeChips();
+// ── Fullscreen (whole modal per tab, or a single chart) ──
+async function toggleFS(el){
+  const cur=document.fullscreenElement;
+  try{
+    if(cur) await document.exitFullscreen();
+    if(cur!==el && el.requestFullscreen) await el.requestFullscreen();
+  }catch(err){ /* fullscreen may be blocked — ignore */ }
+}
+document.getElementById('reports-fs').addEventListener('click',()=>toggleFS(document.getElementById('reports-modal')));
+document.querySelectorAll('.rc-fs').forEach(btn=>{
+  btn.addEventListener('click',e=>{ e.stopPropagation(); toggleFS(btn.closest('.rchart-card')); });
+});
+document.addEventListener('fullscreenchange',()=>{
+  const on=!!document.fullscreenElement;
+  document.getElementById('reports-fs').textContent=on?'🗗':'⛶';
+  if(chartsBuilt) requestAnimationFrame(drawAllCharts);
+});
+// Pipe-map: drag the overview to move the section window; chips set its width
+const pmOv=document.getElementById('pm-overview');
+let pmDrag=false;
+function pmMoveTo(clientX){
+  const r=pmOv.getBoundingClientRect(); const [d0,d1]=distExtent();
+  const frac=(clientX-r.left-PM_L)/(r.width-PM_L-PM_R);
+  pmWinStart=d0+Math.max(0,Math.min(1,frac))*(d1-d0)-pmWinWidth/2;
+  pmClamp(); drawPipeMap();
+}
+pmOv.addEventListener('pointerdown',e=>{pmDrag=true;pmOv.setPointerCapture(e.pointerId);pmMoveTo(e.clientX);});
+pmOv.addEventListener('pointermove',e=>{if(pmDrag)pmMoveTo(e.clientX);});
+pmOv.addEventListener('pointerup',()=>{pmDrag=false;});
+document.querySelectorAll('.pm-w').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.pm-w').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const [d0,d1]=distExtent(), cen=pmWinStart+pmWinWidth/2;
+    if(btn.dataset.w==='full'){ pmWinStart=d0; pmWinWidth=d1-d0; }
+    else { pmWinWidth=+btn.dataset.w; pmWinStart=cen-pmWinWidth/2; }
+    pmClamp(); drawPipeMap();
+  });
+});
+document.getElementById('pm-prev').addEventListener('click',()=>pmStep(-1));
+document.getElementById('pm-next').addEventListener('click',()=>pmStep(1));
+
+// ── Hover tooltips + click-to-select on charts ────────────
+function placeTip(card,tip,clientX,clientY){
+  const cr=card.getBoundingClientRect();
+  let x=clientX-cr.left+14, y=clientY-cr.top+14;
+  if(x+tip.offsetWidth>cr.width-4) x=clientX-cr.left-tip.offsetWidth-14;
+  if(y+tip.offsetHeight>cr.height-4) y=clientY-cr.top-tip.offsetHeight-14;
+  tip.style.left=Math.max(4,x)+'px'; tip.style.top=Math.max(4,y)+'px';
+}
+// scatter charts (Wall Loss, ERF): nearest-point hover + click → Damage Map
+function attachScatterHover(canvasId,fmt){
+  const cv=document.getElementById(canvasId), card=cv.closest('.rchart-card');
+  const tip=document.createElement('div'); tip.className='rc-tip'; card.appendChild(tip);
+  cv.addEventListener('mousemove',e=>{
+    const pts=chartHit[canvasId];
+    if(!pts){tip.style.display='none';return;}
+    const r=cv.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top;
+    let best=null,bd=49;
+    for(const p of pts){ const dx=p.x-mx,dy=p.y-my,d=dx*dx+dy*dy; if(d<bd){bd=d;best=p;} }
+    cv._hover=best?best.a:null;
+    if(best){ tip.innerHTML=fmt(best.a); tip.style.display='block'; placeTip(card,tip,e.clientX,e.clientY); cv.style.cursor='pointer'; }
+    else { tip.style.display='none'; cv.style.cursor='default'; }
+  });
+  cv.addEventListener('mouseleave',()=>{tip.style.display='none';cv._hover=null;});
+  cv.addEventListener('click',()=>{ if(cv._hover) showFeatureOnPipeMap(cv._hover); });
+}
+attachScatterHover('chart-depth',a=>`<b>#${a.id}</b> · ${a.depth}% WT<br>${a.location} · ${(+a.dist).toFixed(0)} m`);
+attachScatterHover('chart-erf',  a=>`<b>#${a.id}</b> · ERF ${(+a.erf).toFixed(3)}<br>${a.location} · ${(+a.dist).toFixed(0)} m`);
+// Damage-map detail: hover a box for info, click to select it
+(function(){
+  const cv=document.getElementById('pm-detail'), card=cv.closest('.rchart-card');
+  const tip=document.createElement('div'); tip.className='rc-tip'; card.appendChild(tip);
+  const hitAt=(cx,cy)=>{ const r=cv.getBoundingClientRect(),mx=cx-r.left,my=cy-r.top; let h=null;
+    for(const b of pmBoxes){ if(mx>=b.x0-1&&mx<=b.x1+1&&my>=b.y0-1&&my<=b.y1+1) h=b; } return h; };
+  const toDistClock=(cx,cy)=>{ const r=cv.getBoundingClientRect(), W=cv.clientWidth, H=cv.clientHeight;
+    const P={l:PM_L,r:PM_R,t:10,b:36}, ws=pmWinStart, we=pmWinStart+pmWinWidth;
+    return { dist:Math.max(ws,Math.min(we, ws+(cx-r.left-P.l)/(W-P.l-P.r)*(we-ws))),
+             clock:Math.max(0,Math.min(12,(cy-r.top-P.t)/(H-P.t-P.b)*12)) }; };
+  cv.addEventListener('mousemove',e=>{
+    if(pmMeasure){ tip.style.display='none'; cv.style.cursor='crosshair'; return; }
+    const b=hitAt(e.clientX,e.clientY);
+    if(b){ const a=b.a;
+      tip.innerHTML = a.type==='dent smooth'
+        ? `<b>#${a.id}</b> · Dent · ${a.depth}% OD<br>${repairLabel(a.repair||'>10yr')}<br>${(+a.dist).toFixed(1)} m`
+        : `<b>#${a.id}</b> · ${a.depth||'?'}% WT · ERF ${a.erf!=null?(+a.erf).toFixed(3):'—'}<br>${a.location} · ${a.dim||''}<br>${a.axLen}×${a.width} mm · ${a.orient||''} · ${(+a.dist).toFixed(1)} m`;
+      tip.style.display='block'; placeTip(card,tip,e.clientX,e.clientY); cv.style.cursor='pointer'; }
+    else { tip.style.display='none'; cv.style.cursor='crosshair'; }
+  });
+  cv.addEventListener('mouseleave',()=>{tip.style.display='none';});
+  cv.addEventListener('click',e=>{
+    if(pmMeasure){ if(pmMeasurePts.length>=2) pmMeasurePts=[]; pmMeasurePts.push(toDistClock(e.clientX,e.clientY)); drawPipeMap(); return; }
+    const b=hitAt(e.clientX,e.clientY); if(b){ pmHighlight=b.a; drawPipeMap(); }
+  });
+})();
+document.getElementById('pm-measure').addEventListener('click',function(){
+  pmMeasure=!pmMeasure; this.classList.toggle('active',pmMeasure); pmMeasurePts=[]; drawPipeMap();
+});
 
 map.fitBounds(routeLine.getBounds(),{padding:[50,50]});
 </script>
