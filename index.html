@@ -121,7 +121,7 @@ html,body{height:100%;overflow:hidden;background:
   /* Sidebar floats over the map as a drawer on mobile (rather than
      squeezing it to a sliver) — taken out of flex flow via absolute
      positioning, #map-col then naturally fills the full width. */
-  #sidebar{position:absolute;top:0;left:0;height:100%;z-index:150;box-shadow:16px 0 48px rgba(0,0,0,.55);}
+  #sidebar{position:absolute;top:0;left:0;height:100%;z-index:150!important;box-shadow:16px 0 48px rgba(0,0,0,.55);}
   #sidebar-backdrop{position:absolute;inset:0;z-index:140;background:rgba(0,0,0,.4);}
   #sidebar-backdrop.show{display:block;}
   #sidebar-toggle{left:0;}
@@ -537,6 +537,12 @@ table.rtable tbody tr{cursor:pointer;}
   #reports-overlay{padding:0;}
   #reports-modal{max-height:none;border-radius:0;}
   .rcell-comment{max-width:140px;}
+  /* Tab bar wraps into uneven multi-line buttons on narrow screens —
+     scroll horizontally as a single row instead, like a mobile tab strip. */
+  .rtabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    padding:8px 12px 0;scrollbar-width:none;}
+  .rtabs::-webkit-scrollbar{display:none;}
+  .rtab{flex:0 0 auto;white-space:nowrap;padding:8px 12px;font-size:11px;}
 }
 
 /* REDUCED MOTION — keep opacity fades, drop transform-based motion */

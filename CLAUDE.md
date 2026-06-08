@@ -112,6 +112,72 @@ operating on the Leaflet `map` instance and the data arrays from `data.js`:
   `<style>` block handle tablet/mobile breakpoints (topbar reflow, sidebar
   auto-collapse on mobile).
 
+## Reports & Analytics modal (also in index.html)
+
+A second, self-contained UI surface opened via the `#btn-reports` card in the
+sidebar (its own card above Search, separate from "Map Layers"). It's a
+full-viewport overlay (`#reports-overlay` / `#reports-modal`, `z-index:4000`)
+with its own native-fullscreen support (`toggleFS`, `#reports-fs`,
+`fullscreenchange`), independent from the map/elevation chart below it.
+
+- **Data source**: `REPORT_FEATURES = ANOMALIES.concat(DENTS)` — a single
+  combined array so the table, charts, and damage map all iterate one list
+  (dents carry `repair='<=1yr'` and `type==='dent smooth'` as their
+  discriminator).
+- **4 tabs** (`.rtab` / `.rpane`, switched by a click handler around line
+  2147 that toggles `.active` and calls `requestAnimationFrame(drawAllCharts)`
+  the first time a chart tab is opened — `chartsBuilt` guards re-init):
+  - `pane-table` — 📋 Repair Action List: sortable/filterable table
+    (`RCOLS`, `rSorted()`, `rFiltered()`); row click calls
+    `showFeatureOnPipeMap(a)`, which switches to the Damage Map tab, centers
+    its zoom window on that feature, and highlights it (so users can see
+    *where* a listed defect is and what's near it — this replaced an earlier
+    behaviour that just jumped back to the main map).
+  - `pane-pipemap` — 🗺 Damage Map ("unrolled pipe development"): an
+    axial-distance × clock-position view drawn at true scale. Two canvases,
+    `#pm-overview` (full-line context strip) and `#pm-detail` (zoomed
+    window) via `drawPipeOverview()`/`drawPipeDetail()`/`drawPipeMap()`.
+    Toolbar has window-width presets (50/100/250 m / full line, `pmWinWidth`/
+    `pmWinStart`/`pmClamp()`), a measurement tool (`pmMeasure`,
+    `pmMeasurePts`, reports Δaxial/Δcircum/surface distance using
+    `PIPE_CIRC = Math.PI*457.2`), and a Prev/Next stepper
+    (`pmStep`/`updateStepLabel`) to walk through the currently filtered
+    feature list. Dents have no clock position, so they render as full-height
+    pink bands at their chainage and are exempt from the %WT depth filter
+    (they use % OD instead). Clicking a drawn box highlights it
+    (`pmBoxes` hit-test registry) and shows a tooltip.
+  - `pane-distance` — 📈 "Along Distance" charts: Wall Loss
+    (`drawDepthChart`/`chart-depth`), ERF (`drawErfChart`/`chart-erf`),
+    Metal-Loss Density (`drawDensityChart`/`chart-density`), Orientation
+    (`drawOrientChart`/`chart-orient`).
+  - `pane-profiles` — 📊 "Distributions" charts: Depth Distribution
+    (`drawDepthHistChart`/`chart-depthhist`, ext/int histogram),
+    Circumferential Distribution / rose chart (`drawRoseChart`/`chart-rose`),
+    Defect Type (`drawTypeChart`/`chart-type`, POF `dim` classes).
+  - All canvases use `cvSetup()` for `devicePixelRatio`-aware bitmap sizing,
+    `attachScatterHover()`/`placeTip()`/`chartHit{}` for shared
+    hover-tooltip wiring, and `.rc-fs` per-chart fullscreen buttons.
+- **One shared filter bar** (`#rchart-filters`, hidden on the table tab via
+  `.hidden`) drives every chart and the damage map — NOT duplicated per tab,
+  so filter state persists when switching between chart tabs:
+  ```js
+  let chExt=true, chInt=true, chMinDepth=0, chTypes=null;
+  const featType = a => a.type==='dent smooth' ? 'Dent' : a.dim;
+  const chPass = a => (a.location==='External'?chExt:a.location==='Internal'?chInt:true)
+                   && (a.type==='dent smooth' || (a.depth||0)>=chMinDepth)
+                   && (!featType(a) || !chTypes || chTypes.has(featType(a)));
+  ```
+  `chTypes` is a `Set` of POF `dim` short-codes plus `'Dent'`, built by
+  `buildTypeChips()` from `ALL_DIMS`. Every chart-drawing function filters
+  `REPORT_FEATURES` through `chPass` — if you add a new chart or change filter
+  semantics, update `chPass` once and all consumers stay in sync (mirrors the
+  `passesActiveFilters` pattern used by the main map).
+- **Entry point**: `drawAllCharts()` (around line 2126) is the single
+  redraw-everything function, called on filter change, tab switch, and
+  window resize. It does **not** include a KPI strip — that was tried and
+  removed; don't re-add a `#rchart-kpis`/`updateKpis()` pattern without
+  reason.
+
 ## Updating data for a new ILI run
 
 Per the README: only `data.js` needs to change — replace `ANOMALIES`,
