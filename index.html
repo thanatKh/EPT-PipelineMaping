@@ -70,7 +70,7 @@ html,body{height:100%;overflow:hidden;background:
 #branding{display:flex;align-items:center;gap:10px;min-width:0;flex-shrink:1;}
 #logo-img{height:42px;width:auto;object-fit:contain;flex-shrink:0;}
 #brand-text{min-width:0;}
-#brand-text .dept{font-size:9.5px;font-weight:500;color:var(--blue2);letter-spacing:1.4px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#brand-text .dept{font-size:10px;font-weight:500;color:var(--blue2);letter-spacing:1.4px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 #brand-text .company{font-family:var(--display);font-size:14px;font-weight:600;font-style:italic;color:var(--text);letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 #topbar-center{
   position:absolute;left:50%;top:50%;
@@ -78,7 +78,7 @@ html,body{height:100%;overflow:hidden;background:
   text-align:center;pointer-events:none;white-space:nowrap;
 }
 #topbar-center .t1{font-family:var(--display);font-size:15px;font-weight:600;letter-spacing:.3px;line-height:1.3;}
-#topbar-center .t2{font-size:10.5px;color:var(--text2);letter-spacing:.6px;margin-top:3px;line-height:1.3;}
+#topbar-center .t2{font-size:11px;color:var(--text2);letter-spacing:.6px;margin-top:3px;line-height:1.3;}
 #kpi-row{display:flex;align-items:center;gap:5px;flex-shrink:0;}
 #kpi-row-label{font-size:8px;color:var(--text3);text-transform:uppercase;letter-spacing:1.1px;
   margin-right:6px;white-space:nowrap;line-height:1.3;text-align:right;flex-shrink:0;}
@@ -87,7 +87,7 @@ html,body{height:100%;overflow:hidden;background:
      background:rgba(47,155,214,.04);border:1px solid var(--border);border-radius:3px;position:relative;}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(47,155,214,.35),transparent);}
 .kpi .v{font-size:15px;font-weight:700;letter-spacing:-.3px;line-height:1.1;font-variant-numeric:tabular-nums;}
-.kpi .l{font-size:8.5px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:3px;}
+.kpi .l{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:3px;}
 .kpi.red .v{color:var(--red);}.kpi.orange .v{color:var(--orange);}
 .kpi.yellow .v{color:var(--yellow);}.kpi.green .v{color:var(--green);}.kpi.blue .v{color:var(--blue2);}
 
@@ -131,7 +131,7 @@ html,body{height:100%;overflow:hidden;background:
 /* ── SMALL MOBILE: even tighter ── */
 @media (max-width:380px){
   #brand-text .dept{display:none;}
-  #brand-text .company{font-size:10.5px;}
+  #brand-text .company{font-size:11px;}
   .kpi{min-width:44px;padding:3px 6px;}
   .kpi .v{font-size:12px;}
 }
@@ -164,7 +164,7 @@ html,body{height:100%;overflow:hidden;background:
 .card::after{content:'';position:absolute;top:6px;right:6px;width:5px;height:5px;border-top:1px solid var(--border2);border-right:1px solid var(--border2);}
 .card-title{
   font-family:var(--display);font-style:italic;font-weight:600;
-  font-size:12.5px;color:var(--text);
+  font-size:13px;color:var(--text);
   letter-spacing:.3px;margin-bottom:11px;
   display:flex;align-items:center;gap:8px;
 }
@@ -202,7 +202,7 @@ html,body{height:100%;overflow:hidden;background:
 /* CHIPS */
 .chip-row{display:flex;gap:6px;flex-wrap:wrap;}
 .chip{
-  padding:4px 10px;border-radius:2px;font-size:10.5px;font-weight:500;letter-spacing:.3px;
+  padding:4px 10px;border-radius:2px;font-size:11px;font-weight:500;letter-spacing:.3px;
   border:1px solid var(--border);color:var(--text2);cursor:pointer;
   transition:background .15s ease,border-color .15s ease,color .15s ease,transform 120ms ease-out;
   display:flex;align-items:center;gap:5px;
@@ -215,12 +215,12 @@ html,body{height:100%;overflow:hidden;background:
 .slider-track{position:relative;height:3px;background:rgba(236,230,217,.1);border-radius:0;margin:10px 0 4px;}
 .slider-fill{position:absolute;left:0;top:0;height:100%;background:var(--blue);box-shadow:0 0 8px var(--blue);pointer-events:none;}
 input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;margin:0;}
-.slider-labels{display:flex;justify-content:space-between;font-size:9.5px;color:var(--text3);font-variant-numeric:tabular-nums;}
+.slider-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);font-variant-numeric:tabular-nums;}
 
 /* LAYER PILLS */
 .layer-row{display:flex;gap:6px;flex-wrap:wrap;}
 .lpill{
-  padding:5px 12px;border-radius:2px;font-size:10.5px;font-weight:500;letter-spacing:.4px;
+  padding:5px 12px;border-radius:2px;font-size:11px;font-weight:500;letter-spacing:.4px;
   border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;
   transition:background .2s ease,border-color .2s ease,color .2s ease,transform 120ms ease-out;
 }
@@ -232,7 +232,7 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
 .stat-box{background:rgba(236,230,217,.025);border:1px solid var(--border);border-radius:2px;padding:9px 11px;}
 .stat-box .sv{font-size:18px;font-weight:700;letter-spacing:-.3px;font-variant-numeric:tabular-nums;}
-.stat-box .sl{font-size:8.5px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+.stat-box .sl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
 
 /* INFO LIST */
 .info-row{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px solid var(--border);}
@@ -327,7 +327,7 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
 .pipe-label{
   background:var(--glass2);backdrop-filter:blur(12px);
   border:1px solid var(--border2);border-radius:2px;
-  padding:3px 9px;font-size:10.5px;font-weight:600;letter-spacing:.4px;
+  padding:3px 9px;font-size:11px;font-weight:600;letter-spacing:.4px;
   color:var(--blue2);white-space:nowrap;font-family:var(--mono);
 }
 
@@ -367,7 +367,7 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
   background:var(--glass2);backdrop-filter:var(--blur);
   border:1px solid var(--border2);border-bottom:none;
   border-radius:2px 2px 0 0;
-  color:var(--blue);font-size:10.5px;font-weight:600;letter-spacing:.4px;
+  color:var(--blue);font-size:11px;font-weight:600;letter-spacing:.4px;
   padding:5px 14px;cursor:pointer;font-family:var(--mono);
   display:flex;align-items:center;gap:6px;
   transition:background .15s ease,transform 120ms ease-out;
@@ -411,7 +411,7 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
 .legend-box.collapsed{min-width:0;padding:8px 12px;}
 .legend-box.collapsed .legend-body{display:none;}
 .legend-title{
-  font-family:var(--display);font-style:italic;font-size:12.5px;font-weight:600;color:var(--text);
+  font-family:var(--display);font-style:italic;font-size:13px;font-weight:600;color:var(--text);
   letter-spacing:.2px;
   display:flex;align-items:center;justify-content:space-between;
   cursor:pointer;user-select:none;gap:10px;margin-bottom:9px;
@@ -426,7 +426,7 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
 .leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 .leg-line{width:18px;height:3px;border-radius:2px;flex-shrink:0;}
 .leg-sq{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
-.legend-note{font-size:9.5px;color:var(--text3);margin-top:7px;padding-top:7px;border-top:1px solid var(--border);line-height:1.5;}
+.legend-note{font-size:10px;color:var(--text3);margin-top:7px;padding-top:7px;border-top:1px solid var(--border);line-height:1.5;}
 
 /* ═══ REPORTS & ANALYTICS MODAL ═══════════════════════════════ */
 #reports-overlay{position:fixed;inset:0;z-index:4000;display:none;
@@ -443,7 +443,7 @@ input[type=range]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cur
   display:flex;align-items:center;gap:9px;letter-spacing:.2px;}
 #reports-head .rtitle::before{content:'';width:13px;height:1px;background:var(--blue);
   box-shadow:0 0 6px var(--blue);}
-#reports-head .rsub{font-size:10.5px;color:var(--text2);letter-spacing:.5px;}
+#reports-head .rsub{font-size:11px;color:var(--text2);letter-spacing:.5px;}
 #reports-fs,#reports-close{width:30px;height:30px;flex-shrink:0;border-radius:3px;
   background:rgba(255,255,255,.04);border:1px solid var(--border2);color:var(--text2);
   font-size:14px;line-height:1;cursor:pointer;transition:.18s;
@@ -504,7 +504,7 @@ table.rtable tbody tr{cursor:pointer;}
 .rchart-card{background:rgba(47,155,214,.025);border:1px solid var(--border);border-radius:3px;
   padding:12px 14px 14px;display:flex;flex-direction:column;position:relative;}
 .rchart-card .rc-title{font-size:12px;color:var(--text);font-weight:600;margin-bottom:2px;}
-.rchart-card .rc-sub{font-size:9.5px;color:var(--text3);margin-bottom:10px;line-height:1.4;padding-right:30px;}
+.rchart-card .rc-sub{font-size:10px;color:var(--text3);margin-bottom:10px;line-height:1.4;padding-right:30px;}
 .rchart-card canvas{width:100%;height:200px;display:block;}
 /* Pipe development (unrolled) damage map — overview strip + detail section */
 #pm-overview{height:72px;cursor:ew-resize;}
@@ -793,7 +793,7 @@ table.rtable tbody tr{cursor:pointer;}
             <button class="chip pm-w" data-w="250">250 m</button>
             <button class="chip pm-w" data-w="full">Full line</button>
             <button class="chip" id="pm-measure" aria-label="Measure separation between two points">📏 Measure</button>
-            <span class="rcd-label" style="margin-left:auto;">Repair list:</span>
+            <span class="rcd-label" style="margin-left:auto;padding-left:18px;border-left:1px solid var(--border2);">Repair list:</span>
             <button class="chip" id="pm-prev" aria-label="Previous repair item">◀ Prev</button>
             <span id="pm-step-label" class="rcd-label" style="min-width:148px;text-align:center;color:var(--blue2);">—</span>
             <button class="chip" id="pm-next" aria-label="Next repair item">Next ▶</button>
@@ -1018,7 +1018,7 @@ function showDetail(a,col){
     rows.map(([l,v])=>`<div class="dp-row"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('')+
     rlHtml+
     `<div><span class="dp-badge" style="background:${col}1a;color:${col};border:1px solid ${col}44;">${repairLabel(a.repair||'>10yr')}</span></div>`+
-    (a.comment&&a.comment!=='None'&&a.comment?`<div style="margin-top:8px;font-size:10.5px;color:var(--text3);font-style:italic;">${a.comment}</div>`:'');
+    (a.comment&&a.comment!=='None'&&a.comment?`<div style="margin-top:8px;font-size:11px;color:var(--text2);font-style:italic;">${a.comment}</div>`:'');
   const dp=document.getElementById('detail-panel');
   dp.classList.remove('closing');
   dp.style.display='block';
@@ -1808,6 +1808,15 @@ function cvSetup(cv){
   return {ctx,w,h};
 }
 const GRID='rgba(94,169,217,0.10)', AXTX='rgba(236,230,217,0.42)';
+const PLOT_BG_COL='rgba(4,6,10,0.55)', AXIS_TITLE_COL='rgba(236,230,217,0.6)';
+const MEASURE_TIP_BG='rgba(8,11,17,0.94)', MEASURE_TIP_TXT='#dfeefb';
+// Plot area is filled darker than the surrounding card so the data
+// region reads as a distinct surface — without this the transparent canvas
+// just shows the page background through it, nearly identical to the card tint.
+function plotBg(ctx,P,w,h){
+  ctx.fillStyle=PLOT_BG_COL;
+  ctx.fillRect(P.l,P.t,w-P.l-P.r,h-P.t-P.b);
+}
 function axisFrame(ctx,P,w,h){
   ctx.strokeStyle=GRID; ctx.lineWidth=1;
   ctx.strokeRect(P.l+.5,P.t+.5,w-P.l-P.r-1,h-P.t-P.b-1);
@@ -1815,7 +1824,7 @@ function axisFrame(ctx,P,w,h){
 // Axis titles: x centered below the tick row, y rotated up the left edge
 function axisTitles(ctx,P,w,h,xt,yt){
   ctx.save();
-  ctx.fillStyle='rgba(236,230,217,0.6)'; ctx.font='600 9px monospace';
+  ctx.fillStyle=AXIS_TITLE_COL; ctx.font='600 9px monospace';
   ctx.textAlign='center'; ctx.textBaseline='bottom';
   ctx.fillText(xt, P.l+(w-P.l-P.r)/2, h-3);
   ctx.translate(11, P.t+(h-P.t-P.b)/2);
@@ -1829,6 +1838,7 @@ const distExtent=()=>{const ds=REPORT_FEATURES.map(a=>a.dist);return [Math.min(.
 function drawDepthChart(){
   const cv=document.getElementById('chart-depth'); const {ctx,w,h}=cvSetup(cv);
   const P={l:46,r:12,t:10,b:36}; const [d0,d1]=distExtent(); const yMax=80;
+  plotBg(ctx,P,w,h);
   const X=d=>P.l+(d-d0)/(d1-d0)*(w-P.l-P.r);
   const Y=v=>P.t+(1-Math.min(v,yMax)/yMax)*(h-P.t-P.b);
   // y gridlines + threshold dashes
@@ -1859,6 +1869,7 @@ function drawDepthChart(){
 function drawDepthHistChart(){
   const cv=document.getElementById('chart-depthhist'); const {ctx,w,h}=cvSetup(cv);
   const P={l:46,r:12,t:10,b:36}; const NB=8;   // 0–10 … 70–80 % WT
+  plotBg(ctx,P,w,h);
   const ext=new Array(NB).fill(0), int=new Array(NB).fill(0);
   REPORT_FEATURES.forEach(a=>{ if(a.depth==null||a.type==='dent smooth'||!chPass(a))return; const i=Math.min(NB-1,Math.floor(a.depth/10)); (a.location==='Internal'?int:ext)[i]++; });
   const yMax=Math.max(1,...ext.map((e,i)=>e+int[i]));
@@ -1895,6 +1906,7 @@ function buildTypeChips(){
 function drawTypeChart(){
   const cv=document.getElementById('chart-type'); const {ctx,w,h}=cvSetup(cv);
   const P={l:92,r:34,t:8,b:34};
+  plotBg(ctx,P,w,h);
   const ext={},int={};
   REPORT_FEATURES.forEach(a=>{ if(a.type==='dent smooth'||!chPass(a)||!a.dim)return;
     const m=a.location==='Internal'?int:ext; m[a.dim]=(m[a.dim]||0)+1; });
@@ -1914,7 +1926,7 @@ function drawTypeChart(){
     ctx.fillStyle=EXT_COL; ctx.globalAlpha=.85; ctx.fillRect(P.l,cy-barH/2,we,barH);
     ctx.fillStyle=INT_COL; ctx.fillRect(P.l+we,cy-barH/2,wn,barH);
     ctx.globalAlpha=1;
-    ctx.fillStyle='rgba(236,230,217,.6)'; ctx.textAlign='left'; ctx.fillText(e+n,P.l+we+wn+5,cy);
+    ctx.fillStyle=AXIS_TITLE_COL; ctx.textAlign='left'; ctx.fillText(e+n,P.l+we+wn+5,cy);
   });
   axisFrame(ctx,P,w,h); axisTitles(ctx,P,w,h,'Feature Count','');
 }
@@ -1922,6 +1934,7 @@ function drawTypeChart(){
 function drawErfChart(){
   const cv=document.getElementById('chart-erf'); const {ctx,w,h}=cvSetup(cv);
   const P={l:46,r:12,t:10,b:36}; const [d0,d1]=distExtent();
+  plotBg(ctx,P,w,h);
   let maxErf=0; REPORT_FEATURES.forEach(a=>{ if(a.erf!=null&&chPass(a)&&a.erf>maxErf)maxErf=a.erf; });
   const yMax=Math.max(0.3,Math.ceil(maxErf*10)/10);
   const X=d=>P.l+(d-d0)/(d1-d0)*(w-P.l-P.r);
@@ -1947,6 +1960,7 @@ function drawErfChart(){
 function drawDensityChart(){
   const cv=document.getElementById('chart-density'); const {ctx,w,h}=cvSetup(cv);
   const P={l:46,r:12,t:10,b:36}; const [d0,d1]=distExtent(); const BIN=50;
+  plotBg(ctx,P,w,h);
   const n=Math.ceil((d1-d0)/BIN); const ext=new Array(n).fill(0), int=new Array(n).fill(0);
   REPORT_FEATURES.forEach(a=>{ if(a.type==='dent smooth'||!chPass(a))return; const i=Math.min(n-1,Math.floor((a.dist-d0)/BIN)); (a.location==='Internal'?int:ext)[i]++; });
   const yMax=Math.max(1,...ext.map((e,i)=>e+int[i]));
@@ -1970,13 +1984,14 @@ function drawDensityChart(){
 function drawOrientChart(){
   const cv=document.getElementById('chart-orient'); const {ctx,w,h}=cvSetup(cv);
   const P={l:46,r:12,t:10,b:36}; const [d0,d1]=distExtent();
+  plotBg(ctx,P,w,h);
   const X=d=>P.l+(d-d0)/(d1-d0)*(w-P.l-P.r);
   const Y=c=>P.t+(c/12)*(h-P.t-P.b);   // 0=12:00 top, 6=6:00 center, 12=12:00 bottom
   ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
   [[0,'12'],[3,'3'],[6,'6'],[9,'9'],[12,'12']].forEach(([c,lbl])=>{
     const y=Y(c); ctx.strokeStyle=c===6?'rgba(94,169,217,.22)':GRID;
     ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();
-    ctx.fillStyle=c===6?'rgba(236,230,217,.6)':AXTX; ctx.fillText(lbl,P.l-5,y);
+    ctx.fillStyle=c===6?AXIS_TITLE_COL:AXTX; ctx.fillText(lbl,P.l-5,y);
   });
   REPORT_FEATURES.forEach(a=>{
     const c=orientClock(a.orient); if(c==null||!chPass(a)) return;
@@ -1992,6 +2007,7 @@ function drawOrientChart(){
 function drawRoseChart(){
   const cv=document.getElementById('chart-rose'); const {ctx,w,h}=cvSetup(cv);
   const P={l:46,r:12,t:10,b:36};
+  plotBg(ctx,P,w,h);
   const ext=new Array(12).fill(0), int=new Array(12).fill(0);
   REPORT_FEATURES.forEach(a=>{ const c=orientClock(a.orient); if(c==null||!chPass(a))return; const i=Math.floor(c)%12; (a.location==='Internal'?int:ext)[i]++; });
   const yMax=Math.max(1,...ext.map((e,i)=>e+int[i]));
@@ -2022,6 +2038,7 @@ function pmClamp(){ const [d0,d1]=distExtent(); pmWinWidth=Math.min(pmWinWidth,d
 function drawPipeOverview(){
   const cv=document.getElementById('pm-overview'); const {ctx,w,h}=cvSetup(cv);
   const [d0,d1]=distExtent(); const P={l:PM_L,r:PM_R,t:6,b:15};
+  plotBg(ctx,P,w,h);
   const X=d=>P.l+(d-d0)/(d1-d0)*(w-P.l-P.r), Yc=c=>P.t+(c/12)*(h-P.t-P.b);
   ctx.strokeStyle=GRID; ctx.beginPath();ctx.moveTo(P.l,Yc(6));ctx.lineTo(w-P.r,Yc(6));ctx.stroke();
   REPORT_FEATURES.filter(a=>a.type!=='dent smooth'&&chPass(a)).sort((a,b)=>(a.depth||0)-(b.depth||0)).forEach(a=>{
@@ -2043,11 +2060,12 @@ function drawPipeOverview(){
 function drawPipeDetail(){
   const cv=document.getElementById('pm-detail'); const {ctx,w,h}=cvSetup(cv);
   pmClamp(); const ws=pmWinStart, we=pmWinStart+pmWinWidth; const P={l:PM_L,r:PM_R,t:10,b:36};
+  plotBg(ctx,P,w,h);
   const X=d=>P.l+(d-ws)/(we-ws)*(w-P.l-P.r), Yc=c=>P.t+(c/12)*(h-P.t-P.b);
   ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
   [[0,'12'],[3,'3'],[6,'6'],[9,'9'],[12,'12']].forEach(([c,l])=>{ const y=Yc(c);
     ctx.strokeStyle=c===6?'rgba(94,169,217,.22)':GRID; ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();
-    ctx.fillStyle=c===6?'rgba(236,230,217,.6)':AXTX; ctx.fillText(l,P.l-5,y); });
+    ctx.fillStyle=c===6?AXIS_TITLE_COL:AXTX; ctx.fillText(l,P.l-5,y); });
   const inWin=REPORT_FEATURES.filter(a=>a.type!=='dent smooth'&&chPass(a)&&(a.dist+a.axLen/2000)>=ws&&(a.dist-a.axLen/2000)<=we);
   let hl=null; pmBoxes=[];
   inWin.sort((a,b)=>(a.depth||0)-(b.depth||0)).forEach(a=>{
@@ -2099,9 +2117,9 @@ function drawPipeDetail(){
       ctx.textAlign='left'; ctx.textBaseline='top';
       const lw=Math.max(...lines.map(t=>ctx.measureText(t).width))+12, lh=lines.length*13+8;
       let bx=(x1+x2)/2+10, by=(y1+y2)/2+8; if(bx+lw>w-P.r)bx=(x1+x2)/2-lw-10; if(by+lh>h-P.b)by=h-P.b-lh-2;
-      ctx.fillStyle='rgba(8,11,17,0.94)'; ctx.fillRect(bx,by,lw,lh);
+      ctx.fillStyle=MEASURE_TIP_BG; ctx.fillRect(bx,by,lw,lh);
       ctx.strokeStyle='rgba(108,196,238,.55)'; ctx.lineWidth=1; ctx.strokeRect(bx+.5,by+.5,lw-1,lh-1);
-      ctx.fillStyle='#dfeefb'; lines.forEach((t,i)=>ctx.fillText(t,bx+6,by+6+i*13));
+      ctx.fillStyle=MEASURE_TIP_TXT; lines.forEach((t,i)=>ctx.fillText(t,bx+6,by+6+i*13));
     }
   }
 }
