@@ -3,7 +3,7 @@
 **Engineering & Maintenance Department**  
 PTT Oil and Retail Business Public Company Limited
 
-An interactive web-based map for visualising In-Line Inspection (ILI) anomaly data from the 18-inch T61 to Sea Berth pipeline (2.7 km). Built for internal engineering reviews and meeting presentations — fully self-hosted (Leaflet + fonts are vendored locally), so the only network dependency is the live map tile imagery.
+An interactive web-based map for visualising In-Line Inspection (ILI) anomaly data from the 18-inch T61 to Sea Berth pipeline (2.7 km). Built for internal engineering reviews and meeting presentations. Leaflet and the UI font are vendored locally, but the UI is themed with **Tailwind CSS via the Play CDN**, so the app now needs internet on load (for Tailwind and the live map tiles) and is no longer fully offline-capable — see [Offline note](#offline-note) below.
 
 ---
 
@@ -35,7 +35,7 @@ repository/
   README.md           -- This file
 ```
 
-All files must stay in the same relative layout. `data.js` is loaded by `index.html` via `<script src="data.js">`, and `vendor/` is loaded via local `<link>`/`<script>` tags — there is no CDN dependency for the app shell, only for the live satellite/street map tiles.
+All files must stay in the same relative layout. `data.js` is loaded by `index.html` via `<script src="data.js">`, and `vendor/` is loaded via local `<link>`/`<script>` tags. The one remaining app-shell CDN dependency is **Tailwind CSS (Play CDN)**, loaded in `<head>`; map tiles are the other live dependency. See the [Offline note](#offline-note).
 
 To update anomaly data for a future ILI run, **only edit `data.js`** — the HTML never needs to change.
 
@@ -173,11 +173,17 @@ To update for a future inspection, replace `ANOMALIES`, `DENTS`, `ROUTE`, and `R
 | Library | Version | Purpose |
 |---|---|---|
 | Leaflet.js | 1.9.4 | Map rendering, markers, tooltips, coordinate projection — vendored locally in `vendor/leaflet/` |
+| Tailwind CSS | Play CDN | Theme tokens + utilities — loaded from `https://cdn.tailwindcss.com` (live, requires internet; prints a "not for production" console notice) |
 | Esri World Imagery | -- | Satellite tile layer (live, requires internet) |
 | OpenStreetMap | -- | Street map tile layer (live, requires internet) |
 | Google Sans | -- | UI typography — vendored locally in `vendor/fonts/` (latin-subset variable woff2, ~70 KB total) |
 
-No build tools, no frameworks, no npm. Pure HTML, CSS, and JavaScript — everything except the live map tiles is self-hosted, so the app keeps working with no internet access (e.g. aboard a survey vessel or in a site office).
+No build tools, no npm — pure HTML, CSS, and JavaScript.
+
+<a id="offline-note"></a>
+### Offline note
+
+Leaflet and the font are vendored, but the app references the **Tailwind Play CDN**, so it now needs internet on load and is no longer guaranteed to work offline (e.g. aboard a survey vessel or in a site office). The visual styling itself lives in the inline `<style>` block (a slate CSS-variable design system), so the page still renders fully styled even if the Tailwind CDN is blocked — Tailwind currently only supplies theme tokens for future use. To restore true offline operation, either delete the Tailwind `<script>` from `<head>` (the inline styles stand alone) or compile Tailwind to a vendored CSS file with the Tailwind CLI.
 
 ---
 
