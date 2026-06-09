@@ -241,26 +241,24 @@ html,body{height:100%;overflow:hidden;background:var(--bg);
   padding:4px 11px;border-radius:9px;font-size:11px;font-weight:500;letter-spacing:.3px;
   border:1px solid transparent;color:var(--text2);cursor:pointer;background:transparent;
   transition:background .15s ease,color .15s ease,transform 120ms ease-out;
-  display:flex;align-items:center;gap:5px;
+  display:flex;align-items:center;gap:0;
   overflow:hidden;
 }
 .chip::before{
   content:'✓';
   font-size:11px;font-weight:700;
   color:var(--blue2);
-  max-width:0;opacity:0;
-  display:inline-block;
+  display:none;
   transform:scale(.5) rotate(-20deg);
-  transition:max-width .2s ease,opacity .18s ease,transform .2s cubic-bezier(.34,1.56,.64,1),margin-right .2s ease;
-  margin-right:0;
-  overflow:hidden;
-  white-space:nowrap;
+  transition:opacity .18s ease,transform .2s cubic-bezier(.34,1.56,.64,1);
+  opacity:0;
   flex-shrink:0;
 }
 .chip.active:not(.pm-w)::before{
-  max-width:14px;opacity:1;
+  display:inline-block;
+  opacity:1;
   transform:scale(1) rotate(0deg);
-  margin-right:2px;
+  margin-right:4px;
 }
 .chip:hover{color:var(--text);background:rgba(148,163,184,.08);}
 .chip:active{transform:scale(.97);}
@@ -295,16 +293,15 @@ input[type=range]::-moz-range-track{background:transparent;}
   content:'✓';
   font-size:11px;font-weight:700;
   color:var(--blue2);
-  max-width:0;opacity:0;
-  display:inline-block;
+  display:none;
   transform:scale(.5) rotate(-20deg);
-  transition:max-width .2s ease,opacity .18s ease,transform .2s cubic-bezier(.34,1.56,.64,1),margin-right .2s ease;
-  margin-right:0;
-  overflow:hidden;
-  white-space:nowrap;
+  transition:opacity .18s ease,transform .2s cubic-bezier(.34,1.56,.64,1);
+  opacity:0;
+  flex-shrink:0;
 }
 .lpill.on::before{
-  max-width:14px;opacity:1;
+  display:inline-block;
+  opacity:1;
   transform:scale(1) rotate(0deg);
   margin-right:5px;
 }
@@ -556,9 +553,9 @@ input[type=range]::-moz-range-track{background:transparent;}
   overflow:hidden;}
 #reports-head{display:flex;align-items:center;gap:14px;padding:14px 18px;
   border-bottom:1px solid var(--border);flex-shrink:0;}
-#reports-head .rtitle{font-family:var(--display);font-style:italic;font-size:16px;font-weight:600;color:var(--text);
+#reports-head .rtitle{font-family:var(--display);font-style:italic;font-size:18px;font-weight:600;color:var(--text);
   display:flex;align-items:center;gap:9px;letter-spacing:.2px;}
-#reports-head .rsub{font-size:11px;color:var(--text2);letter-spacing:.5px;}
+#reports-head .rsub{font-size:12px;color:var(--text2);letter-spacing:.5px;}
 #reports-fs,#reports-close{width:32px;height:32px;flex-shrink:0;border-radius:9px;
   background:rgba(148,163,184,.06);border:1px solid var(--border2);color:var(--text2);
   font-size:14px;line-height:1;cursor:pointer;
@@ -570,7 +567,7 @@ input[type=range]::-moz-range-track{background:transparent;}
 #reports-fs:active,#reports-close:active{transform:scale(.94);}
 #reports-modal:fullscreen{width:100%;height:100%;max-width:none;max-height:none;border-radius:0;background:var(--bg);}
 .rtabs{display:flex;gap:4px;padding:10px 18px 0;border-bottom:1px solid var(--border);flex-shrink:0;}
-.rtab{padding:9px 16px;font-family:var(--sans);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;
+.rtab{padding:9px 16px;font-family:var(--sans);font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;
   background:none;border:1px solid transparent;border-bottom:none;border-radius:10px 10px 0 0;
   transition:background .18s ease,color .18s ease;display:flex;align-items:center;gap:7px;}
 .rtab:hover{color:var(--text);background:rgba(148,163,184,.08);}
@@ -585,28 +582,28 @@ input[type=range]::-moz-range-track{background:transparent;}
 #rtable-toolbar .rchips{display:flex;gap:5px;flex-wrap:wrap;}
 #rtable-search-wrap{position:relative;flex:1 1 200px;min-width:160px;max-width:280px;}
 #rtable-search-wrap .rsearch-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);
-  color:var(--text3);font-size:12px;pointer-events:none;}
+  color:var(--text3);font-size:13px;pointer-events:none;}
 #rtable-search{width:100%;background:rgba(148,163,184,.06);border:1px solid var(--border);
   border-radius:10px;color:var(--text);padding:7px 10px 7px 30px;
-  font-size:11px;outline:none;font-family:var(--sans);transition:border-color .2s,background .2s,box-shadow .2s;}
+  font-size:12px;outline:none;font-family:var(--sans);transition:border-color .2s,background .2s,box-shadow .2s;}
 #rtable-search::placeholder{color:var(--text3);}
 #rtable-search:focus-visible{border-color:var(--blue);background:rgba(59,130,246,.07);box-shadow:0 0 0 2px rgba(59,130,246,.4);}
-#rtable-count{font-size:11px;color:var(--text2);font-variant-numeric:tabular-nums;}
+#rtable-count{font-size:12px;color:var(--text2);font-variant-numeric:tabular-nums;}
 #rexport-btn{margin-left:auto;display:flex;align-items:center;gap:6px;padding:8px 15px;
-  font-family:var(--sans);font-size:11px;font-weight:500;color:var(--blue2);cursor:pointer;
+  font-family:var(--sans);font-size:12px;font-weight:500;color:var(--blue2);cursor:pointer;
   background:rgba(59,130,246,.12);border:1px solid var(--blue);border-radius:10px;
   transition:background .18s ease,color .18s ease;}
 #rexport-btn:hover{background:rgba(59,130,246,.20);}
 #rexport-btn:active{transform:scale(.97);}
 .rtable-wrap{border:1px solid var(--border);border-radius:12px;overflow:auto;max-height:calc(100% - 50px);}
-table.rtable{width:100%;border-collapse:collapse;font-size:11px;font-variant-numeric:tabular-nums;}
+table.rtable{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;}
 table.rtable thead th{position:sticky;top:0;z-index:2;background:#0f172a;color:var(--text2);
-  font-weight:600;text-align:right;padding:9px 10px;white-space:nowrap;cursor:pointer;
-  border-bottom:1px solid var(--border2);user-select:none;letter-spacing:.3px;}
+  font-weight:600;text-align:right;padding:10px 11px;white-space:nowrap;cursor:pointer;
+  border-bottom:1px solid var(--border2);user-select:none;letter-spacing:.3px;font-size:12px;}
 table.rtable thead th:first-child,table.rtable thead th.tl{text-align:left;}
 table.rtable thead th:hover{color:var(--blue2);}
-table.rtable thead th .arrow{color:var(--blue);margin-left:3px;font-size:9px;}
-table.rtable tbody td{text-align:right;padding:7px 10px;white-space:nowrap;color:var(--text);
+table.rtable thead th .arrow{color:var(--blue);margin-left:3px;font-size:10px;}
+table.rtable tbody td{text-align:right;padding:8px 11px;white-space:nowrap;color:var(--text);
   border-bottom:1px solid rgba(148,163,184,.05);}
 table.rtable tbody td.tl{text-align:left;}
 table.rtable tbody tr:hover{background:rgba(59,130,246,.06);}
@@ -621,7 +618,7 @@ table.rtable tbody tr{cursor:pointer;}
 /* grouped filter segments: [label] [control]  |  [label] [control] */
 .rcf-group{display:flex;align-items:center;gap:10px;}
 .rcf-group .rchips{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.rcf-label{font-size:10px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;
+.rcf-label{font-size:11px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;
   color:var(--text3);white-space:nowrap;}
 .rcf-div{align-self:stretch;width:1px;min-height:22px;background:var(--border2);flex-shrink:0;}
 .rchart-depth{gap:11px;}
@@ -630,32 +627,40 @@ table.rtable tbody tr{cursor:pointer;}
   white-space:nowrap;min-width:48px;}
 .rchart-types{align-items:center;flex-wrap:wrap;}
 .rchart-types #chip-types{display:flex;flex-wrap:wrap;gap:6px;}
-.rchart-types .chip{padding:4px 9px;font-size:10px;}
+.rchart-types .chip{padding:4px 10px;font-size:11px;}
 .rcd-label{font-size:11px;color:var(--text2);white-space:nowrap;}
 .rcd-label b{color:var(--blue2);font-variant-numeric:tabular-nums;}
-.rchart-grid{display:grid;grid-template-columns:1fr;gap:16px;}
-.rchart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;
-  padding:14px 16px 16px;display:flex;flex-direction:column;position:relative;
-  box-shadow:0 1px 2px rgba(0,0,0,.3);}
-.rchart-card .rc-title{font-size:12px;color:var(--text);font-weight:600;margin-bottom:2px;}
-.rchart-card .rc-sub{font-size:10px;color:var(--text3);margin-bottom:10px;line-height:1.4;padding-right:30px;}
-.rchart-card canvas{width:100%;height:300px;display:block;}
+.rchart-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.rchart-grid.single-col{grid-template-columns:1fr;}
+.rchart-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
+  padding:18px 18px 14px;display:flex;flex-direction:column;position:relative;
+  box-shadow:0 4px 24px rgba(0,0,0,.35);transition:box-shadow .2s ease;}
+.rchart-card:hover{box-shadow:0 6px 32px rgba(0,0,0,.5);}
+.rchart-card .rc-title{font-size:14px;color:var(--text);font-weight:700;margin-bottom:3px;letter-spacing:-.1px;}
+.rchart-card .rc-sub{font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.5;padding-right:30px;}
+.rchart-card canvas{width:100%;height:300px;display:block;border-radius:8px;}
+.rchart-card .rc-kpi-row{display:flex;gap:18px;margin-bottom:12px;flex-wrap:wrap;}
+.rc-kpi{display:flex;flex-direction:column;gap:1px;}
+.rc-kpi .rc-kpi-v{font-size:22px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums;line-height:1;}
+.rc-kpi .rc-kpi-l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-top:2px;}
 /* Pipe development (unrolled) damage map — overview strip + detail section */
-#pm-overview{height:72px;cursor:ew-resize;touch-action:none;}
-#pm-detail{height:min(520px,72vh);cursor:grab;touch-action:none;}
+#pm-overview{height:56px;cursor:ew-resize;touch-action:none;}
+#pm-detail{height:min(380px,55vh);cursor:grab;touch-action:none;}
 #pm-detail:active{cursor:grabbing;}
 .pm-toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:9px 0 2px;}
-.pm-w{font-size:10px;padding:4px 9px;}
+.pm-w{font-size:11px;padding:5px 10px;}
 /* single-select window presets — solid accent fill (hybrid) */
 .pm-w.active{background:var(--sel-bg);color:var(--sel-txt);font-weight:600;}
 .pm-w.active:hover{background:var(--sel-bg);color:var(--sel-txt);}
-.pm-card:fullscreen #pm-overview{flex:0 0 72px;height:72px;}
+.pm-card:fullscreen #pm-overview{flex:0 0 56px;height:56px;}
 .pm-card:fullscreen #pm-detail{flex:1 1 auto;height:auto;min-height:0;}
 .rc-tip{position:absolute;display:none;pointer-events:none;z-index:6;
-  background:var(--glass2);border:1px solid var(--border2);border-radius:8px;
-  padding:6px 9px;font-size:11px;color:var(--text);white-space:nowrap;line-height:1.5;
-  box-shadow:0 6px 20px rgba(0,0,0,.5);font-variant-numeric:tabular-nums;}
+  background:#0b1628;border:1px solid rgba(147,197,253,.2);border-radius:10px;
+  padding:8px 12px;font-size:11px;color:var(--text);white-space:nowrap;line-height:1.6;
+  box-shadow:0 8px 32px rgba(0,0,0,.7),0 0 0 1px rgba(59,130,246,.08);font-variant-numeric:tabular-nums;}
 .rc-tip b{color:var(--blue2);}
+.rc-tip .tip-id{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.rc-tip .tip-sep{display:block;height:1px;background:rgba(148,163,184,.12);margin:5px 0;}
 .rc-fs{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:8px;
   background:rgba(148,163,184,.06);border:1px solid var(--border2);color:var(--text2);
   font-size:11px;line-height:1;cursor:pointer;
@@ -664,13 +669,13 @@ table.rtable tbody tr{cursor:pointer;}
 .rc-fs:hover{background:rgba(59,130,246,.16);color:var(--blue2);border-color:var(--blue);}
 .rc-fs:active{transform:scale(.92);}
 .rchart-card:fullscreen{background:var(--bg);padding:24px 34px 22px;justify-content:flex-start;}
-.rchart-card:fullscreen .rc-title{font-size:16px;}
-.rchart-card:fullscreen .rc-sub{font-size:11px;}
+.rchart-card:fullscreen .rc-title{font-size:20px;}
+.rchart-card:fullscreen .rc-sub{font-size:13px;}
 .rchart-card:fullscreen canvas{flex:1;height:auto;min-height:0;}
 .rchart-card:fullscreen .rc-fs{top:18px;right:18px;width:30px;height:30px;font-size:14px;}
-.rc-legend{display:flex;gap:14px;margin-top:8px;font-size:10px;color:var(--text2);flex-wrap:wrap;}
-.rc-legend span{display:flex;align-items:center;gap:5px;}
-.rc-legend i{width:10px;height:10px;border-radius:2px;display:inline-block;}
+.rc-legend{display:flex;gap:16px;margin-top:10px;font-size:11px;color:var(--text2);flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--border);}
+.rc-legend span{display:flex;align-items:center;gap:6px;font-weight:500;}
+.rc-legend i{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0;}
 @media (max-width:880px){
   .rchart-grid{grid-template-columns:1fr;}
   #reports-overlay{padding:0;}
@@ -681,7 +686,7 @@ table.rtable tbody tr{cursor:pointer;}
   .rtabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
     padding:8px 12px 0;scrollbar-width:none;}
   .rtabs::-webkit-scrollbar{display:none;}
-  .rtab{flex:0 0 auto;white-space:nowrap;padding:8px 12px;font-size:11px;}
+  .rtab{flex:0 0 auto;white-space:nowrap;padding:8px 12px;font-size:12px;}
 }
 
 /* REDUCED MOTION — keep opacity fades, drop transform-based motion */
@@ -930,7 +935,7 @@ table.rtable tbody tr{cursor:pointer;}
 
     <!-- CHART: PIPE DEVELOPMENT (own tab) -->
     <div class="rpane" id="pane-pipemap">
-      <div class="rchart-grid">
+      <div class="rchart-grid single-col">
         <div class="rchart-card pm-card">
           <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
           <div class="rc-title">Pipe Development — Unrolled Damage Map</div>
@@ -962,7 +967,7 @@ table.rtable tbody tr{cursor:pointer;}
 
     <!-- CHARTS: ALONG DISTANCE (everything plotted against chainage) -->
     <div class="rpane" id="pane-distance">
-      <div class="rchart-grid">
+      <div class="rchart-grid single-col">
         <div class="rchart-card">
           <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
           <div class="rc-title">Wall Loss vs. Distance</div>
@@ -1008,7 +1013,7 @@ table.rtable tbody tr{cursor:pointer;}
 
     <!-- CHARTS: DISTRIBUTIONS (plotted against depth / size / orientation, not distance) -->
     <div class="rpane" id="pane-profiles">
-      <div class="rchart-grid">
+      <div class="rchart-grid single-col">
         <div class="rchart-card">
           <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
           <div class="rc-title">Depth Distribution (Severity Profile)</div>
@@ -1587,13 +1592,25 @@ function drawElev(){
   const cW=W-PAD.left-PAD.right,cH=H-PAD.top-PAD.bottom;
 
   // ── True pixel projection: use Leaflet's own map→screen transform ──
-  // For each ROUTE_PROFILE point, project lat/lon → map container pixel X,
-  // then linearly map that pixel range onto the chart canvas width.
-  // This is geometrically exact: if a point is at the map center, it will be
-  // at the chart center — regardless of zoom, pan, or projection warping.
+  // map.latLngToContainerPoint() returns pixel X relative to the Leaflet
+  // container (#map div).  The canvas sits inside #elev-canvas-wrap which
+  // has 14 px left+right padding, so the canvas is 28 px narrower than the
+  // map div and its left edge is offset 14 px to the right of the map's
+  // left edge.  Additionally PAD.left/right reserve space for axis labels.
+  // To keep the plot area visually aligned with the map we must shift and
+  // rescale the map-pixel coordinate so that:
+  //   map px = WRAP_PAD_L + PAD.left  → canvas X = PAD.left  (plot left)
+  //   map px = mapW − WRAP_PAD_R − PAD.right → canvas X = PAD.left + cW  (plot right)
+  // i.e. we normalise over the map pixel range that corresponds to the
+  // canvas plot area, not over the full [0, mapW] range.
 
-  // Get map container pixel width for normalisation
   const mapW = map.getSize().x;
+  const WRAP_PAD_L = 14;   // #elev-canvas-wrap padding-left  (px)
+  const WRAP_PAD_R = 14;   // #elev-canvas-wrap padding-right (px)
+  // Map-pixel X that aligns with the left / right edge of the canvas plot area
+  const mapPlotL = WRAP_PAD_L + PAD.left;            // e.g. 60 px
+  const mapPlotR = mapW - WRAP_PAD_R - PAD.right;    // e.g. mapW − 34 px
+  const mapPlotW = mapPlotR - mapPlotL;               // map pixels spanning the plot
 
   // Project every ROUTE_PROFILE point to a map pixel X
   const rpProjected = ROUTE_PROFILE.map(p => {
@@ -1601,10 +1618,8 @@ function drawElev(){
     return { dist: p.dist, alt: p.alt, px };
   });
 
-  // Chart X: linearly map [0, mapW] → [PAD.left+cW, PAD.left]
-  // (reversed because pipeline goes East→West: T61 right, Sea Berth left)
+  // Chart X: map pixel → canvas plot X, aligned to the map
   function toX(dist) {
-    // Find this dist's map pixel X by interpolating rpProjected
     let px;
     for(let i=0;i<rpProjected.length-1;i++){
       const a=rpProjected[i],b=rpProjected[i+1];
@@ -1615,17 +1630,16 @@ function drawElev(){
       }
     }
     if(px===undefined){
-      // Clamp: extrapolate from nearest end
       if(dist<=rpProjected[0].dist) px=rpProjected[0].px;
       else px=rpProjected[rpProjected.length-1].px;
     }
-    // Map pixel X [0,mapW] → canvas X [PAD.left, PAD.left+cW]
-    return PAD.left + (px/mapW)*cW;
+    // Rescale: map pixel range [mapPlotL, mapPlotR] → canvas [PAD.left, PAD.left+cW]
+    return PAD.left + (px - mapPlotL) / mapPlotW * cW;
   }
 
-  // For hover/click: need dist from canvas X — build reverse lookup
+  // For hover/click: invert toX — canvas plot X → map pixel → nearest dist
   function xToDist(canvasX) {
-    const targetPx = ((canvasX-PAD.left)/cW)*mapW;
+    const targetPx = (canvasX - PAD.left) / cW * mapPlotW + mapPlotL;
     let best=null,bestD=Infinity;
     rpProjected.forEach(p=>{
       const d=Math.abs(p.px-targetPx);
@@ -1656,7 +1670,7 @@ function drawElev(){
   ctx.strokeStyle='rgba(90,200,250,0.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
   ctx.beginPath();ctx.moveTo(PAD.left,slY);ctx.lineTo(PAD.left+cW,slY);ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle='rgba(90,200,250,0.55)';ctx.font="9px 'Google Sans',sans-serif";ctx.textAlign='right';
+  ctx.fillStyle='rgba(90,200,250,0.55)';ctx.font="11px 'Google Sans',sans-serif";ctx.textAlign='right';
   ctx.fillText('0 m',PAD.left-4,slY+3);
 
   // Y grid & labels
@@ -1664,7 +1678,7 @@ function drawElev(){
     const y=toY(alt);if(y<PAD.top||y>PAD.top+cH)return;
     ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(PAD.left,y);ctx.lineTo(PAD.left+cW,y);ctx.stroke();
-    ctx.fillStyle='rgba(235,235,245,0.3)';ctx.font="9px 'Google Sans',sans-serif";ctx.textAlign='right';
+    ctx.fillStyle='rgba(235,235,245,0.3)';ctx.font="11px 'Google Sans',sans-serif";ctx.textAlign='right';
     ctx.fillText(`${alt}m`,PAD.left-4,y+3);
   });
 
@@ -1675,13 +1689,13 @@ function drawElev(){
   for(let d=firstTick;d<=viewMaxD+1;d+=step){
     const x=toX(d);
     if(x<PAD.left-1||x>PAD.left+cW+1) continue;
-    ctx.fillStyle='rgba(235,235,245,0.3)';ctx.font="9px 'Google Sans',sans-serif";ctx.textAlign='center';
+    ctx.fillStyle='rgba(235,235,245,0.3)';ctx.font="11px 'Google Sans',sans-serif";ctx.textAlign='center';
     ctx.fillText(d>=1000?(d/1000).toFixed(1)+'km':d+'m',x,PAD.top+cH+16);
     ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(x,PAD.top);ctx.lineTo(x,PAD.top+cH);ctx.stroke();
   }
   // End labels
-  ctx.font="bold 9px 'Google Sans',sans-serif";ctx.fillStyle='rgba(90,200,250,0.6)';
+  ctx.font="bold 11px 'Google Sans',sans-serif";ctx.fillStyle='rgba(90,200,250,0.6)';
   ctx.textAlign='left'; ctx.fillText('⚓ Sea Berth',PAD.left+2,PAD.top+10);
   ctx.textAlign='right';ctx.fillText('🏭 T61 →',PAD.left+cW-2,PAD.top+10);
 
@@ -1976,10 +1990,11 @@ function exportReportCSV(){
 
 // ── Charts ────────────────────────────────────────────────
 let chExt=true, chInt=true, chMinDepth=0, chTypes=null;
-const featType = a => a.type==='dent smooth' ? 'Dent' : a.dim;   // dents have no POF dim
+const featType = a => a.type==='dent smooth' ? 'Dent' : a.dim;
 const chPass = a => (a.location==='External'?chExt:a.location==='Internal'?chInt:true)
-                 && (a.type==='dent smooth' || (a.depth||0)>=chMinDepth)   // dent depth is % OD, not % WT
+                 && (a.type==='dent smooth' || (a.depth||0)>=chMinDepth)
                  && (!featType(a) || !chTypes || chTypes.has(featType(a)));
+
 function cvSetup(cv){
   const dpr=window.devicePixelRatio||1;
   const w=cv.clientWidth, h=cv.clientHeight;
@@ -1989,88 +2004,387 @@ function cvSetup(cv){
   ctx.clearRect(0,0,w,h);
   return {ctx,w,h};
 }
-const GRID='rgba(148,163,184,0.10)', AXTX='rgba(148,163,184,0.42)';
-const PLOT_BG_COL='rgba(4,6,10,0.55)', AXIS_TITLE_COL='rgba(148,163,184,0.6)';
+
+// ── Design tokens ─────────────────────────────────────────
+const GRID        = 'rgba(148,163,184,0.07)';
+const GRID_STRONG = 'rgba(148,163,184,0.14)';
+const AXTX        = 'rgba(148,163,184,0.55)';
+const AXIS_TITLE_COL = 'rgba(148,163,184,0.7)';
+const FONT_TICK   = "500 10.5px 'Google Sans',sans-serif";
+const FONT_LABEL  = "600 11px 'Google Sans',sans-serif";
+const FONT_TITLE  = "600 11px 'Google Sans',sans-serif";
 const MEASURE_TIP_BG='rgba(8,11,17,0.94)', MEASURE_TIP_TXT='#dfeefb';
-// Plot area is filled darker than the surrounding card so the data
-// region reads as a distinct surface — without this the transparent canvas
-// just shows the page background through it, nearly identical to the card tint.
+// Ext / Int gradient stops
+const EXT_GRAD_TOP='rgba(255,159,10,0.9)', EXT_GRAD_BOT='rgba(255,159,10,0.35)';
+const INT_GRAD_TOP='rgba(108,196,238,0.9)', INT_GRAD_BOT='rgba(108,196,238,0.35)';
+
 function plotBg(ctx,P,w,h){
-  ctx.fillStyle=PLOT_BG_COL;
-  ctx.fillRect(P.l,P.t,w-P.l-P.r,h-P.t-P.b);
+  // Subtle gradient background — darkest at bottom, slight blue tint at top
+  const g=ctx.createLinearGradient(0,P.t,0,P.t+(h-P.t-P.b));
+  g.addColorStop(0,'rgba(15,23,42,0.7)');
+  g.addColorStop(1,'rgba(4,6,12,0.85)');
+  ctx.fillStyle=g;
+  // Rounded plot area
+  const r=6, pl=P.l,pt=P.t,pw=w-P.l-P.r,ph=h-P.t-P.b;
+  ctx.beginPath();
+  ctx.moveTo(pl+r,pt); ctx.lineTo(pl+pw-r,pt);
+  ctx.arcTo(pl+pw,pt,pl+pw,pt+r,r);
+  ctx.lineTo(pl+pw,pt+ph-r);
+  ctx.arcTo(pl+pw,pt+ph,pl+pw-r,pt+ph,r);
+  ctx.lineTo(pl+r,pt+ph);
+  ctx.arcTo(pl,pt+ph,pl,pt+ph-r,r);
+  ctx.lineTo(pl,pt+r);
+  ctx.arcTo(pl,pt,pl+r,pt,r);
+  ctx.closePath();
+  ctx.fill();
 }
+
 function axisFrame(ctx,P,w,h){
-  ctx.strokeStyle=GRID; ctx.lineWidth=1;
-  ctx.strokeRect(P.l+.5,P.t+.5,w-P.l-P.r-1,h-P.t-P.b-1);
+  ctx.strokeStyle='rgba(148,163,184,0.12)'; ctx.lineWidth=1;
+  const r=6,pl=P.l,pt=P.t,pw=w-P.l-P.r,ph=h-P.t-P.b;
+  ctx.beginPath();
+  ctx.moveTo(pl+r,pt); ctx.lineTo(pl+pw-r,pt);
+  ctx.arcTo(pl+pw,pt,pl+pw,pt+r,r);
+  ctx.lineTo(pl+pw,pt+ph-r);
+  ctx.arcTo(pl+pw,pt+ph,pl+pw-r,pt+ph,r);
+  ctx.lineTo(pl+r,pt+ph);
+  ctx.arcTo(pl,pt+ph,pl,pt+ph-r,r);
+  ctx.lineTo(pl,pt+r);
+  ctx.arcTo(pl,pt,pl+r,pt,r);
+  ctx.closePath();
+  ctx.stroke();
 }
-// Axis titles: x centered below the tick row, y rotated up the left edge
+
 function axisTitles(ctx,P,w,h,xt,yt){
   ctx.save();
-  ctx.fillStyle=AXIS_TITLE_COL; ctx.font='600 9px monospace';
+  ctx.fillStyle=AXIS_TITLE_COL; ctx.font=FONT_TITLE;
   ctx.textAlign='center'; ctx.textBaseline='bottom';
-  ctx.fillText(xt, P.l+(w-P.l-P.r)/2, h-3);
-  ctx.translate(11, P.t+(h-P.t-P.b)/2);
-  ctx.rotate(-Math.PI/2);
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText(yt, 0, 0);
+  ctx.fillText(xt, P.l+(w-P.l-P.r)/2, h-2);
+  if(yt){
+    ctx.translate(12, P.t+(h-P.t-P.b)/2);
+    ctx.rotate(-Math.PI/2);
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(yt, 0, 0);
+  }
   ctx.restore();
 }
+
+// Rounded-top rectangle helper
+function roundedBar(ctx,x,y,bw,bh,r){
+  if(bh<=0)return;
+  r=Math.min(r,bh/2,bw/2);
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+bw-r,y);
+  ctx.arcTo(x+bw,y,x+bw,y+r,r);
+  ctx.lineTo(x+bw,y+bh);
+  ctx.lineTo(x,y+bh);
+  ctx.lineTo(x,y+r);
+  ctx.arcTo(x,y,x+r,y,r);
+  ctx.closePath();
+  ctx.fill();
+}
+
+// Glow dot for scatter charts
+function glowDot(ctx,px,py,col,alpha,r=3){
+  ctx.save();
+  ctx.globalAlpha=alpha*0.3;
+  ctx.fillStyle=col;
+  ctx.beginPath(); ctx.arc(px,py,r*2.8,0,7); ctx.fill();
+  ctx.globalAlpha=alpha;
+  ctx.fillStyle=col;
+  ctx.beginPath(); ctx.arc(px,py,r,0,7); ctx.fill();
+  ctx.restore();
+}
+
 const distExtent=()=>{const ds=REPORT_FEATURES.map(a=>a.dist);return [Math.min(...ds),Math.max(...ds)];};
 
+// ── Y-grid helper — draws horizontal gridlines + left tick labels ──────────
+function yGrid(ctx,P,w,vals,fmt,highlightSet){
+  ctx.font=FONT_TICK; ctx.textAlign='right'; ctx.textBaseline='middle';
+  vals.forEach(({v,y,strong,special})=>{
+    ctx.strokeStyle=special?'rgba(255,159,10,0.18)':strong?GRID_STRONG:GRID;
+    ctx.lineWidth=special?1.5:1;
+    ctx.setLineDash(special?[4,4]:[]);
+    ctx.beginPath(); ctx.moveTo(P.l,y); ctx.lineTo(w-P.r,y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=special?'rgba(255,159,10,0.7)':AXTX;
+    ctx.fillText(fmt?fmt(v):v, P.l-6, y);
+  });
+}
+
+// ── X-distance tick labels ─────────────────────────────────────────────────
+function xDistTicks(ctx,P,w,h,X,d0,d1){
+  ctx.font=FONT_TICK; ctx.textAlign='center'; ctx.textBaseline='top';
+  ctx.fillStyle=AXTX;
+  const step=((d1-d0)<=200)?25:((d1-d0)<=500)?50:((d1-d0)<=1000)?100:500;
+  for(let d=Math.ceil(d0/step)*step;d<=d1;d+=step){
+    const x=X(d); if(x<P.l||x>w-P.r) continue;
+    ctx.fillText(d>=1000?(d/1000).toFixed(1)+'k':d+'m', x, h-P.b+5);
+  }
+}
+
+// ── Ext/Int gradient fill factory ─────────────────────────────────────────
+function extGrad(ctx,y0,y1){ const g=ctx.createLinearGradient(0,y0,0,y1); g.addColorStop(0,EXT_GRAD_TOP); g.addColorStop(1,EXT_GRAD_BOT); return g; }
+function intGrad(ctx,y0,y1){ const g=ctx.createLinearGradient(0,y0,0,y1); g.addColorStop(0,INT_GRAD_TOP); g.addColorStop(1,INT_GRAD_BOT); return g; }
+
+// ══════════════════════════════════════════════════════════════════════════
+//  WALL LOSS vs. DISTANCE — scatter with depth-zone bands + glow dots
+// ══════════════════════════════════════════════════════════════════════════
 function drawDepthChart(){
   const cv=document.getElementById('chart-depth'); const {ctx,w,h}=cvSetup(cv);
-  const P={l:46,r:12,t:10,b:36}; const [d0,d1]=distExtent(); const yMax=80;
+  const P={l:54,r:14,t:12,b:46}; const [d0,d1]=distExtent(); const yMax=80;
   plotBg(ctx,P,w,h);
-  const X=d=>P.l+(d-d0)/(d1-d0)*(w-P.l-P.r);
-  const Y=v=>P.t+(1-Math.min(v,yMax)/yMax)*(h-P.t-P.b);
-  // y gridlines + threshold dashes
-  ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
-  [0,20,40,60,80].forEach(v=>{
-    const y=Y(v); ctx.strokeStyle=(v===20||v===40||v===60)?'rgba(255,159,10,.22)':GRID;
-    ctx.setLineDash(v===20||v===40||v===60?[3,3]:[]);
-    ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();
-    ctx.fillStyle=AXTX; ctx.fillText(v,P.l-5,y);
+  const cW=w-P.l-P.r, cH=h-P.t-P.b;
+  const X=d=>P.l+(d-d0)/(d1-d0)*cW;
+  const Y=v=>P.t+(1-Math.min(v,yMax)/yMax)*cH;
+
+  // Depth-zone colour bands (≥60 red, 40-60 orange, 20-40 yellow, <20 green)
+  const bands=[
+    {lo:60,hi:80,col:'rgba(255,69,58,0.06)'},
+    {lo:40,hi:60,col:'rgba(255,159,10,0.05)'},
+    {lo:20,hi:40,col:'rgba(255,214,10,0.04)'},
+    {lo:0, hi:20,col:'rgba(48,209,88,0.04)'},
+  ];
+  ctx.save(); ctx.beginPath(); ctx.rect(P.l,P.t,cW,cH); ctx.clip();
+  bands.forEach(b=>{
+    const y1=Y(b.hi), y2=Y(b.lo);
+    ctx.fillStyle=b.col; ctx.fillRect(P.l,y1,cW,y2-y1);
   });
-  ctx.setLineDash([]);
-  // x labels
-  ctx.textAlign='center'; ctx.textBaseline='top';
-  for(let d=Math.ceil(d0/500)*500; d<=d1; d+=500){ctx.fillStyle=AXTX;ctx.fillText(d,X(d),h-P.b+4);}
-  // points (internal under external so the deeper-external set reads on top isn't critical; draw both)
+  ctx.restore();
+
+  // Y gridlines
+  const yVals=[0,20,40,60,80].map(v=>({v,y:Y(v),special:(v===20||v===40||v===60)}));
+  yGrid(ctx,P,w,yVals,null,null);
+
+  // X ticks
+  xDistTicks(ctx,P,w,h,X,d0,d1);
+
+  // Scatter dots — plain filled circles
   const pts=[];
   REPORT_FEATURES.forEach(a=>{
     if(a.depth==null||a.type==='dent smooth'||!chPass(a)) return;
     const px=X(a.dist), py=Y(a.depth);
-    ctx.fillStyle=locColor(a); ctx.globalAlpha=.62;
-    ctx.beginPath();ctx.arc(px,py,2.1,0,7);ctx.fill();
+    const col=locColor(a);
+    ctx.globalAlpha=0.82; ctx.fillStyle=col;
+    ctx.beginPath(); ctx.arc(px,py,2.4,0,Math.PI*2); ctx.fill();
     pts.push({x:px,y:py,a});
   });
   chartHit['chart-depth']=pts;
-  ctx.globalAlpha=1; axisFrame(ctx,P,w,h); axisTitles(ctx,P,w,h,'Distance (m)','Wall Loss (% WT)');
+  ctx.globalAlpha=1;
+  axisFrame(ctx,P,w,h);
+  axisTitles(ctx,P,w,h,'Distance (m)','Wall Loss (% WT)');
 }
 
+// ══════════════════════════════════════════════════════════════════════════
+//  ERF vs. DISTANCE — scatter with ERF=1 danger line
+// ══════════════════════════════════════════════════════════════════════════
+function drawErfChart(){
+  const cv=document.getElementById('chart-erf'); const {ctx,w,h}=cvSetup(cv);
+  const P={l:54,r:14,t:12,b:46}; const [d0,d1]=distExtent();
+  plotBg(ctx,P,w,h);
+  const cW=w-P.l-P.r, cH=h-P.t-P.b;
+  let maxErf=0; REPORT_FEATURES.forEach(a=>{ if(a.erf!=null&&chPass(a)&&a.erf>maxErf)maxErf=a.erf; });
+  const yMax=Math.max(0.3,Math.ceil(maxErf*10)/10);
+  const X=d=>P.l+(d-d0)/(d1-d0)*cW;
+  const Y=v=>P.t+(1-Math.min(v,yMax)/yMax)*cH;
+
+  // Danger zone band above ERF=1 threshold (if it's in range)
+  if(yMax>1){
+    ctx.save(); ctx.beginPath(); ctx.rect(P.l,P.t,cW,cH); ctx.clip();
+    ctx.fillStyle='rgba(255,69,58,0.06)';
+    ctx.fillRect(P.l,P.t,cW,Y(1)-P.t);
+    ctx.restore();
+  }
+
+  // Y grid
+  const ticks=Math.max(3,Math.round(yMax/0.1));
+  const yVals=[];
+  for(let t=0;t<=ticks;t++){
+    const v=Math.round(yMax*t/ticks*100)/100;
+    yVals.push({v,y:Y(v),strong:v===1,special:false});
+  }
+  yGrid(ctx,P,w,yVals,v=>v.toFixed(2),null);
+
+  // ERF=1 danger line
+  if(Y(1)>=P.t&&Y(1)<=P.t+cH){
+    ctx.strokeStyle='rgba(255,69,58,0.5)'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.moveTo(P.l,Y(1)); ctx.lineTo(P.l+cW,Y(1)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='rgba(255,69,58,0.75)'; ctx.font=FONT_LABEL;
+    ctx.textAlign='right'; ctx.textBaseline='bottom';
+    ctx.fillText('ERF = 1.0 ⚠', P.l+cW-4, Y(1)-3);
+  }
+
+  xDistTicks(ctx,P,w,h,X,d0,d1);
+  const pts=[];
+  REPORT_FEATURES.forEach(a=>{
+    if(a.erf==null||a.type==='dent smooth'||!chPass(a)) return;
+    const px=X(a.dist), py=Y(a.erf);
+    const col=locColor(a);
+    ctx.globalAlpha=0.82; ctx.fillStyle=col;
+    ctx.beginPath(); ctx.arc(px,py,2.4,0,Math.PI*2); ctx.fill();
+    pts.push({x:px,y:py,a});
+  });
+  chartHit['chart-erf']=pts;
+  ctx.globalAlpha=1;
+  axisFrame(ctx,P,w,h);
+  axisTitles(ctx,P,w,h,'Distance (m)','ERF');
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  METAL-LOSS DENSITY — stacked gradient bars
+// ══════════════════════════════════════════════════════════════════════════
+function drawDensityChart(){
+  const cv=document.getElementById('chart-density'); const {ctx,w,h}=cvSetup(cv);
+  const P={l:54,r:14,t:12,b:46}; const [d0,d1]=distExtent(); const BIN=50;
+  plotBg(ctx,P,w,h);
+  const cW=w-P.l-P.r, cH=h-P.t-P.b;
+  const n=Math.ceil((d1-d0)/BIN);
+  const ext=new Array(n).fill(0), int=new Array(n).fill(0);
+  REPORT_FEATURES.forEach(a=>{ if(a.type==='dent smooth'||!chPass(a))return; const i=Math.min(n-1,Math.floor((a.dist-d0)/BIN)); (a.location==='Internal'?int:ext)[i]++; });
+  const yMax=Math.max(1,...ext.map((e,i)=>e+int[i]));
+  const X=d=>P.l+(d-d0)/(d1-d0)*cW;
+  const Y=v=>P.t+(1-v/yMax)*cH;
+  const ticks=yMax<=5?yMax:4;
+  const yVals=[];
+  for(let t=0;t<=ticks;t++){const v=Math.round(yMax*t/ticks);yVals.push({v,y:Y(v)});}
+  yGrid(ctx,P,w,yVals,null,null);
+  const bw=cW/n;
+  const gap=Math.max(1.5,bw*0.12);
+  for(let i=0;i<n;i++){
+    const x=P.l+i*bw+gap, barW=bw-gap*2, b0=Y(0);
+    const he=b0-Y(ext[i]); if(he>0){ ctx.fillStyle=extGrad(ctx,Y(ext[i]),b0); roundedBar(ctx,x,Y(ext[i]),barW,he,3); }
+    const hi=b0-Y(int[i]); if(hi>0){ ctx.fillStyle=intGrad(ctx,Y(ext[i])-hi,Y(ext[i])); roundedBar(ctx,x,Y(ext[i])-hi,barW,hi,3); }
+  }
+  ctx.globalAlpha=1;
+  xDistTicks(ctx,P,w,h,X,d0,d1);
+  axisFrame(ctx,P,w,h);
+  axisTitles(ctx,P,w,h,'Distance (m) · 50 m bins','Count');
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  ORIENTATION vs. DISTANCE — scatter with clock-band backgrounds
+// ══════════════════════════════════════════════════════════════════════════
+function drawOrientChart(){
+  const cv=document.getElementById('chart-orient'); const {ctx,w,h}=cvSetup(cv);
+  const P={l:54,r:14,t:12,b:46}; const [d0,d1]=distExtent();
+  plotBg(ctx,P,w,h);
+  const cW=w-P.l-P.r, cH=h-P.t-P.b;
+  const X=d=>P.l+(d-d0)/(d1-d0)*cW;
+  const Y=c=>P.t+(c/12)*cH;
+
+  // Subtle bottom-half highlight — sediment zone (4:00–8:00)
+  ctx.save(); ctx.beginPath(); ctx.rect(P.l,P.t,cW,cH); ctx.clip();
+  ctx.fillStyle='rgba(59,130,246,0.04)';
+  ctx.fillRect(P.l,Y(4),cW,Y(8)-Y(4));
+  ctx.restore();
+
+  ctx.font=FONT_TICK; ctx.textAlign='right'; ctx.textBaseline='middle';
+  [[0,'12'],[3,'3'],[6,'6'],[9,'9'],[12,'12']].forEach(([c,lbl])=>{
+    const y=Y(c);
+    ctx.strokeStyle=c===6?GRID_STRONG:GRID; ctx.lineWidth=c===6?1.5:1;
+    ctx.setLineDash(c===6?[6,4]:[]);
+    ctx.beginPath(); ctx.moveTo(P.l,y); ctx.lineTo(P.l+cW,y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle=c===6?'rgba(147,197,253,0.7)':AXTX;
+    ctx.fillText(lbl, P.l-6, y);
+  });
+
+  const pts=[];
+  REPORT_FEATURES.forEach(a=>{
+    const c=orientClock(a.orient); if(c==null||!chPass(a)) return;
+    const px=X(a.dist), py=Y(c);
+    const col=locColor(a);
+    ctx.globalAlpha=0.78; ctx.fillStyle=col;
+    ctx.beginPath(); ctx.arc(px,py,2.2,0,Math.PI*2); ctx.fill();
+    pts.push({x:px,y:py,a});
+  });
+  chartHit['chart-orient']=pts;
+  ctx.globalAlpha=1;
+  xDistTicks(ctx,P,w,h,X,d0,d1);
+  axisFrame(ctx,P,w,h);
+  axisTitles(ctx,P,w,h,'Distance (m)','o\'clock');
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  DEPTH DISTRIBUTION — stacked gradient bars per 10% WT band
+// ══════════════════════════════════════════════════════════════════════════
 function drawDepthHistChart(){
   const cv=document.getElementById('chart-depthhist'); const {ctx,w,h}=cvSetup(cv);
-  const P={l:46,r:12,t:10,b:36}; const NB=8;   // 0–10 … 70–80 % WT
+  const P={l:54,r:14,t:12,b:46}; const NB=8;
   plotBg(ctx,P,w,h);
+  const cW=w-P.l-P.r, cH=h-P.t-P.b;
   const ext=new Array(NB).fill(0), int=new Array(NB).fill(0);
   REPORT_FEATURES.forEach(a=>{ if(a.depth==null||a.type==='dent smooth'||!chPass(a))return; const i=Math.min(NB-1,Math.floor(a.depth/10)); (a.location==='Internal'?int:ext)[i]++; });
   const yMax=Math.max(1,...ext.map((e,i)=>e+int[i]));
-  const Y=v=>P.t+(1-v/yMax)*(h-P.t-P.b);
-  ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  const Y=v=>P.t+(1-v/yMax)*cH;
   const ticks=4;
-  for(let t=0;t<=ticks;t++){const v=Math.round(yMax*t/ticks);const y=Y(v);ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();ctx.fillStyle=AXTX;ctx.fillText(v,P.l-5,y);}
-  const bw=(w-P.l-P.r)/NB;
+  const yVals=[];
+  for(let t=0;t<=ticks;t++){const v=Math.round(yMax*t/ticks);yVals.push({v,y:Y(v)});}
+  yGrid(ctx,P,w,yVals,null,null);
+
+  const bw=cW/NB;
+  const gap=Math.max(3,bw*0.14);
   for(let i=0;i<NB;i++){
-    const x=P.l+i*bw;
-    const he=Y(0)-Y(ext[i]); ctx.fillStyle=EXT_COL; ctx.globalAlpha=.85; ctx.fillRect(x+2.5,Y(ext[i]),bw-5,he);
-    const hi=Y(0)-Y(int[i]); ctx.fillStyle=INT_COL; ctx.fillRect(x+2.5,Y(ext[i])-hi,bw-5,hi);
+    const x=P.l+i*bw+gap, barW=bw-gap*2, b0=Y(0);
+    const he=b0-Y(ext[i]);
+    if(he>0){
+      ctx.fillStyle=extGrad(ctx,Y(ext[i]),b0); roundedBar(ctx,x,Y(ext[i]),barW,he,4);
+    }
+    const hi=b0-Y(int[i]);
+    if(hi>0){
+      ctx.fillStyle=intGrad(ctx,Y(ext[i])-hi,Y(ext[i])); roundedBar(ctx,x,Y(ext[i])-hi,barW,hi,3);
+    }
+    // x label
+    ctx.font=FONT_TICK; ctx.textAlign='center'; ctx.textBaseline='top'; ctx.fillStyle=AXTX;
+    ctx.fillText((i*10)+'–'+(i*10+10), x+barW/2, h-P.b+5);
   }
   ctx.globalAlpha=1;
-  ctx.textAlign='center'; ctx.textBaseline='top';
-  for(let i=0;i<NB;i++){ctx.fillStyle=AXTX;ctx.fillText((i*10)+'–'+(i*10+10),P.l+i*bw+bw/2,h-P.b+4);}
-  axisFrame(ctx,P,w,h); axisTitles(ctx,P,w,h,'Depth (% WT)','Feature Count');
+  axisFrame(ctx,P,w,h);
+  axisTitles(ctx,P,w,h,'Depth band (% WT)','Count');
 }
 
+// ══════════════════════════════════════════════════════════════════════════
+//  CIRCUMFERENTIAL DISTRIBUTION (rose-style bar chart)
+// ══════════════════════════════════════════════════════════════════════════
+function drawRoseChart(){
+  const cv=document.getElementById('chart-rose'); const {ctx,w,h}=cvSetup(cv);
+  const P={l:54,r:14,t:12,b:46};
+  plotBg(ctx,P,w,h);
+  const cW=w-P.l-P.r, cH=h-P.t-P.b;
+  const ext=new Array(12).fill(0), int=new Array(12).fill(0);
+  REPORT_FEATURES.forEach(a=>{ const c=orientClock(a.orient); if(c==null||!chPass(a))return; const i=Math.floor(c)%12; (a.location==='Internal'?int:ext)[i]++; });
+  const yMax=Math.max(1,...ext.map((e,i)=>e+int[i]));
+  const Y=v=>P.t+(1-v/yMax)*cH;
+  const ticks=4;
+  const yVals=[];
+  for(let t=0;t<=ticks;t++){const v=Math.round(yMax*t/ticks);yVals.push({v,y:Y(v)});}
+  yGrid(ctx,P,w,yVals,null,null);
+
+  // Highlight 4–8 o'clock (bottom sediment zone)
+  ctx.save(); ctx.beginPath(); ctx.rect(P.l,P.t,cW,cH); ctx.clip();
+  ctx.fillStyle='rgba(59,130,246,0.05)';
+  const bzone=cW/12;
+  ctx.fillRect(P.l+4*bzone,P.t,4*bzone,cH);
+  ctx.restore();
+
+  const bw=cW/12;
+  const gap=Math.max(2,bw*0.14);
+  for(let i=0;i<12;i++){
+    const x=P.l+i*bw+gap, barW=bw-gap*2, b0=Y(0);
+    const he=b0-Y(ext[i]); if(he>0){ ctx.fillStyle=extGrad(ctx,Y(ext[i]),b0); roundedBar(ctx,x,Y(ext[i]),barW,he,4); }
+    const hi=b0-Y(int[i]); if(hi>0){ ctx.fillStyle=intGrad(ctx,Y(ext[i])-hi,Y(ext[i])); roundedBar(ctx,x,Y(ext[i])-hi,barW,hi,3); }
+    ctx.font=FONT_TICK; ctx.textAlign='center'; ctx.textBaseline='top'; ctx.fillStyle=AXTX;
+    ctx.fillText(i===0?'12':String(i), x+barW/2, h-P.b+5);
+  }
+  ctx.globalAlpha=1;
+  axisFrame(ctx,P,w,h);
+  axisTitles(ctx,P,w,h,'Clock position (o\'clock)','Count');
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  DEFECT TYPE (POF) — horizontal bar chart with gradient fills
+// ══════════════════════════════════════════════════════════════════════════
 const DIM_SHORT={'General':'General','Pitting':'Pitting','Pinhole':'Pinhole','Axial grooving':'Axial groove','Circumferential grooving':'Circ. groove','Axial slotting':'Axial slot','Circumferential slotting':'Circ. slot'};
 const ALL_DIMS=Object.keys(DIM_SHORT).filter(k=>REPORT_FEATURES.some(a=>a.dim===k));
 if(DENTS.length) ALL_DIMS.push('Dent');
@@ -2081,132 +2395,74 @@ function buildTypeChips(){
   mk('All', chTypes.size===ALL_DIMS.length, ()=>{ chTypes=new Set(ALL_DIMS); buildTypeChips(); drawAllCharts(); });
   ALL_DIMS.forEach(k=> mk(DIM_SHORT[k]||k, chTypes.has(k), ()=>{
     chTypes.has(k)?chTypes.delete(k):chTypes.add(k);
-    if(!chTypes.size) chTypes=new Set(ALL_DIMS);   // never empty
+    if(!chTypes.size) chTypes=new Set(ALL_DIMS);
     buildTypeChips(); drawAllCharts();
   }));
 }
 function drawTypeChart(){
   const cv=document.getElementById('chart-type'); const {ctx,w,h}=cvSetup(cv);
-  const P={l:92,r:34,t:8,b:34};
+  const P={l:106,r:40,t:10,b:30};
   plotBg(ctx,P,w,h);
-  const ext={},int={};
+  const cW=w-P.l-P.r, cH=h-P.t-P.b;
+  const ext={},int_={};
   REPORT_FEATURES.forEach(a=>{ if(a.type==='dent smooth'||!chPass(a)||!a.dim)return;
-    const m=a.location==='Internal'?int:ext; m[a.dim]=(m[a.dim]||0)+1; });
-  const cats=Object.keys(DIM_SHORT).filter(k=>(ext[k]||0)+(int[k]||0)>0)
-    .sort((x,y)=>((ext[y]||0)+(int[y]||0))-((ext[x]||0)+(int[x]||0)));
-  const xMax=Math.max(1,...cats.map(k=>(ext[k]||0)+(int[k]||0)));
-  const X=v=>P.l+v/xMax*(w-P.l-P.r);
-  ctx.font='9px monospace';
-  ctx.textAlign='center'; ctx.textBaseline='top';
-  for(let t=0;t<=4;t++){const v=Math.round(xMax*t/4);const x=X(v);ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,h-P.b);ctx.stroke();ctx.fillStyle=AXTX;ctx.fillText(v,x,h-P.b+4);}
-  const plotH=h-P.t-P.b, rowH=plotH/Math.max(1,cats.length), barH=Math.min(24,rowH*0.6);
-  ctx.textBaseline='middle';
+    const m=a.location==='Internal'?int_:ext; m[a.dim]=(m[a.dim]||0)+1; });
+  const cats=Object.keys(DIM_SHORT).filter(k=>(ext[k]||0)+(int_[k]||0)>0)
+    .sort((x,y)=>((ext[y]||0)+(int_[y]||0))-((ext[x]||0)+(int_[x]||0)));
+  const xMax=Math.max(1,...cats.map(k=>(ext[k]||0)+(int_[k]||0)));
+  const X=v=>P.l+v/xMax*cW;
+
+  // X grid
+  ctx.font=FONT_TICK; ctx.textAlign='center'; ctx.textBaseline='top'; ctx.fillStyle=AXTX;
+  for(let t=0;t<=4;t++){
+    const v=Math.round(xMax*t/4), x=X(v);
+    ctx.strokeStyle=GRID; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x,P.t); ctx.lineTo(x,P.t+cH); ctx.stroke();
+    ctx.fillText(v, x, P.t+cH+5);
+  }
+
+  const rowH=cH/Math.max(1,cats.length);
+  const barH=Math.min(22,rowH*0.55);
+  const r=4;
   cats.forEach((k,i)=>{
-    const cy=P.t+rowH*(i+0.5), e=ext[k]||0, n=int[k]||0;
-    ctx.fillStyle=AXTX; ctx.textAlign='right'; ctx.fillText(DIM_SHORT[k],P.l-6,cy);
+    const cy=P.t+rowH*(i+0.5);
+    const e=ext[k]||0, n=int_[k]||0;
+    const total=e+n;
     const we=X(e)-P.l, wn=X(n)-P.l;
-    ctx.fillStyle=EXT_COL; ctx.globalAlpha=.85; ctx.fillRect(P.l,cy-barH/2,we,barH);
-    ctx.fillStyle=INT_COL; ctx.fillRect(P.l+we,cy-barH/2,wn,barH);
-    ctx.globalAlpha=1;
-    ctx.fillStyle=AXIS_TITLE_COL; ctx.textAlign='left'; ctx.fillText(e+n,P.l+we+wn+5,cy);
-  });
-  axisFrame(ctx,P,w,h); axisTitles(ctx,P,w,h,'Feature Count','');
-}
 
-function drawErfChart(){
-  const cv=document.getElementById('chart-erf'); const {ctx,w,h}=cvSetup(cv);
-  const P={l:46,r:12,t:10,b:36}; const [d0,d1]=distExtent();
-  plotBg(ctx,P,w,h);
-  let maxErf=0; REPORT_FEATURES.forEach(a=>{ if(a.erf!=null&&chPass(a)&&a.erf>maxErf)maxErf=a.erf; });
-  const yMax=Math.max(0.3,Math.ceil(maxErf*10)/10);
-  const X=d=>P.l+(d-d0)/(d1-d0)*(w-P.l-P.r);
-  const Y=v=>P.t+(1-Math.min(v,yMax)/yMax)*(h-P.t-P.b);
-  ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
-  const ticks=Math.max(3,Math.round(yMax/0.1));
-  for(let t=0;t<=ticks;t++){const v=yMax*t/ticks;const y=Y(v);ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();ctx.fillStyle=AXTX;ctx.fillText(v.toFixed(2),P.l-5,y);}
-  const pts=[];
-  REPORT_FEATURES.forEach(a=>{
-    if(a.erf==null||a.type==='dent smooth'||!chPass(a)) return;
-    const px=X(a.dist), py=Y(a.erf);
-    ctx.fillStyle=locColor(a); ctx.globalAlpha=.62;
-    ctx.beginPath();ctx.arc(px,py,2.1,0,7);ctx.fill();
-    pts.push({x:px,y:py,a});
-  });
-  chartHit['chart-erf']=pts;
-  ctx.globalAlpha=1;
-  ctx.textAlign='center'; ctx.textBaseline='top';
-  for(let d=Math.ceil(d0/500)*500; d<=d1; d+=500){ctx.fillStyle=AXTX;ctx.fillText(d,X(d),h-P.b+4);}
-  axisFrame(ctx,P,w,h); axisTitles(ctx,P,w,h,'Distance (m)','ERF (P_fail ratio)');
-}
+    // Row hover band
+    ctx.fillStyle=i%2===0?'rgba(148,163,184,0.025)':'transparent';
+    ctx.fillRect(P.l,cy-rowH/2,cW,rowH);
 
-function drawDensityChart(){
-  const cv=document.getElementById('chart-density'); const {ctx,w,h}=cvSetup(cv);
-  const P={l:46,r:12,t:10,b:36}; const [d0,d1]=distExtent(); const BIN=50;
-  plotBg(ctx,P,w,h);
-  const n=Math.ceil((d1-d0)/BIN); const ext=new Array(n).fill(0), int=new Array(n).fill(0);
-  REPORT_FEATURES.forEach(a=>{ if(a.type==='dent smooth'||!chPass(a))return; const i=Math.min(n-1,Math.floor((a.dist-d0)/BIN)); (a.location==='Internal'?int:ext)[i]++; });
-  const yMax=Math.max(1,...ext.map((e,i)=>e+int[i]));
-  const X=d=>P.l+(d-d0)/(d1-d0)*(w-P.l-P.r);
-  const Y=v=>P.t+(1-v/yMax)*(h-P.t-P.b);
-  ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
-  const ticks=yMax<=5?yMax:4;
-  for(let t=0;t<=ticks;t++){const v=Math.round(yMax*t/ticks);const y=Y(v);ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();ctx.fillStyle=AXTX;ctx.fillText(v,P.l-5,y);}
-  const bw=(w-P.l-P.r)/n;
-  for(let i=0;i<n;i++){
-    const x=P.l+i*bw, b0=Y(0);
-    const he=b0-Y(ext[i]); ctx.fillStyle=EXT_COL; ctx.globalAlpha=.85; ctx.fillRect(x+.4,Y(ext[i]),bw-.8,he);
-    const hi=b0-Y(int[i]); ctx.fillStyle=INT_COL; ctx.fillRect(x+.4,Y(ext[i])-hi,bw-.8,hi);
-  }
-  ctx.globalAlpha=1;
-  ctx.textAlign='center'; ctx.textBaseline='top';
-  for(let d=Math.ceil(d0/500)*500; d<=d1; d+=500){ctx.fillStyle=AXTX;ctx.fillText(d,X(d),h-P.b+4);}
-  axisFrame(ctx,P,w,h); axisTitles(ctx,P,w,h,'Distance (m)','Feature Count / 50 m');
-}
+    // Category label
+    ctx.font=FONT_LABEL; ctx.textAlign='right'; ctx.textBaseline='middle';
+    ctx.fillStyle='rgba(203,213,225,0.85)';
+    ctx.fillText(DIM_SHORT[k], P.l-8, cy);
 
-function drawOrientChart(){
-  const cv=document.getElementById('chart-orient'); const {ctx,w,h}=cvSetup(cv);
-  const P={l:46,r:12,t:10,b:36}; const [d0,d1]=distExtent();
-  plotBg(ctx,P,w,h);
-  const X=d=>P.l+(d-d0)/(d1-d0)*(w-P.l-P.r);
-  const Y=c=>P.t+(c/12)*(h-P.t-P.b);   // 0=12:00 top, 6=6:00 center, 12=12:00 bottom
-  ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
-  [[0,'12'],[3,'3'],[6,'6'],[9,'9'],[12,'12']].forEach(([c,lbl])=>{
-    const y=Y(c); ctx.strokeStyle=c===6?'rgba(148,163,184,.22)':GRID;
-    ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();
-    ctx.fillStyle=c===6?AXIS_TITLE_COL:AXTX; ctx.fillText(lbl,P.l-5,y);
+    // Ext bar
+    if(we>0){
+      const g=ctx.createLinearGradient(P.l,0,P.l+we,0);
+      g.addColorStop(0,'rgba(255,159,10,0.9)'); g.addColorStop(1,'rgba(255,159,10,0.55)');
+      ctx.fillStyle=g;
+      ctx.beginPath();
+      ctx.moveTo(P.l,cy-barH/2+r); ctx.arcTo(P.l,cy-barH/2,P.l+r,cy-barH/2,r);
+      ctx.lineTo(P.l+we-r,cy-barH/2); ctx.arcTo(P.l+we,cy-barH/2,P.l+we,cy-barH/2+r,r);
+      ctx.lineTo(P.l+we,cy+barH/2-r); ctx.arcTo(P.l+we,cy+barH/2,P.l+we-r,cy+barH/2,r);
+      ctx.lineTo(P.l+r,cy+barH/2); ctx.arcTo(P.l,cy+barH/2,P.l,cy+barH/2-r,r);
+      ctx.closePath(); ctx.fill();
+    }
+    // Int bar on top
+    if(wn>0){
+      ctx.fillStyle=intGrad(ctx,cy-barH/2,cy+barH/2);
+      ctx.fillRect(P.l+we, cy-barH/2+1, wn, barH-2);
+    }
+    // Total count label
+    ctx.font=FONT_LABEL; ctx.textAlign='left'; ctx.textBaseline='middle';
+    ctx.fillStyle='rgba(147,197,253,0.85)';
+    ctx.fillText(total, P.l+we+wn+8, cy);
   });
-  REPORT_FEATURES.forEach(a=>{
-    const c=orientClock(a.orient); if(c==null||!chPass(a)) return;
-    ctx.fillStyle=locColor(a); ctx.globalAlpha=.55;
-    ctx.beginPath();ctx.arc(X(a.dist),Y(c),2,0,7);ctx.fill();
-  });
-  ctx.globalAlpha=1;
-  ctx.textAlign='center'; ctx.textBaseline='top';
-  for(let d=Math.ceil(d0/500)*500; d<=d1; d+=500){ctx.fillStyle=AXTX;ctx.fillText(d,X(d),h-P.b+4);}
-  axisFrame(ctx,P,w,h); axisTitles(ctx,P,w,h,'Distance (m)','Clock Position (o’clock)');
-}
-
-function drawRoseChart(){
-  const cv=document.getElementById('chart-rose'); const {ctx,w,h}=cvSetup(cv);
-  const P={l:46,r:12,t:10,b:36};
-  plotBg(ctx,P,w,h);
-  const ext=new Array(12).fill(0), int=new Array(12).fill(0);
-  REPORT_FEATURES.forEach(a=>{ const c=orientClock(a.orient); if(c==null||!chPass(a))return; const i=Math.floor(c)%12; (a.location==='Internal'?int:ext)[i]++; });
-  const yMax=Math.max(1,...ext.map((e,i)=>e+int[i]));
-  const Y=v=>P.t+(1-v/yMax)*(h-P.t-P.b);
-  ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
-  const ticks=4;
-  for(let t=0;t<=ticks;t++){const v=Math.round(yMax*t/ticks);const y=Y(v);ctx.strokeStyle=GRID;ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();ctx.fillStyle=AXTX;ctx.fillText(v,P.l-5,y);}
-  const bw=(w-P.l-P.r)/12;
-  for(let i=0;i<12;i++){
-    const x=P.l+i*bw;
-    const he=Y(0)-Y(ext[i]); ctx.fillStyle=EXT_COL; ctx.globalAlpha=.85; ctx.fillRect(x+1.5,Y(ext[i]),bw-3,he);
-    const hi=Y(0)-Y(int[i]); ctx.fillStyle=INT_COL; ctx.fillRect(x+1.5,Y(ext[i])-hi,bw-3,hi);
-  }
-  ctx.globalAlpha=1;
-  ctx.textAlign='center'; ctx.textBaseline='top';
-  for(let i=0;i<12;i++){ctx.fillStyle=AXTX;ctx.fillText(i===0?'12':i,P.l+i*bw+bw/2,h-P.b+4);}
-  axisFrame(ctx,P,w,h); axisTitles(ctx,P,w,h,'Clock Hour (o’clock)','Feature Count');
+  axisFrame(ctx,P,w,h);
+  axisTitles(ctx,P,w,h,'Feature count','');
 }
 // ── Pipe development (unrolled) damage map ────────────────
 const PIPE_CIRC=Math.PI*457.2;     // 18" OD circumference (mm) ≈ 1436 — width maps to clock
@@ -2219,7 +2475,7 @@ let pmMeasure=false, pmMeasurePts=[];   // measure tool: [{dist,clock}] (max 2)
 function pmClamp(){ const [d0,d1]=distExtent(); pmWinWidth=Math.min(pmWinWidth,d1-d0); pmWinStart=Math.max(d0,Math.min(pmWinStart,d1-pmWinWidth)); }
 function drawPipeOverview(){
   const cv=document.getElementById('pm-overview'); const {ctx,w,h}=cvSetup(cv);
-  const [d0,d1]=distExtent(); const P={l:PM_L,r:PM_R,t:6,b:15};
+  const [d0,d1]=distExtent(); const P={l:PM_L,r:PM_R,t:6,b:18};
   plotBg(ctx,P,w,h);
   const X=d=>P.l+(d-d0)/(d1-d0)*(w-P.l-P.r), Yc=c=>P.t+(c/12)*(h-P.t-P.b);
   ctx.strokeStyle=GRID; ctx.beginPath();ctx.moveTo(P.l,Yc(6));ctx.lineTo(w-P.r,Yc(6));ctx.stroke();
@@ -2236,15 +2492,15 @@ function drawPipeOverview(){
   ctx.strokeStyle='#6cc4ee'; ctx.lineWidth=1.5; ctx.strokeRect(x0+.5,P.t+.5,Math.max(1,x1-x0-1),h-P.t-P.b-1);
   if(pmHighlight){ const hx=X(pmHighlight.dist); ctx.strokeStyle='#fff'; ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(hx,P.t-2);ctx.lineTo(hx,h-P.b+1);ctx.stroke(); }
-  ctx.font='9px monospace'; ctx.fillStyle=AXTX; ctx.textAlign='center'; ctx.textBaseline='top';
+  ctx.font='11px monospace'; ctx.fillStyle=AXTX; ctx.textAlign='center'; ctx.textBaseline='top';
   for(let d=Math.ceil(d0/500)*500; d<=d1; d+=500) ctx.fillText(d,X(d),h-P.b+2);
 }
 function drawPipeDetail(){
   const cv=document.getElementById('pm-detail'); const {ctx,w,h}=cvSetup(cv);
-  pmClamp(); const ws=pmWinStart, we=pmWinStart+pmWinWidth; const P={l:PM_L,r:PM_R,t:10,b:36};
+  pmClamp(); const ws=pmWinStart, we=pmWinStart+pmWinWidth; const P={l:PM_L,r:PM_R,t:10,b:44};
   plotBg(ctx,P,w,h);
   const X=d=>P.l+(d-ws)/(we-ws)*(w-P.l-P.r), Yc=c=>P.t+(c/12)*(h-P.t-P.b);
-  ctx.font='9px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  ctx.font='11px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
   [[0,'12'],[3,'3'],[6,'6'],[9,'9'],[12,'12']].forEach(([c,l])=>{ const y=Yc(c);
     ctx.strokeStyle=c===6?'rgba(148,163,184,.22)':GRID; ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();
     ctx.fillStyle=c===6?AXIS_TITLE_COL:AXTX; ctx.fillText(l,P.l-5,y); });
@@ -2272,13 +2528,13 @@ function drawPipeDetail(){
     const unit=hl.a.type==='dent smooth'?'% OD':'% WT';
     ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.strokeRect(hl.x0-3,hl.y0-3,hl.bw+6,hl.bh+6);
     ctx.strokeStyle='rgba(108,196,238,0.9)'; ctx.lineWidth=1; ctx.strokeRect(hl.x0-5.5,hl.y0-5.5,hl.bw+11,hl.bh+11);
-    ctx.fillStyle='#fff'; ctx.font='600 11px monospace'; ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillStyle='#fff'; ctx.font='600 12px monospace'; ctx.textAlign='center'; ctx.textBaseline='bottom';
     ctx.fillText('#'+hl.a.id+'  ·  '+(hl.a.depth||'?')+unit, hl.x0+hl.bw/2, Math.max(P.t+12,hl.y0-7));
   }
   axisFrame(ctx,P,w,h);
-  axisTitles(ctx,P,w,h,`Distance (m)  ·  ${ws.toFixed(0)}–${we.toFixed(0)} m  ·  ${inWin.length} features in window`,'Clock Position (o’clock)');
+  axisTitles(ctx,P,w,h,`Distance (m)  ·  ${ws.toFixed(0)}–${we.toFixed(0)} m  ·  ${inWin.length} features in window`,"Clock Position (o'clock)");
   if(pmMeasure){
-    ctx.font='10px monospace';
+    ctx.font='11px monospace';
     if(pmMeasurePts.length<2){
       ctx.fillStyle='rgba(108,196,238,.8)'; ctx.textAlign='center'; ctx.textBaseline='top';
       ctx.fillText('Click two points to measure axial / circumferential separation', P.l+(w-P.l-P.r)/2, P.t+2);
@@ -2445,8 +2701,9 @@ function attachScatterHover(canvasId,fmt){
   cv.addEventListener('mouseleave',()=>{tip.style.display='none';cv._hover=null;});
   cv.addEventListener('click',()=>{ if(cv._hover) showFeatureOnPipeMap(cv._hover); });
 }
-attachScatterHover('chart-depth',a=>`<b>#${a.id}</b> · ${a.depth}% WT<br>${a.location} · ${(+a.dist).toFixed(0)} m`);
-attachScatterHover('chart-erf',  a=>`<b>#${a.id}</b> · ERF ${(+a.erf).toFixed(3)}<br>${a.location} · ${(+a.dist).toFixed(0)} m`);
+attachScatterHover('chart-depth', a=>`<b>#${a.id}</b> · ${a.depth}% WT<br>${a.location} · ${(+a.dist).toFixed(0)} m`);
+attachScatterHover('chart-erf',   a=>`<b>#${a.id}</b> · ERF ${(+a.erf).toFixed(3)}<br>${a.location} · ${(+a.dist).toFixed(0)} m`);
+attachScatterHover('chart-orient',a=>`<b>#${a.id}</b> · ${a.orient||'—'}<br>${a.location} · ${(+a.dist).toFixed(0)} m`);
 // Damage-map detail: hover a box for info, click to select it
 (function(){
   const cv=document.getElementById('pm-detail'), card=cv.closest('.rchart-card');
@@ -2454,7 +2711,7 @@ attachScatterHover('chart-erf',  a=>`<b>#${a.id}</b> · ERF ${(+a.erf).toFixed(3
   const hitAt=(cx,cy)=>{ const r=cv.getBoundingClientRect(),mx=cx-r.left,my=cy-r.top; let h=null;
     for(const b of pmBoxes){ if(mx>=b.x0-1&&mx<=b.x1+1&&my>=b.y0-1&&my<=b.y1+1) h=b; } return h; };
   const toDistClock=(cx,cy)=>{ const r=cv.getBoundingClientRect(), W=cv.clientWidth, H=cv.clientHeight;
-    const P={l:PM_L,r:PM_R,t:10,b:36}, ws=pmWinStart, we=pmWinStart+pmWinWidth;
+    const P={l:PM_L,r:PM_R,t:10,b:44}, ws=pmWinStart, we=pmWinStart+pmWinWidth;
     return { dist:Math.max(ws,Math.min(we, ws+(cx-r.left-P.l)/(W-P.l-P.r)*(we-ws))),
              clock:Math.max(0,Math.min(12,(cy-r.top-P.t)/(H-P.t-P.b)*12)) }; };
   // drag-to-pan: slide the window along the pipe (disabled while measuring or at full-line zoom)

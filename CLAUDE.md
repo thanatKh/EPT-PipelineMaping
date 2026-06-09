@@ -100,6 +100,41 @@ python3 -m http.server 8080
 (or `npx serve .`, or VS Code Live Server). There is no build, lint, or test
 tooling in this repo.
 
+### Validating JS syntax after edits
+
+After any large edit to the script block, validate with Node.js to catch
+parse errors before opening the browser:
+
+```bash
+node -e "
+const fs=require('fs');
+const html=fs.readFileSync('index.html','utf8');
+const m=html.match(/<script(?![^>]*src)[^>]*>([\s\S]*?)<\/script>/g);
+const vm=require('vm');
+m.forEach((s,i)=>{
+  const src=s.replace(/<\/?script[^>]*>/g,'');
+  try{new vm.Script(src);}catch(e){console.error('Block',i,e.message);}
+});
+console.log('SYNTAX OK');
+"
+```
+
+**Critical:** The Edit tool sometimes inserts Unicode "smart quotes"
+(`'` `'` U+2018/U+2019) instead of ASCII apostrophes inside string literals
+and template strings. These cause `Invalid or unexpected token` JS errors that
+break the entire app silently. If the app stops loading after an edit, run the
+validator above. Fix by bulk-replacing in Python:
+
+```python
+import re, pathlib
+p = pathlib.Path('index.html')
+html = p.read_text('utf-8')
+# Fix only inside <script> blocks
+def fix(m): return m.group(0).replace('‘',"'").replace('’',"'")
+html = re.sub(r'<script[\s\S]*?</script>', fix, html)
+p.write_text(html, 'utf-8')
+```
+
 ## Architecture (all in index.html)
 
 The script is one long top-to-bottom sequence of globals and functions
@@ -235,6 +270,30 @@ with its own native-fullscreen support (`toggleFS`, `#reports-fs`,
   window resize. It does **not** include a KPI strip — that was tried and
   removed; don't re-add a `#rchart-kpis`/`updateKpis()` pattern without
   reason.
+
+## Chart colour conventions (do not break)
+
+All canvas charts in the Reports modal share these colour constants (defined
+once near the top of the chart section):
+
+```js
+const EXT_COL='#ff9f0a';           // External corrosion — amber/orange
+const INT_COL='#6cc4ee';           // Internal corrosion — sky blue
+const locColor = a => a.location==='Internal' ? INT_COL : EXT_COL;
+```
+
+`extGrad`/`intGrad` are gradient factory functions that build
+`createLinearGradient` fills using `EXT_GRAD_TOP/BOT` and `INT_GRAD_TOP/BOT`
+respectively. Every stacked bar chart (Density, Depth Histogram,
+Circumferential Distribution) uses `extGrad` for the External segment and
+`intGrad` for the Internal segment stacked on top — the same orientation in
+all charts. Scatter charts (Wall Loss, ERF, Orientation) use `locColor(a)`
+as a plain filled `ctx.arc` dot (no glow). Never reintroduce depth-band
+colours (green/yellow/red) into `drawDepthHistChart` — that chart should
+always use `extGrad`/`intGrad` to be consistent with all other charts.
+
+Legend swatches (`.rc-legend i`) are `border-radius:50%` circles — not
+squares — to match the scatter dot style.
 
 ## Updating data for a new ILI run
 
