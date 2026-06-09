@@ -192,8 +192,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);
   width:280px;padding:14px;display:flex;flex-direction:column;gap:10px;
   height:100%;overflow-y:auto;overflow-x:hidden;
 }
+/* ── Global scrollbar theme ────────────────────────────── */
+*{scrollbar-width:thin;scrollbar-color:var(--border2) transparent;}
+*::-webkit-scrollbar{width:5px;height:5px;}
+*::-webkit-scrollbar-track{background:transparent;}
+*::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+*::-webkit-scrollbar-thumb:hover{background:rgba(148,163,184,0.45);}
+*::-webkit-scrollbar-corner{background:transparent;}
 #sidebar-inner::-webkit-scrollbar{width:3px;}
-#sidebar-inner::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+#sidebar-inner::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
 
 /* CARDS */
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 15px;position:relative;
@@ -575,8 +582,10 @@ input[type=range]::-moz-range-track{background:transparent;}
 .rtab.active:hover{background:#7db4fb;color:var(--sel-txt);}
 .rpane{flex:1;overflow:auto;display:none;padding:16px 18px;}
 .rpane.active{display:block;}
-.rpane::-webkit-scrollbar{width:9px;height:9px;}
-.rpane::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+.rpane::-webkit-scrollbar{width:5px;height:5px;}
+.rpane::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+.rpane::-webkit-scrollbar-thumb:hover{background:rgba(148,163,184,0.45);}
+.rpane::-webkit-scrollbar-track{background:transparent;}
 /* ── table pane ── */
 #rtable-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
 #rtable-toolbar .rchips{display:flex;gap:5px;flex-wrap:wrap;}
@@ -1128,6 +1137,7 @@ function closeDetailPanel(){
 }
 
 function showDetail(a,col){
+  window._dpFeature=a;
   markSelectedPoint(a,col);
   document.getElementById('dp-title').innerHTML=
     `<span style="color:${col}">#${a.id}</span>&nbsp;`+
@@ -1175,7 +1185,15 @@ function showDetail(a,col){
     rows.map(([l,v])=>`<div class="dp-row"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('')+
     rlHtml+
     `<div><span class="dp-badge" style="background:${col}1a;color:${col};border:1px solid ${col}44;">${repairLabel(a.repair||'>10yr')}</span></div>`+
-    (a.comment&&a.comment!=='None'&&a.comment?`<div style="margin-top:8px;font-size:11px;line-height:1.5;color:var(--text2);font-style:italic;">${a.comment}</div>`:'');
+    (a.comment&&a.comment!=='None'&&a.comment?`<div style="margin-top:8px;font-size:11px;line-height:1.5;color:var(--text2);font-style:italic;">${a.comment}</div>`:'')+
+    `<button onclick="showFeatureOnPipeMap(window._dpFeature)" style="
+      margin-top:12px;width:100%;padding:8px 0;border:none;border-radius:8px;
+      background:var(--sel-bg);color:var(--sel-txt);
+      font-family:var(--display);font-size:12px;font-weight:600;
+      cursor:pointer;letter-spacing:.3px;
+      display:flex;align-items:center;justify-content:center;gap:6px;">
+      View on Damage Map
+    </button>`;
   const dp=document.getElementById('detail-panel');
   dp.classList.remove('closing');
   dp.style.display='block';
@@ -2567,10 +2585,11 @@ function drawPipeMap(){ drawPipeOverview(); drawPipeDetail(); updateStepLabel();
 function showFeatureOnPipeMap(a){
   pmHighlight=a;
   const [d0,d1]=distExtent();
-  if(pmWinWidth<(d1-d0)) pmWinStart=a.dist-pmWinWidth/2;   // keep current zoom unless "Full line"
+  if(pmWinWidth<(d1-d0)) pmWinStart=a.dist-pmWinWidth/2;
   pmClamp();
+  openReports();   // ensure modal is open
   if(document.getElementById('pane-pipemap').classList.contains('active')) drawPipeMap();
-  else document.querySelector('.rtab[data-pane="pane-pipemap"]').click();   // activates tab + redraws
+  else document.querySelector('.rtab[data-pane="pane-pipemap"]').click();
 }
 // Prev/Next walk the action-list order (worst-first), auto-centring each item
 function pmStep(dir){
