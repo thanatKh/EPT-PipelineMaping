@@ -10,22 +10,38 @@ interactive Leaflet.js map with a synchronised elevation profile. No build
 step, no npm — pure HTML/CSS/JS plus one data file.
 
 Leaflet and the UI font are still vendored locally, but the app is **no longer
-fully offline-capable**: it now pulls Tailwind CSS from the Tailwind Play CDN
-(`https://cdn.tailwindcss.com`) at runtime, which requires internet on load and
-prints a "should not be used in production" console notice. The live satellite/
-street map tiles also require internet. Important nuance: Tailwind is wired in
-(CDN script + a `tailwind.config` defining the slate theme, `Google Sans`, and
-the semantic `prio.*` anomaly colours), but the actual styling still lives in
-the inline `<style>` block — a CSS-variable design system in a **neutral-slate,
-flat-solid** style: opaque panels, crisp 1px borders, subtle dark drop shadows
-for elevation, and deliberately **no glassmorphism blur or glow**. (The
-`--glass`/`--glass2` variable names are now opaque solids — kept for
-compatibility with the many rules that reference them; `--blur` is set to
-`none`.) No element currently consumes Tailwind utility classes, so the app
-still renders fully styled even if the CDN is blocked; the utilities are simply
-available for future markup. To restore true offline
-operation, remove the CDN `<script>` (the inline styles stand alone) or compile
-Tailwind to a vendored CSS file via the Tailwind CLI.
+fully offline-capable** — and that's accepted, not a regression to fix. It now
+pulls two libraries from CDNs at runtime:
+
+- **Tailwind CSS** (`https://cdn.tailwindcss.com`) — prints a "should not be
+  used in production" console notice. Wired in via a `<script>` + a
+  `tailwind.config` defining the slate theme, `Google Sans`, and the semantic
+  `prio.*` anomaly colours, but the actual styling still lives in the inline
+  `<style>` block — a CSS-variable design system in a **neutral-slate,
+  flat-solid** style: opaque panels, crisp 1px borders, subtle dark drop
+  shadows for elevation, and deliberately **no glassmorphism blur or glow**.
+  (The `--glass`/`--glass2` variable names are now opaque solids — kept for
+  compatibility with the many rules that reference them; `--blur` is set to
+  `none`.) No element currently consumes Tailwind utility classes, so the app
+  still renders fully styled even if the CDN is blocked; the utilities are
+  simply available for future markup.
+- **Lucide Icons** (`https://unpkg.com/lucide@latest`) — provides `<i
+  data-lucide="...">` icon markup. After injecting any new icon markup
+  dynamically (e.g. inside a JS template string), call
+  `lucide.createIcons()` again to render it — it only scans the DOM once on
+  load otherwise. A guarded call (`if(window.lucide) lucide.createIcons();`)
+  runs once at the end of the main script, and again after every dynamic
+  injection point (sidebar toggle, fullscreen toggle, legend `onAdd`, etc.).
+  Lucide is used for **UI controls only** (buttons, tabs, toggles, search/clear
+  icons, fullscreen/close/chevron affordances) — not for data labels, legend
+  swatches, or anomaly markers, which keep their existing emoji/colour-dot
+  conventions. `[data-lucide]` icons are sized via the `width:1em;height:1em`
+  rule near the top of the `<style>` block — don't add per-icon inline sizing.
+
+The live satellite/street map tiles also require internet regardless. Internet
+on load is now a baseline requirement for this app — do not add offline
+fallbacks or "works without CDN" caveats for Tailwind/Lucide unless the user
+asks.
 
 ## Design standard (do not regress)
 
@@ -53,6 +69,11 @@ projector in a lit room. When changing any colour, keep these rules:
     (`var(--sel-bg)` / `var(--sel-txt)`, ~7:1) so the active item is
     unmistakable when projected. No checkmark on single-select.
   - Never indicate selection with an accent **border outline** alone.
+- **Scrollbars** are themed globally (thin, `--border2` thumb, transparent
+  track, pill radius) via a single `*`/`*::-webkit-scrollbar*` rule block in
+  the `<style>` block — don't add per-element scrollbar overrides unless a
+  surface needs a different thumb width (e.g. `#sidebar-inner`/`.rpane` use
+  3-5px).
 
 ## Files
 
@@ -203,7 +224,12 @@ operating on the Leaflet `map` instance and the data arrays from `data.js`:
     panel.
 - **Responsive layout**: `fixMapHeight()` plus media queries in the
   `<style>` block handle tablet/mobile breakpoints (topbar reflow, sidebar
-  auto-collapse on mobile).
+  auto-collapse on mobile). At `max-width:640px`, `#topbar-row2` switches to
+  a column flex layout: `#kpi-row-label` ("Survey Totals...") gets
+  `flex-basis:100%; order:-1` to occupy its own centered row above the KPI
+  cards, and `.kpi{flex:1 1 0; min-width:60px}` lets the 6 KPI cards
+  (≤1yr/<10yr/>10yr/Metal Loss/Laminations/ERF≥1.0) wrap evenly into rows
+  without overflow or mid-card text wrapping.
 
 ## Reports & Analytics modal (also in index.html)
 
@@ -226,7 +252,7 @@ with its own native-fullscreen support (`toggleFS`, `#reports-fs`,
     surface, orientation, and comment. Row click calls `showFeatureOnPipeMap(a)`,
     which switches to the Damage Map tab, centers its zoom window on that
     feature, and highlights it.
-  - `pane-pipemap` — 🗺 Damage Map ("unrolled pipe development"): an
+  - `pane-pipemap` — Damage Map ("unrolled pipe development"): an
     axial-distance × clock-position view drawn at true scale. Two canvases,
     `#pm-overview` (full-line context strip) and `#pm-detail` (zoomed
     window) via `drawPipeOverview()`/`drawPipeDetail()`/`drawPipeMap()`.
@@ -235,10 +261,19 @@ with its own native-fullscreen support (`toggleFS`, `#reports-fs`,
     `pmMeasurePts`, reports Δaxial/Δcircum/surface distance using
     `PIPE_CIRC = Math.PI*457.2`), and a Prev/Next stepper
     (`pmStep`/`updateStepLabel`) to walk through the currently filtered
-    feature list. Dents have no clock position, so they render as full-height
-    pink bands at their chainage and are exempt from the %WT depth filter
-    (they use % OD instead). Clicking a drawn box highlights it
-    (`pmBoxes` hit-test registry) and shows a tooltip.
+    feature list. Dents are drawn through the same `orientClock`/box-drawing
+    path as corrosion features (true-scale `axLen` × `width` rectangle at
+    their `orient` clock position), filled `#ff375f` instead of
+    `depthColor(...)`, and are exempt from the %WT depth filter (they use
+    % OD instead) — this requires `orient`/`axLen`/`width`/`wt` fields on the
+    dent object (see "Anomaly object fields" in README.md). Clicking a drawn
+    box highlights it (`pmBoxes` hit-test registry) and shows a tooltip.
+  - The map's detail panel (`showDetail`) includes a "View on Damage Map"
+    button that calls `showFeatureOnPipeMap(a)` — this opens the Reports
+    modal (`openReports()`, idempotent via `reportsBuilt` guard) if not
+    already open, switches to `pane-pipemap`, and centers/highlights the
+    clicked feature. `window._dpFeature` holds the currently-shown detail
+    feature for this button's `onclick`.
   - `pane-distance` — 📈 "Along Distance" charts: Wall Loss
     (`drawDepthChart`/`chart-depth`), ERF (`drawErfChart`/`chart-erf`),
     Metal-Loss Density (`drawDensityChart`/`chart-density`), Orientation

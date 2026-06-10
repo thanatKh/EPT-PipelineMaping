@@ -174,6 +174,7 @@ To update for a future inspection, replace `ANOMALIES`, `DENTS`, `ROUTE`, and `R
 |---|---|---|
 | Leaflet.js | 1.9.4 | Map rendering, markers, tooltips, coordinate projection — vendored locally in `vendor/leaflet/` |
 | Tailwind CSS | Play CDN | Theme tokens + utilities — loaded from `https://cdn.tailwindcss.com` (live, requires internet; prints a "not for production" console notice) |
+| Lucide Icons | latest | Icon set — loaded from `https://unpkg.com/lucide@latest` (live, requires internet) |
 | Esri World Imagery | -- | Satellite tile layer (live, requires internet) |
 | OpenStreetMap | -- | Street map tile layer (live, requires internet) |
 | Google Sans | -- | UI typography — vendored locally in `vendor/fonts/` (latin-subset variable woff2, ~70 KB total) |
@@ -183,7 +184,7 @@ No build tools, no npm — pure HTML, CSS, and JavaScript.
 <a id="offline-note"></a>
 ### Offline note
 
-Leaflet and the font are vendored, but the app references the **Tailwind Play CDN**, so it now needs internet on load and is no longer guaranteed to work offline (e.g. aboard a survey vessel or in a site office). The visual styling itself lives in the inline `<style>` block (a slate CSS-variable design system), so the page still renders fully styled even if the Tailwind CDN is blocked — Tailwind currently only supplies theme tokens for future use. To restore true offline operation, either delete the Tailwind `<script>` from `<head>` (the inline styles stand alone) or compile Tailwind to a vendored CSS file with the Tailwind CLI.
+Leaflet and the font are vendored, but the app references the **Tailwind Play CDN** and **Lucide Icons CDN**, so it needs internet on load and is no longer guaranteed to work offline (e.g. aboard a survey vessel or in a site office). The visual styling itself lives in the inline `<style>` block (a slate CSS-variable design system), so the page still renders fully styled even if the Tailwind CDN is blocked — Tailwind currently only supplies theme tokens for future use. Internet on load is accepted as a baseline requirement for this app.
 
 ---
 

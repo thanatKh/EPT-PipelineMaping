@@ -31,6 +31,8 @@
      neutral-slate chrome and keeps the semantic anomaly colours (red/orange/
      yellow/green/teal/pink) that the canvas + legend code depend on. -->
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- Lucide Icons (per request) — also CDN-loaded, same online-only tradeoff as Tailwind above. -->
+<script src="https://unpkg.com/lucide@latest"></script>
 <script>
 tailwind.config = {
   darkMode: 'class',
@@ -141,15 +143,16 @@ html,body{height:100%;overflow:hidden;background:var(--bg);
     padding:10px 12px 8px;gap:8px;
   }
   #topbar-row1{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-  #topbar-row2{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;padding-bottom:2px;}
+  #topbar-row2{display:flex;flex-direction:column;align-items:center;gap:5px;padding-bottom:2px;}
   #branding{flex:1;min-width:0;}
   #logo-img{height:34px;}
   #brand-text .brand-app{font-size:12px;max-width:200px;}
   #brand-text .dept{font-size:9px;letter-spacing:.4px;}
   #brand-text .company{font-size:10px;max-width:200px;}
-  #kpi-row{gap:4px;flex-wrap:wrap;justify-content:center;flex-shrink:1;min-width:0;max-width:100%;}
-  #kpi-row-label{margin-right:4px;}
-  .kpi{min-width:52px;padding:3px 8px;border-radius:8px;}
+  #kpi-row{gap:6px;flex-wrap:wrap;justify-content:center;flex-shrink:1;min-width:0;max-width:100%;}
+  #kpi-row-label{flex-basis:100%;margin-right:0;text-align:center;line-height:1.4;order:-1;}
+  #kpi-row-label b{display:inline;margin-right:4px;}
+  .kpi{min-width:60px;flex:1 1 0;padding:4px 8px;border-radius:8px;}
   .kpi .v{font-size:13px;}
   .kpi .l{font-size:8px;letter-spacing:.3px;}
   #main{height:calc(100vh - 104px);}
@@ -192,6 +195,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);
   width:280px;padding:14px;display:flex;flex-direction:column;gap:10px;
   height:100%;overflow-y:auto;overflow-x:hidden;
 }
+/* ── Lucide icons ───────────────────────────────────────── */
+[data-lucide]{width:1em;height:1em;stroke-width:2;flex-shrink:0;vertical-align:-0.125em;}
+.chip [data-lucide],#btn-elev [data-lucide],#measure-clear [data-lucide]{margin-right:5px;}
+#pm-next [data-lucide]{margin-left:5px;}
+
 /* ── Global scrollbar theme ────────────────────────────── */
 *{scrollbar-width:thin;scrollbar-color:var(--border2) transparent;}
 *::-webkit-scrollbar{width:5px;height:5px;}
@@ -353,10 +361,18 @@ input[type=range]::-moz-range-track{background:transparent;}
 #search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none;}
 #search-input{
   width:100%;background:rgba(148,163,184,.06);border:1px solid var(--border);
-  border-radius:10px;color:var(--text);padding:9px 12px 9px 34px;
+  border-radius:10px;color:var(--text);padding:9px 30px 9px 34px;
   font-size:12px;outline:none;font-family:var(--sans);transition:border-color .2s,background .2s,box-shadow .2s;
 }
 #search-input::placeholder{color:var(--text3);}
+/* Clear (✕) button shown inside search inputs once they have text */
+.search-clear-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  width:20px;height:20px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(148,163,184,.12);color:var(--text2);
+  display:none;align-items:center;justify-content:center;font-size:11px;line-height:1;
+  transition:background .15s ease,color .15s ease;}
+.search-clear-btn:hover{background:rgba(148,163,184,.22);color:var(--text);}
+.search-clear-btn.show{display:flex;}
 #search-input:focus-visible{border-color:var(--blue);background:rgba(59,130,246,.07);box-shadow:0 0 0 2px rgba(59,130,246,.4);}
 /* Pulsing locator ring — marks the map location of a clicked search result
    so it's findable among the dense anomaly mass; fades out on its own. */
@@ -560,6 +576,7 @@ input[type=range]::-moz-range-track{background:transparent;}
   overflow:hidden;}
 #reports-head{display:flex;align-items:center;gap:14px;padding:14px 18px;
   border-bottom:1px solid var(--border);flex-shrink:0;}
+#reports-head .rtitle-logo{height:28px;width:auto;flex-shrink:0;}
 #reports-head .rtitle{font-family:var(--display);font-style:italic;font-size:18px;font-weight:600;color:var(--text);
   display:flex;align-items:center;gap:9px;letter-spacing:.2px;}
 #reports-head .rsub{font-size:12px;color:var(--text2);letter-spacing:.5px;}
@@ -593,7 +610,7 @@ input[type=range]::-moz-range-track{background:transparent;}
 #rtable-search-wrap .rsearch-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);
   color:var(--text3);font-size:13px;pointer-events:none;}
 #rtable-search{width:100%;background:rgba(148,163,184,.06);border:1px solid var(--border);
-  border-radius:10px;color:var(--text);padding:7px 10px 7px 30px;
+  border-radius:10px;color:var(--text);padding:7px 28px 7px 30px;
   font-size:12px;outline:none;font-family:var(--sans);transition:border-color .2s,background .2s,box-shadow .2s;}
 #rtable-search::placeholder{color:var(--text3);}
 #rtable-search:focus-visible{border-color:var(--blue);background:rgba(59,130,246,.07);box-shadow:0 0 0 2px rgba(59,130,246,.4);}
@@ -606,11 +623,13 @@ input[type=range]::-moz-range-track{background:transparent;}
 #rexport-btn:active{transform:scale(.97);}
 .rtable-wrap{border:1px solid var(--border);border-radius:12px;overflow:auto;max-height:calc(100% - 50px);}
 table.rtable{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;}
-table.rtable thead th{position:sticky;top:0;z-index:2;background:#0f172a;color:var(--text2);
-  font-weight:600;text-align:right;padding:10px 11px;white-space:nowrap;cursor:pointer;
-  border-bottom:1px solid var(--border2);user-select:none;letter-spacing:.3px;font-size:12px;}
+table.rtable thead th{position:sticky;top:0;z-index:2;
+  background:linear-gradient(180deg,#1c2942 0%,#16223a 100%);color:var(--text2);
+  font-weight:600;text-align:right;padding:11px 11px;white-space:nowrap;cursor:pointer;
+  border-bottom:2px solid var(--blue);user-select:none;letter-spacing:.5px;font-size:11px;
+  text-transform:uppercase;transition:color .15s ease,background .15s ease;}
 table.rtable thead th:first-child,table.rtable thead th.tl{text-align:left;}
-table.rtable thead th:hover{color:var(--blue2);}
+table.rtable thead th:hover{color:var(--blue2);background:linear-gradient(180deg,#23314e 0%,#1b2840 100%);}
 table.rtable thead th .arrow{color:var(--blue);margin-left:3px;font-size:10px;}
 table.rtable tbody td{text-align:right;padding:8px 11px;white-space:nowrap;color:var(--text);
   border-bottom:1px solid rgba(148,163,184,.05);}
@@ -742,15 +761,16 @@ table.rtable tbody tr{cursor:pointer;}
     <div id="sidebar-inner">
 
       <button id="btn-reports" aria-label="Open repair action list and corrosion analytics">
-        <span class="br-ico">📊</span>
+        <span class="br-ico"><i data-lucide="bar-chart-3"></i></span>
         <span class="br-txt">Reports &amp; Analytics<small>Action list · damage map · charts</small></span>
       </button>
 
       <div class="card">
         <div class="card-title">Search</div>
         <div id="search-wrap">
-          <span id="search-icon">⌕</span>
+          <span id="search-icon"><i data-lucide="search"></i></span>
           <input id="search-input" type="text" placeholder="Feature ID, distance, type…" autocomplete="off" spellcheck="false" aria-label="Search anomalies by feature ID, distance, or type">
+          <button id="search-clear" class="search-clear-btn" aria-label="Clear search" title="Clear"><i data-lucide="x"></i></button>
         </div>
         <div id="search-results" aria-live="polite"></div>
       </div>
@@ -813,7 +833,7 @@ table.rtable tbody tr{cursor:pointer;}
         </div>
         <div style="margin-top:8px;">
           <button class="lpill lpill-full" id="btn-measure">
-            <span>📏</span> Measure Distance
+            <i data-lucide="ruler"></i> Measure Distance
           </button>
         </div>
       </div>
@@ -827,7 +847,7 @@ table.rtable tbody tr{cursor:pointer;}
           <div class="stat-box"><div class="sv" id="stat-int" style="color:var(--blue2)">—</div><div class="sl">Internal</div></div>
         </div>
         <button class="lpill lpill-full" id="btn-export" aria-label="Export currently filtered anomalies as CSV">
-          <span>⬇</span> Export Filtered (CSV)
+          <i data-lucide="download"></i> Export Filtered (CSV)
         </button>
       </div>
 
@@ -851,8 +871,8 @@ table.rtable tbody tr{cursor:pointer;}
     <div id="map"></div>
     <div id="elev-panel" class="open">
       <div id="elev-header">
-        <div class="etitle">⛰ Elevation Profile — Pipe Altitude vs. Distance</div>
-        <button class="eclose" onclick="toggleElev()" aria-label="Close elevation profile">✕</button>
+        <div class="etitle"><i data-lucide="mountain"></i> Elevation Profile — Pipe Altitude vs. Distance</div>
+        <button class="eclose" onclick="toggleElev()" aria-label="Close elevation profile"><i data-lucide="x"></i></button>
       </div>
       <div id="elev-canvas-wrap">
         <canvas id="elev-canvas"></canvas>
@@ -860,22 +880,22 @@ table.rtable tbody tr{cursor:pointer;}
         <div id="elev-tooltip"></div>
       </div>
     </div>
-    <button id="btn-elev" onclick="toggleElev()">⛰ Elevation Profile</button>
+    <button id="btn-elev" onclick="toggleElev()"><i data-lucide="mountain"></i> Elevation Profile</button>
   </div>
 </div>
 
-<button id="sidebar-toggle" aria-label="Toggle sidebar">◀</button>
+<button id="sidebar-toggle" aria-label="Toggle sidebar"><i data-lucide="chevron-left"></i></button>
 
 <!-- MEASURE BAR -->
 <div id="measure-bar">
   <span class="measure-dot"></span>
   <span id="measure-status">Click first point on the map</span>
   <span id="measure-result" style="display:none"></span>
-  <button id="measure-clear" aria-label="Clear measurement">✕ Clear</button>
+  <button id="measure-clear" aria-label="Clear measurement"><i data-lucide="x"></i> Clear</button>
 </div>
 
 <div id="detail-panel">
-  <button class="dp-close" onclick="closeDetailPanel()" aria-label="Close detail panel">✕</button>
+  <button class="dp-close" onclick="closeDetailPanel()" aria-label="Close detail panel"><i data-lucide="x"></i></button>
   <div id="dp-title"></div>
   <div id="dp-content" aria-live="polite"></div>
 </div>
@@ -884,18 +904,19 @@ table.rtable tbody tr{cursor:pointer;}
 <div id="reports-overlay" role="dialog" aria-modal="true" aria-label="Reports and Analytics">
   <div id="reports-modal">
     <div id="reports-head">
+      <img src="logo.png" alt="" class="rtitle-logo" width="103" height="42">
       <div>
         <div class="rtitle">Reports &amp; Analytics</div>
       </div>
       <div class="rsub">18T64T61 · ILI 22–23 Nov 2025</div>
-      <button id="reports-fs" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
-      <button id="reports-close" aria-label="Close">✕</button>
+      <button id="reports-fs" aria-label="Toggle fullscreen" title="Fullscreen"><i data-lucide="maximize-2"></i></button>
+      <button id="reports-close" aria-label="Close"><i data-lucide="x"></i></button>
     </div>
     <div class="rtabs">
-      <button class="rtab active" data-pane="pane-table">📋 Repair Action List</button>
-      <button class="rtab" data-pane="pane-pipemap">🗺 Damage Map</button>
-      <button class="rtab" data-pane="pane-distance">📈 Along Distance</button>
-      <button class="rtab" data-pane="pane-profiles">📊 Distributions</button>
+      <button class="rtab active" data-pane="pane-table"><i data-lucide="clipboard-list"></i> Repair Action List</button>
+      <button class="rtab" data-pane="pane-pipemap"><i data-lucide="map"></i> Damage Map</button>
+      <button class="rtab" data-pane="pane-distance"><i data-lucide="trending-up"></i> Along Distance</button>
+      <button class="rtab" data-pane="pane-profiles"><i data-lucide="bar-chart-3"></i> Distributions</button>
     </div>
 
     <!-- Shared chart filter bar — one instance, applies to BOTH chart tabs, hidden on the table tab -->
@@ -928,11 +949,12 @@ table.rtable tbody tr{cursor:pointer;}
       <div id="rtable-toolbar">
         <div class="rchips" id="rtable-chips"></div>
         <div id="rtable-search-wrap">
-          <span class="rsearch-icon">🔍</span>
+          <span class="rsearch-icon"><i data-lucide="search"></i></span>
           <input id="rtable-search" type="text" placeholder="Search ID, type, surface, comment…" autocomplete="off" spellcheck="false" aria-label="Search the repair action list by feature ID, type, surface, or comment">
+          <button id="rtable-search-clear" class="search-clear-btn" aria-label="Clear search" title="Clear"><i data-lucide="x"></i></button>
         </div>
         <span id="rtable-count">—</span>
-        <button id="rexport-btn" aria-label="Export the listed features as CSV"><span>⬇</span> Export Full (CSV)</button>
+        <button id="rexport-btn" aria-label="Export the listed features as CSV"><i data-lucide="download"></i> Export Full (CSV)</button>
       </div>
       <div class="rtable-wrap">
         <table class="rtable">
@@ -946,7 +968,7 @@ table.rtable tbody tr{cursor:pointer;}
     <div class="rpane" id="pane-pipemap">
       <div class="rchart-grid single-col">
         <div class="rchart-card pm-card">
-          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen"><i data-lucide="maximize-2"></i></button>
           <div class="rc-title">Pipe Development — Unrolled Damage Map</div>
           <div class="rc-sub">The pipe skin unrolled: axial distance × clock position. Each box is a real-scale corrosion feature (true axial length × circumferential width), coloured by depth (% WT). Drag the blue window on the overview to scan a section. (Note: shows feature footprint &amp; depth — a true river-bottom profile needs the detailed Pipetally grid export.)</div>
           <canvas id="pm-overview"></canvas>
@@ -956,11 +978,11 @@ table.rtable tbody tr{cursor:pointer;}
             <button class="chip pm-w active" data-w="100">100 m</button>
             <button class="chip pm-w" data-w="250">250 m</button>
             <button class="chip pm-w" data-w="full">Full line</button>
-            <button class="chip" id="pm-measure" aria-label="Measure separation between two points">📏 Measure</button>
+            <button class="chip" id="pm-measure" aria-label="Measure separation between two points"><i data-lucide="ruler"></i> Measure</button>
             <span class="rcd-label" style="margin-left:auto;padding-left:18px;border-left:1px solid var(--border2);">Repair list:</span>
-            <button class="chip" id="pm-prev" aria-label="Previous repair item">◀ Prev</button>
+            <button class="chip" id="pm-prev" aria-label="Previous repair item"><i data-lucide="chevron-left"></i> Prev</button>
             <span id="pm-step-label" class="rcd-label" style="min-width:148px;text-align:center;color:var(--blue2);">—</span>
-            <button class="chip" id="pm-next" aria-label="Next repair item">Next ▶</button>
+            <button class="chip" id="pm-next" aria-label="Next repair item">Next <i data-lucide="chevron-right"></i></button>
           </div>
           <canvas id="pm-detail"></canvas>
           <div class="rc-legend">
@@ -978,7 +1000,7 @@ table.rtable tbody tr{cursor:pointer;}
     <div class="rpane" id="pane-distance">
       <div class="rchart-grid single-col">
         <div class="rchart-card">
-          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen"><i data-lucide="maximize-2"></i></button>
           <div class="rc-title">Wall Loss vs. Distance</div>
           <div class="rc-sub">Peak depth (% WT) of every metal-loss feature along the line. Dashed lines mark 20 / 40 / 60 % thresholds.</div>
           <canvas id="chart-depth"></canvas>
@@ -988,7 +1010,7 @@ table.rtable tbody tr{cursor:pointer;}
           </div>
         </div>
         <div class="rchart-card">
-          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen"><i data-lucide="maximize-2"></i></button>
           <div class="rc-title">ERF vs. Distance</div>
           <div class="rc-sub">Estimated Repair Factor (failure-pressure ratio) of each feature. ERF ≥ 1.0 would require repair — all features sit far below, confirming adequate remaining strength.</div>
           <canvas id="chart-erf"></canvas>
@@ -998,7 +1020,7 @@ table.rtable tbody tr{cursor:pointer;}
           </div>
         </div>
         <div class="rchart-card">
-          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen"><i data-lucide="maximize-2"></i></button>
           <div class="rc-title">Metal-Loss Density vs. Distance</div>
           <div class="rc-sub">Number of features per 50 m segment — reveals corrosion clustering and hot-spots.</div>
           <canvas id="chart-density"></canvas>
@@ -1008,7 +1030,7 @@ table.rtable tbody tr{cursor:pointer;}
           </div>
         </div>
         <div class="rchart-card">
-          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen"><i data-lucide="maximize-2"></i></button>
           <div class="rc-title">Orientation vs. Distance</div>
           <div class="rc-sub">Clock position of each feature (6:00 = pipe bottom, center). Bottom-clustering suggests water / sediment-driven corrosion.</div>
           <canvas id="chart-orient"></canvas>
@@ -1024,7 +1046,7 @@ table.rtable tbody tr{cursor:pointer;}
     <div class="rpane" id="pane-profiles">
       <div class="rchart-grid single-col">
         <div class="rchart-card">
-          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen"><i data-lucide="maximize-2"></i></button>
           <div class="rc-title">Depth Distribution (Severity Profile)</div>
           <div class="rc-sub">Feature count per 10 % WT depth band, External vs. Internal — the overall health profile: how many features are shallow vs. deep.</div>
           <canvas id="chart-depthhist"></canvas>
@@ -1034,7 +1056,7 @@ table.rtable tbody tr{cursor:pointer;}
           </div>
         </div>
         <div class="rchart-card">
-          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen"><i data-lucide="maximize-2"></i></button>
           <div class="rc-title">Circumferential Distribution</div>
           <div class="rc-sub">Feature count per clock hour — overall circumferential pattern, External vs. Internal.</div>
           <canvas id="chart-rose"></canvas>
@@ -1044,7 +1066,7 @@ table.rtable tbody tr{cursor:pointer;}
           </div>
         </div>
         <div class="rchart-card">
-          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen">⛶</button>
+          <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen"><i data-lucide="maximize-2"></i></button>
           <div class="rc-title">Defect Type (POF Classification)</div>
           <div class="rc-sub">Feature count per Pipeline-Operators-Forum corrosion class — what kind of metal loss dominates, External vs. Internal.</div>
           <canvas id="chart-type"></canvas>
@@ -1402,6 +1424,7 @@ document.getElementById('btn-export').addEventListener('click',exportFilteredCSV
 document.getElementById('search-input').addEventListener('input',function(){
   const q=this.value.trim().toLowerCase();
   const sr=document.getElementById('search-results');
+  document.getElementById('search-clear').classList.toggle('show',this.value.length>0);
   sr.innerHTML='';
   if(!q) return;
   const matches=ANOMALIES.filter(a=>
@@ -1430,6 +1453,12 @@ document.getElementById('search-input').addEventListener('input',function(){
     sr.appendChild(d);
   });
 });
+document.getElementById('search-clear').addEventListener('click',()=>{
+  const inp=document.getElementById('search-input');
+  inp.value='';
+  inp.dispatchEvent(new Event('input'));
+  inp.focus();
+});
 
 // ── Sidebar toggle ────────────────────────────────────────
 const sb=document.getElementById('sidebar');
@@ -1438,7 +1467,8 @@ const sbBackdrop=document.getElementById('sidebar-backdrop');
 const setSidebar=c=>{
   sb.classList.toggle('collapsed',c);
   tb.classList.toggle('collapsed',c);
-  tb.textContent=c?'▶':'◀';
+  tb.innerHTML=`<i data-lucide="${c?'chevron-right':'chevron-left'}"></i>`;
+  if(window.lucide) lucide.createIcons();
   // On mobile the sidebar floats over the map as a drawer — dim the map
   // behind it (and let a tap on the dimmed area close it) instead of
   // squeezing the map into an unusable sliver.
@@ -1457,7 +1487,7 @@ legend.onAdd=()=>{
   d.innerHTML=`
     <div class="legend-title" onclick="this.closest('.legend-box').classList.toggle('collapsed')">
       Anomaly Legend
-      <span class="legend-toggle">▲</span>
+      <span class="legend-toggle"><i data-lucide="chevron-up"></i></span>
     </div>
     <div class="legend-body">
       <div class="leg-row"><span class="leg-dot" style="background:#ff453a;"></span>Repair ≤ 1 year</div>
@@ -1474,6 +1504,7 @@ legend.onAdd=()=>{
   return d;
 };
 legend.addTo(map);
+if(window.lucide) lucide.createIcons();
 
 // ═══════════════════════════════════════════════════════════════════
 //  MEASURE DISTANCE TOOL
@@ -2612,7 +2643,14 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&reportsOverlay.cla
 document.getElementById('rexport-btn').addEventListener('click',exportReportCSV);
 document.getElementById('rtable-search').addEventListener('input',function(){
   rSearchQ=this.value.trim().toLowerCase();
+  document.getElementById('rtable-search-clear').classList.toggle('show',this.value.length>0);
   renderTable();
+});
+document.getElementById('rtable-search-clear').addEventListener('click',()=>{
+  const inp=document.getElementById('rtable-search');
+  inp.value='';
+  inp.dispatchEvent(new Event('input'));
+  inp.focus();
 });
 document.querySelectorAll('.rtab').forEach(tab=>{
   tab.addEventListener('click',()=>{
@@ -2658,7 +2696,8 @@ document.querySelectorAll('.rc-fs').forEach(btn=>{
 });
 document.addEventListener('fullscreenchange',()=>{
   const on=!!document.fullscreenElement;
-  document.getElementById('reports-fs').textContent=on?'🗗':'⛶';
+  document.getElementById('reports-fs').innerHTML=`<i data-lucide="${on?'minimize-2':'maximize-2'}"></i>`;
+  if(window.lucide) lucide.createIcons();
   if(chartsBuilt) requestAnimationFrame(drawAllCharts);
 });
 // Pipe-map: drag the overview to move the section window; chips set its width
@@ -2766,6 +2805,9 @@ document.getElementById('pm-measure').addEventListener('click',function(){
 });
 
 map.fitBounds(routeLine.getBounds(),{padding:[50,50]});
+
+// Lucide icon rendering — call again after injecting any new <i data-lucide="..."> markup
+if(window.lucide) lucide.createIcons();
 </script>
 </body>
 </html>
