@@ -968,7 +968,7 @@ table.rtable tbody tr{cursor:pointer;}
             <span><i style="background:#ffd60a"></i>20–40%</span>
             <span><i style="background:#ff9f0a"></i>40–60%</span>
             <span><i style="background:#ff453a"></i>≥60% WT</span>
-            <span><i style="background:#ff375f"></i>Dent (full-height)</span>
+            <span><i style="background:#ff375f"></i>Dent</span>
           </div>
         </div>
       </div>
@@ -2497,13 +2497,11 @@ function drawPipeOverview(){
   plotBg(ctx,P,w,h);
   const X=d=>P.l+(d-d0)/(d1-d0)*(w-P.l-P.r), Yc=c=>P.t+(c/12)*(h-P.t-P.b);
   ctx.strokeStyle=GRID; ctx.beginPath();ctx.moveTo(P.l,Yc(6));ctx.lineTo(w-P.r,Yc(6));ctx.stroke();
-  REPORT_FEATURES.filter(a=>a.type!=='dent smooth'&&chPass(a)).sort((a,b)=>(a.depth||0)-(b.depth||0)).forEach(a=>{
+  REPORT_FEATURES.filter(a=>chPass(a)).sort((a,b)=>(a.depth||0)-(b.depth||0)).forEach(a=>{
     const c=orientClock(a.orient); if(c==null)return;
-    ctx.fillStyle=depthColor(a.depth||0); ctx.globalAlpha=.8; ctx.fillRect(X(a.dist)-.5,Yc(c)-1.1,1.3,2.2);
+    ctx.fillStyle=a.type==='dent smooth'?'#ff375f':depthColor(a.depth||0); ctx.globalAlpha=.8; ctx.fillRect(X(a.dist)-.5,Yc(c)-1.1,1.3,2.2);
   });
   ctx.globalAlpha=1;
-  REPORT_FEATURES.forEach(a=>{ if(a.type!=='dent smooth'||!chPass(a))return;   // dents span full circumference (no clock)
-    const x=X(a.dist); ctx.strokeStyle='#ff375f'; ctx.lineWidth=1.5; ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,h-P.b);ctx.stroke(); });
   pmClamp();
   const x0=X(pmWinStart), x1=X(pmWinStart+pmWinWidth);
   ctx.fillStyle='rgba(108,196,238,0.14)'; ctx.fillRect(x0,P.t,x1-x0,h-P.t-P.b);
@@ -2522,25 +2520,18 @@ function drawPipeDetail(){
   [[0,'12'],[3,'3'],[6,'6'],[9,'9'],[12,'12']].forEach(([c,l])=>{ const y=Yc(c);
     ctx.strokeStyle=c===6?'rgba(148,163,184,.22)':GRID; ctx.beginPath();ctx.moveTo(P.l,y);ctx.lineTo(w-P.r,y);ctx.stroke();
     ctx.fillStyle=c===6?AXIS_TITLE_COL:AXTX; ctx.fillText(l,P.l-5,y); });
-  const inWin=REPORT_FEATURES.filter(a=>a.type!=='dent smooth'&&chPass(a)&&(a.dist+a.axLen/2000)>=ws&&(a.dist-a.axLen/2000)<=we);
+  const inWin=REPORT_FEATURES.filter(a=>chPass(a)&&(a.dist+a.axLen/2000)>=ws&&(a.dist-a.axLen/2000)<=we);
   let hl=null; pmBoxes=[];
   inWin.sort((a,b)=>(a.depth||0)-(b.depth||0)).forEach(a=>{
     const c=orientClock(a.orient); if(c==null)return;
+    const isDent=a.type==='dent smooth';
     const hAx=a.axLen/2000, hCl=(a.width/PIPE_CIRC)*6;   // m / clock-hours
     const x0=X(a.dist-hAx), bw=Math.max(2,X(a.dist+hAx)-x0);
     const y0=Yc(Math.max(0,c-hCl)), bh=Math.max(2,Yc(Math.min(12,c+hCl))-y0);
-    ctx.fillStyle=depthColor(a.depth||0); ctx.globalAlpha=.78; ctx.fillRect(x0,y0,bw,bh);
+    ctx.fillStyle=isDent?'#ff375f':depthColor(a.depth||0); ctx.globalAlpha=.78; ctx.fillRect(x0,y0,bw,bh);
     ctx.globalAlpha=1; ctx.strokeStyle='rgba(0,0,0,.4)'; ctx.lineWidth=.5; ctx.strokeRect(x0+.25,y0+.25,bw-.5,bh-.5);
     pmBoxes.push({x0,y0,x1:x0+bw,y1:y0+bh,a});
     if(a===pmHighlight) hl={x0,y0,bw,bh,a};
-  });
-  REPORT_FEATURES.forEach(a=>{   // dents: no clock → draw as a full-height band at their chainage
-    if(a.type!=='dent smooth'||!chPass(a)||a.dist<ws||a.dist>we) return;
-    const x=X(a.dist);
-    ctx.fillStyle='rgba(255,55,95,0.16)'; ctx.fillRect(x-3,P.t,6,h-P.t-P.b);
-    ctx.strokeStyle='#ff375f'; ctx.lineWidth=1.5; ctx.beginPath();ctx.moveTo(x,P.t);ctx.lineTo(x,h-P.b);ctx.stroke();
-    pmBoxes.push({x0:x-4,y0:P.t,x1:x+4,y1:h-P.b,a});
-    if(a===pmHighlight) hl={x0:x-4,y0:P.t,bw:8,bh:h-P.t-P.b,a};
   });
   if(hl){  // selected feature — bright ring + id label, drawn on top of everything
     const unit=hl.a.type==='dent smooth'?'% OD':'% WT';
