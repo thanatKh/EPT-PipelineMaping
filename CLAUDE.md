@@ -89,8 +89,17 @@ projector in a lit room. When changing any colour, keep these rules:
   be renamed or removed without updating the JS too.
   Key CSS variables added recently: `--sel-bg`/`--sel-txt` for the single-select
   active fill (used by `.lseg-btn.on`, `.rtab.active`, `.pm-w.active`); `--r`/
-  `--r-sm` for border-radius tokens. The `.lpill-full` modifier class handles
-  full-width action pills (Measure/Export buttons) without inline styles.
+  `--r-sm` for border-radius tokens — the full radius scale is `--r-xs` 8px
+  (chips/pills), `--r-sm` 10px (inputs/tiles), `--r` 12px (cards/panels),
+  `--r-lg` 16px (modal/chart cards); use these rather than raw px values.
+  `--row-line` is the table/list row separator. The `.lpill-full` modifier
+  class handles full-width action pills (Measure/Export buttons) without
+  inline styles. Unselected `.lpill`/`.chip` get a neutral resting tint +
+  hairline so they read as buttons; all buttons share one `:focus-visible`
+  ring. The detail panel's action button is `.dp-action`.
+  Display-only formatters `fmtNum`, `fmtType`, `prioShort`, `isDentF` sit
+  next to the colour helpers — use them for anything user-visible, but keep
+  raw values for sorting, search and CSV export.
 - `data.js` — all anomaly/route data, loaded globally via `<script src="data.js">`.
   Exports `ANOMALIES`, `DENTS`, `ROUTE`, `REFS`, `ROUTE_PROFILE`.
 - `README.md` — full feature documentation, data field reference, and update

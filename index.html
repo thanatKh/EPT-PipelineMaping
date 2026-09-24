@@ -90,8 +90,11 @@ tailwind.config = {
   --display: 'Google Sans', sans-serif;   /* headings/titles — set in italic for a refined editorial voice */
   --sans:    'Google Sans', sans-serif;   /* base UI/body text — same family, upright, for clear pairing-by-contrast */
   --blur:    none;                        /* flat solid — backdrop blur disabled */
-  --r:       14px;
-  --r-sm:    11px;
+  --r-lg:    16px;                        /* modal / chart cards */
+  --r:       12px;                        /* panels, cards, overlays */
+  --r-sm:    10px;                        /* inputs, KPI tiles, segmented controls */
+  --r-xs:    8px;                         /* chips, pills, small buttons */
+  --row-line: rgba(148,163,184,.12);      /* table/list row separators — visible when projected */
   --sel-bg:  #60a5fa;                     /* single-select active fill (blue-400) */
   --sel-txt: #0b1220;                     /* single-select active text — dark for contrast on --sel-bg */
 }
@@ -114,6 +117,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);
 #brand-text{min-width:0;display:flex;flex-direction:column;gap:2px;}
 #brand-text .brand-app{font-family:var(--display);font-size:15px;font-weight:600;letter-spacing:.2px;
   color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#brand-text .brand-app .short{display:none;}
 #brand-text .dept{font-size:10px;font-weight:500;color:var(--blue2);letter-spacing:1.4px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 #brand-text .company{font-family:var(--display);font-size:11px;font-weight:500;font-style:italic;color:var(--text2);letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 #kpi-row{display:flex;align-items:center;gap:5px;flex-shrink:0;}
@@ -121,11 +125,12 @@ html,body{height:100%;overflow:hidden;background:var(--bg);
   margin-right:6px;white-space:nowrap;line-height:1.3;text-align:right;flex-shrink:0;}
 #kpi-row-label b{display:block;color:var(--text2);font-weight:600;letter-spacing:1px;}
 .kpi{display:flex;flex-direction:column;align-items:center;padding:6px 12px;min-width:58px;
-     background:var(--card);border:1px solid var(--border);border-radius:10px;position:relative;overflow:hidden;}
+     background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);position:relative;overflow:hidden;}
 .kpi .v{font-size:15px;font-weight:700;letter-spacing:-.3px;line-height:1.1;font-variant-numeric:tabular-nums;}
 .kpi .l{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:3px;}
 .kpi.red .v{color:var(--red);}.kpi.orange .v{color:var(--orange);}
 .kpi.yellow .v{color:var(--yellow);}.kpi.green .v{color:var(--green);}.kpi.blue .v{color:var(--blue2);}
+.kpi.neutral .v{color:var(--text);}
 
 /* ── TABLET: shrink KPIs and brand lockup ── */
 @media (max-width:1024px){
@@ -148,11 +153,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);
   #logo-img{height:34px;}
   #brand-text .brand-app{font-size:12px;max-width:200px;}
   #brand-text .dept{font-size:9px;letter-spacing:.4px;}
-  #brand-text .company{font-size:10px;max-width:200px;}
+  #brand-text .company{display:none;}
+  #brand-text .brand-app .full{display:none;}
+  #brand-text .brand-app .short{display:inline;}
   #kpi-row{gap:6px;flex-wrap:wrap;justify-content:center;flex-shrink:1;min-width:0;max-width:100%;}
   #kpi-row-label{flex-basis:100%;margin-right:0;text-align:center;line-height:1.4;order:-1;}
   #kpi-row-label b{display:inline;margin-right:4px;}
-  .kpi{min-width:60px;flex:1 1 0;padding:4px 8px;border-radius:8px;}
+  .kpi{min-width:0;flex:1 1 calc(33.333% - 6px);padding:4px 8px;border-radius:var(--r-xs);}
   .kpi .v{font-size:13px;}
   .kpi .l{font-size:8px;letter-spacing:.3px;}
   #main{height:calc(100vh - 104px);}
@@ -200,6 +207,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);
 .chip [data-lucide],#btn-elev [data-lucide],#measure-clear [data-lucide]{margin-right:5px;}
 #pm-next [data-lucide]{margin-left:5px;}
 
+/* ── Keyboard focus — one crisp ring for every control ── */
+button:focus-visible,.filter-row:focus-visible,[tabindex]:focus-visible,input[type=range]:focus-visible{
+  outline:2px solid var(--blue2);outline-offset:2px;}
+.filter-row:focus-visible{outline-offset:0;}
+
 /* ── Global scrollbar theme ────────────────────────────── */
 *{scrollbar-width:thin;scrollbar-color:var(--border2) transparent;}
 *::-webkit-scrollbar{width:5px;height:5px;}
@@ -211,7 +223,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);
 #sidebar-inner::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
 
 /* CARDS */
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 15px;position:relative;
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 15px;position:relative;
   box-shadow:0 1px 2px rgba(0,0,0,.3);transition:border-color .2s ease;}
 .card:hover{border-color:var(--border2);}
 .card-title{
@@ -225,7 +237,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);
 .filter-row{
   display:flex;align-items:center;gap:9px;
   font-size:12px;color:var(--text2);cursor:pointer;
-  padding:5px 6px;border-radius:8px;margin:-2px -3px;
+  padding:5px 6px;border-radius:var(--r-xs);margin:-2px -3px;
   transition:background .15s,color .15s;user-select:none;
 }
 .filter-row:hover{background:rgba(59,130,246,.06);color:var(--text);}
@@ -247,13 +259,13 @@ html,body{height:100%;overflow:hidden;background:var(--bg);
 .pill.yellow{background:var(--yellow);color:var(--yellow);}
 .pill.green {background:var(--green); color:var(--green);}
 .pill.teal  {background:var(--teal);  color:var(--teal);}
-.pill.pink  {background:var(--pink);  color:var(--pink);border-radius:2px;}
+.pill.pink  {background:var(--pink);  color:var(--pink);}
 .filter-count{margin-left:auto;font-size:10px;color:var(--text3);}
 
 /* CHIPS */
 .chip-row{display:flex;gap:6px;flex-wrap:wrap;}
 .chip{
-  padding:4px 11px;border-radius:9px;font-size:11px;font-weight:500;letter-spacing:.3px;
+  padding:4px 11px;border-radius:var(--r-xs);font-size:11px;font-weight:500;letter-spacing:.3px;
   border:1px solid transparent;color:var(--text2);cursor:pointer;background:transparent;
   transition:background .15s ease,color .15s ease,transform 120ms ease-out;
   display:flex;align-items:center;gap:0;
@@ -299,7 +311,7 @@ input[type=range]::-moz-range-track{background:transparent;}
 .layer-row{display:flex;gap:6px;flex-wrap:wrap;}
 .lpill{
   display:inline-flex;align-items:center;gap:0;
-  padding:6px 13px;border-radius:9px;font-size:11px;font-weight:500;letter-spacing:.4px;
+  padding:6px 13px;border-radius:var(--r-xs);font-size:11px;font-weight:500;letter-spacing:.4px;
   border:1px solid transparent;background:transparent;color:var(--text2);cursor:pointer;
   transition:background .2s ease,color .2s ease,transform 120ms ease-out;
   overflow:hidden;
@@ -327,6 +339,12 @@ input[type=range]::-moz-range-track{background:transparent;}
 
 /* Full-width action pill — Measure + Export buttons in sidebar */
 .lpill-full{width:100%;justify-content:center;gap:6px;}
+/* Resting state — unselected pills/chips and plain action buttons get a
+   neutral tint + hairline so they read as buttons, not loose text. Selected
+   multi-select items stay borderless soft-fill (see .lpill.on/.chip.active). */
+.lpill:not(.on),.chip:not(.active){background:rgba(148,163,184,.08);border-color:var(--border2);}
+.lpill:not(.on):hover,.chip:not(.active):hover{background:rgba(148,163,184,.16);color:var(--text);}
+.lpill-full:not(.on){color:var(--text);}
 #btn-export{margin-top:8px;}
 
 /* Map Layers — grouped by selection type: base map (single-select segmented
@@ -335,8 +353,8 @@ input[type=range]::-moz-range-track{background:transparent;}
 .lgroup-label{font-size:9px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;
   color:var(--text3);margin:12px 0 6px;}
 .lgroup-label:first-of-type{margin-top:0;}
-.lseg{display:flex;background:rgba(148,163,184,.10);border-radius:10px;padding:3px;gap:3px;}
-.lseg-btn{flex:1;padding:6px 10px;border-radius:7px;font-size:11px;font-weight:500;letter-spacing:.3px;
+.lseg{display:flex;background:rgba(148,163,184,.10);border-radius:var(--r-sm);padding:3px;gap:3px;}
+.lseg-btn{flex:1;padding:6px 10px;border-radius:var(--r-xs);font-size:11px;font-weight:500;letter-spacing:.3px;
   border:1px solid transparent;background:transparent;color:var(--text2);cursor:pointer;text-align:center;
   transition:background .2s ease,color .2s ease,transform 120ms ease-out;}
 .lseg-btn:hover{color:var(--text);}
@@ -346,7 +364,7 @@ input[type=range]::-moz-range-track{background:transparent;}
 
 /* STAT GRID */
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
-.stat-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;transition:border-color .2s;}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;transition:border-color .2s;}
 .stat-box:hover{border-color:var(--border2);}
 .stat-box .sv{font-size:18px;font-weight:700;letter-spacing:-.3px;font-variant-numeric:tabular-nums;}
 .stat-box .sl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
@@ -361,7 +379,7 @@ input[type=range]::-moz-range-track{background:transparent;}
 #search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none;}
 #search-input{
   width:100%;background:rgba(148,163,184,.06);border:1px solid var(--border);
-  border-radius:10px;color:var(--text);padding:9px 30px 9px 34px;
+  border-radius:var(--r-sm);color:var(--text);padding:9px 30px 9px 34px;
   font-size:12px;outline:none;font-family:var(--sans);transition:border-color .2s,background .2s,box-shadow .2s;
 }
 #search-input::placeholder{color:var(--text3);}
@@ -386,7 +404,7 @@ input[type=range]::-moz-range-track{background:transparent;}
 .search-ring-core{position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;
   background:var(--blue2);transform:translate(-50%,-50%);}
 #btn-reports{display:flex;align-items:center;gap:11px;width:100%;text-align:left;cursor:pointer;
-  padding:13px 14px;border-radius:12px;border:1px solid transparent;font-family:var(--sans);
+  padding:13px 14px;border-radius:var(--r);border:1px solid transparent;font-family:var(--sans);
   background:rgba(59,130,246,.16);transition:background .18s ease,box-shadow .18s ease;}
 #btn-reports:hover{background:rgba(59,130,246,.24);
   box-shadow:0 4px 14px rgba(0,0,0,.45);}
@@ -395,7 +413,9 @@ input[type=range]::-moz-range-track{background:transparent;}
 #btn-reports .br-txt{display:flex;flex-direction:column;font-size:13px;font-weight:600;color:var(--blue2);letter-spacing:.2px;line-height:1.2;}
 #btn-reports .br-txt small{font-weight:400;font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-top:3px;}
 #search-results{max-height:140px;overflow-y:auto;margin-top:6px;}
-.sr-item{padding:7px 9px;font-size:11px;cursor:pointer;border-radius:8px;border-bottom:1px solid var(--border);transition:background .1s;}
+.sr-item{padding:7px 9px;font-size:11px;cursor:pointer;border-radius:var(--r-xs);border-bottom:1px solid var(--border);transition:background .1s;}
+.sr-item .sr-meta{color:var(--text3);}
+.sr-more{padding:6px 9px;font-size:10px;color:var(--text3);}
 .sr-item:last-child{border:none;}
 .sr-item:hover{background:rgba(59,130,246,.06);}
 
@@ -435,7 +455,7 @@ input[type=range]::-moz-range-track{background:transparent;}
 #detail-panel .dp-close{
   position:absolute;top:12px;right:13px;
   background:rgba(255,255,255,.08);border:none;color:var(--text2);
-  width:22px;height:22px;border-radius:11px;font-size:11px;
+  width:22px;height:22px;border-radius:var(--r-sm);font-size:11px;
   cursor:pointer;display:flex;align-items:center;justify-content:center;
   transition:background .15s ease,color .15s ease,transform 120ms ease-out;
 }
@@ -446,6 +466,13 @@ input[type=range]::-moz-range-track{background:transparent;}
 .dp-row:last-of-type{border:none;}
 .dp-row .lbl{color:var(--text2);letter-spacing:.2px;}.dp-row .val{color:var(--text);font-weight:500;text-align:right;font-variant-numeric:tabular-nums;}
 .dp-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;margin-top:10px;}
+.dp-action{margin-top:12px;width:100%;padding:9px 0;border:none;border-radius:var(--r-xs);
+  background:var(--sel-bg);color:var(--sel-txt);font-family:var(--sans);font-size:12px;font-weight:600;
+  letter-spacing:.3px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:background .15s ease,transform 120ms ease-out;}
+.dp-action:hover{background:#7db4fb;}
+.dp-action:active{transform:scale(.98);}
+.dp-comment{margin-top:8px;font-size:11px;line-height:1.5;color:var(--text2);font-style:italic;}
 .depth-bar-bg{background:rgba(255,255,255,.08);border-radius:3px;height:5px;width:100%;overflow:hidden;}
 .depth-bar-fill{height:100%;border-radius:3px;transition:width .4s cubic-bezier(.4,0,.2,1);}
 
@@ -454,17 +481,17 @@ input[type=range]::-moz-range-track{background:transparent;}
   background:var(--glass2)!important;
   border:1px solid var(--border2)!important;color:var(--text)!important;
   font-size:12px!important;font-family:var(--sans)!important;
-  border-radius:10px!important;padding:9px 12px!important;
+  border-radius:var(--r-sm)!important;padding:9px 12px!important;
   box-shadow:0 8px 24px rgba(0,0,0,.5)!important;
 }
 .leaflet-tooltip-top::before{border-top-color:var(--border2)!important;}
-.leaflet-control-zoom{border:1px solid var(--border2)!important;border-radius:10px!important;overflow:hidden;backdrop-filter:var(--blur);box-shadow:0 4px 16px rgba(0,0,0,.4)!important;}
+.leaflet-control-zoom{border:1px solid var(--border2)!important;border-radius:var(--r-sm)!important;overflow:hidden;backdrop-filter:var(--blur);box-shadow:0 4px 16px rgba(0,0,0,.4)!important;}
 .leaflet-control-zoom a{background:var(--glass2)!important;color:var(--blue2)!important;border-bottom:1px solid var(--border)!important;width:30px!important;height:30px!important;line-height:30px!important;font-size:16px!important;font-family:var(--sans)!important;}
 .leaflet-control-zoom a:hover{background:rgba(59,130,246,.1)!important;}
 .leaflet-bar{border:none!important;}.leaflet-control-attribution{display:none;}
 .pipe-label{
   background:var(--glass2);
-  border:1px solid var(--border2);border-radius:8px;
+  border:1px solid var(--border2);border-radius:var(--r-xs);
   padding:3px 9px;font-size:11px;font-weight:600;letter-spacing:.4px;
   color:var(--blue2);white-space:nowrap;font-family:var(--sans);
 }
@@ -484,14 +511,14 @@ input[type=range]::-moz-range-track{background:transparent;}
   padding:7px 14px 0;flex-shrink:0;
 }
 #elev-header .etitle{font-family:var(--display);font-style:italic;font-size:13px;font-weight:600;color:var(--text);letter-spacing:.3px;display:flex;align-items:center;gap:8px;}
-#elev-header .eclose{background:rgba(255,255,255,.07);border:none;color:var(--text2);width:20px;height:20px;border-radius:10px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease,color .15s ease,transform 120ms ease-out;}
+#elev-header .eclose{background:rgba(255,255,255,.07);border:none;color:var(--text2);width:20px;height:20px;border-radius:var(--r-sm);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease,color .15s ease,transform 120ms ease-out;}
 #elev-header .eclose:hover{background:rgba(255,59,48,.2);color:var(--red);}
 #elev-header .eclose:active{transform:scale(.9);}
 #elev-canvas-wrap{flex:1;padding:4px 14px 8px;position:relative;min-height:0;}
 #elev-canvas{width:100%;height:100%;display:block;cursor:crosshair;}
 #elev-tooltip{
   position:absolute;pointer-events:none;display:none;
-  background:var(--glass2);border:1px solid var(--border2);border-radius:8px;
+  background:var(--glass2);border:1px solid var(--border2);border-radius:var(--r-xs);
   padding:6px 10px;font-size:11px;white-space:nowrap;z-index:10;
   box-shadow:0 4px 16px rgba(0,0,0,.5);
 }
@@ -520,7 +547,7 @@ input[type=range]::-moz-range-track{background:transparent;}
   position:absolute;top:70px;left:50%;transform:translateX(-50%);
   z-index:600;display:none;align-items:center;gap:10px;
   background:var(--glass2);backdrop-filter:var(--blur);
-  border:1px solid var(--border2);border-radius:12px;
+  border:1px solid var(--border2);border-radius:var(--r);
   padding:9px 18px;font-size:12px;color:var(--text2);
   box-shadow:0 8px 24px rgba(0,0,0,.5);white-space:nowrap;
   animation:slideDown .2s cubic-bezier(.4,0,.2,1);
@@ -531,7 +558,7 @@ input[type=range]::-moz-range-track{background:transparent;}
 #measure-result{font-size:14px;font-weight:700;color:var(--blue2);min-width:110px;text-align:center;font-variant-numeric:tabular-nums;}
 #measure-clear{
   background:rgba(148,163,184,.08);border:none;color:var(--text2);
-  padding:3px 10px;border-radius:8px;font-size:11px;cursor:pointer;
+  padding:3px 10px;border-radius:var(--r-xs);font-size:11px;cursor:pointer;
   font-family:var(--sans);
   transition:background .15s ease,color .15s ease,transform 120ms ease-out;
 }
@@ -541,7 +568,7 @@ input[type=range]::-moz-range-track{background:transparent;}
 
 .legend-box{
   background:var(--glass2);backdrop-filter:var(--blur);
-  border:1px solid var(--border2);border-radius:12px;
+  border:1px solid var(--border2);border-radius:var(--r);
   padding:12px 14px;font-family:var(--sans);min-width:170px;
   box-shadow:0 6px 18px rgba(0,0,0,.4);
 }
@@ -572,7 +599,7 @@ input[type=range]::-moz-range-track{background:transparent;}
 #reports-overlay.show{display:flex;}
 #reports-modal{margin:auto;width:100%;max-width:none;height:100%;max-height:none;
   display:flex;flex-direction:column;background:var(--glass2);backdrop-filter:var(--blur);
-  border:1px solid var(--border2);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.55);
+  border:1px solid var(--border2);border-radius:var(--r-lg);box-shadow:0 24px 60px rgba(0,0,0,.55);
   overflow:hidden;}
 #reports-head{display:flex;align-items:center;gap:14px;padding:14px 18px;
   border-bottom:1px solid var(--border);flex-shrink:0;}
@@ -580,7 +607,7 @@ input[type=range]::-moz-range-track{background:transparent;}
 #reports-head .rtitle{font-family:var(--display);font-style:italic;font-size:18px;font-weight:600;color:var(--text);
   display:flex;align-items:center;gap:9px;letter-spacing:.2px;}
 #reports-head .rsub{font-size:12px;color:var(--text2);letter-spacing:.5px;}
-#reports-fs,#reports-close{width:32px;height:32px;flex-shrink:0;border-radius:9px;
+#reports-fs,#reports-close{width:32px;height:32px;flex-shrink:0;border-radius:var(--r-xs);
   background:rgba(148,163,184,.06);border:1px solid var(--border2);color:var(--text2);
   font-size:14px;line-height:1;cursor:pointer;
   transition:background .18s ease,color .18s ease,border-color .18s ease;
@@ -610,18 +637,18 @@ input[type=range]::-moz-range-track{background:transparent;}
 #rtable-search-wrap .rsearch-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);
   color:var(--text3);font-size:13px;pointer-events:none;}
 #rtable-search{width:100%;background:rgba(148,163,184,.06);border:1px solid var(--border);
-  border-radius:10px;color:var(--text);padding:7px 28px 7px 30px;
+  border-radius:var(--r-sm);color:var(--text);padding:7px 28px 7px 30px;
   font-size:12px;outline:none;font-family:var(--sans);transition:border-color .2s,background .2s,box-shadow .2s;}
 #rtable-search::placeholder{color:var(--text3);}
 #rtable-search:focus-visible{border-color:var(--blue);background:rgba(59,130,246,.07);box-shadow:0 0 0 2px rgba(59,130,246,.4);}
 #rtable-count{font-size:12px;color:var(--text2);font-variant-numeric:tabular-nums;}
 #rexport-btn{margin-left:auto;display:flex;align-items:center;gap:6px;padding:8px 15px;
   font-family:var(--sans);font-size:12px;font-weight:500;color:var(--blue2);cursor:pointer;
-  background:rgba(59,130,246,.12);border:1px solid var(--blue);border-radius:10px;
+  background:rgba(59,130,246,.12);border:1px solid var(--blue);border-radius:var(--r-sm);
   transition:background .18s ease,color .18s ease;}
 #rexport-btn:hover{background:rgba(59,130,246,.20);}
 #rexport-btn:active{transform:scale(.97);}
-.rtable-wrap{border:1px solid var(--border);border-radius:12px;overflow:auto;max-height:calc(100% - 50px);}
+.rtable-wrap{border:1px solid var(--border);border-radius:var(--r);overflow:auto;max-height:calc(100% - 50px);}
 table.rtable{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;}
 table.rtable thead th{position:sticky;top:0;z-index:2;
   background:linear-gradient(180deg,#1c2942 0%,#16223a 100%);color:var(--text2);
@@ -632,13 +659,19 @@ table.rtable thead th:first-child,table.rtable thead th.tl{text-align:left;}
 table.rtable thead th:hover{color:var(--blue2);background:linear-gradient(180deg,#23314e 0%,#1b2840 100%);}
 table.rtable thead th .arrow{color:var(--blue);margin-left:3px;font-size:10px;}
 table.rtable tbody td{text-align:right;padding:8px 11px;white-space:nowrap;color:var(--text);
-  border-bottom:1px solid rgba(148,163,184,.05);}
+  border-bottom:1px solid var(--row-line);}
+/* row fills go on the cells — Chromium skips the <tr> background behind empty cells */
+table.rtable tbody tr:nth-child(even) td{background:rgba(148,163,184,.035);}
 table.rtable tbody td.tl{text-align:left;}
-table.rtable tbody tr:hover{background:rgba(59,130,246,.06);}
+table.rtable tbody tr:hover td{background:rgba(59,130,246,.10);}
+table.rtable tbody tr.sel td{background:rgba(96,165,250,.20);}
+table.rtable tbody tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--blue2);}
 table.rtable tbody tr{cursor:pointer;}
-.rprio-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;
+.rprio-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;background:currentColor;flex-shrink:0;
   vertical-align:middle;}
-.rcell-comment{max-width:260px;overflow:hidden;text-overflow:ellipsis;color:var(--text2);}
+/* width cap lives on the inner span so the cell (and its row fill) still spans the whole column */
+.rcell-comment{color:var(--text2);}
+.rcell-comment span{display:block;max-width:260px;overflow:hidden;text-overflow:ellipsis;}
 /* ── charts pane ── */
 #rchart-filters{display:flex;align-items:center;gap:14px;flex-wrap:wrap;flex-shrink:0;
   padding:12px 18px;border-bottom:1px solid var(--border);}
@@ -653,20 +686,22 @@ table.rtable tbody tr{cursor:pointer;}
 .rchart-depth .slider-track{width:150px;margin:0;flex-shrink:0;}
 .rcd-val{font-size:11px;color:var(--blue2);font-weight:600;font-variant-numeric:tabular-nums;
   white-space:nowrap;min-width:48px;}
-.rchart-types{align-items:center;flex-wrap:wrap;}
+.rchart-types{align-items:center;flex-wrap:wrap;flex-basis:100%;}
 .rchart-types #chip-types{display:flex;flex-wrap:wrap;gap:6px;}
 .rchart-types .chip{padding:4px 10px;font-size:11px;}
 .rcd-label{font-size:11px;color:var(--text2);white-space:nowrap;}
 .rcd-label b{color:var(--blue2);font-variant-numeric:tabular-nums;}
 .rchart-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
 .rchart-grid.single-col{grid-template-columns:1fr;}
-.rchart-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
+.rchart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);
   padding:18px 18px 14px;display:flex;flex-direction:column;position:relative;
   box-shadow:0 4px 24px rgba(0,0,0,.35);transition:box-shadow .2s ease;}
 .rchart-card:hover{box-shadow:0 6px 32px rgba(0,0,0,.5);}
 .rchart-card .rc-title{font-size:14px;color:var(--text);font-weight:700;margin-bottom:3px;letter-spacing:-.1px;}
+.rc-info{display:inline-flex;vertical-align:-2px;margin-left:4px;color:var(--text3);cursor:help;}
+.rc-info:hover{color:var(--blue2);}
 .rchart-card .rc-sub{font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.5;padding-right:30px;}
-.rchart-card canvas{width:100%;height:300px;display:block;border-radius:8px;}
+.rchart-card canvas{width:100%;height:300px;display:block;border-radius:var(--r-xs);}
 .rchart-card .rc-kpi-row{display:flex;gap:18px;margin-bottom:12px;flex-wrap:wrap;}
 .rc-kpi{display:flex;flex-direction:column;gap:1px;}
 .rc-kpi .rc-kpi-v{font-size:22px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums;line-height:1;}
@@ -683,13 +718,13 @@ table.rtable tbody tr{cursor:pointer;}
 .pm-card:fullscreen #pm-overview{flex:0 0 56px;height:56px;}
 .pm-card:fullscreen #pm-detail{flex:1 1 auto;height:auto;min-height:0;}
 .rc-tip{position:absolute;display:none;pointer-events:none;z-index:6;
-  background:#0b1628;border:1px solid rgba(147,197,253,.2);border-radius:10px;
+  background:#0b1628;border:1px solid rgba(147,197,253,.2);border-radius:var(--r-sm);
   padding:8px 12px;font-size:11px;color:var(--text);white-space:nowrap;line-height:1.6;
   box-shadow:0 8px 32px rgba(0,0,0,.7),0 0 0 1px rgba(59,130,246,.08);font-variant-numeric:tabular-nums;}
 .rc-tip b{color:var(--blue2);}
 .rc-tip .tip-id{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;}
 .rc-tip .tip-sep{display:block;height:1px;background:rgba(148,163,184,.12);margin:5px 0;}
-.rc-fs{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:8px;
+.rc-fs{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:var(--r-xs);
   background:rgba(148,163,184,.06);border:1px solid var(--border2);color:var(--text2);
   font-size:11px;line-height:1;cursor:pointer;
   transition:background .18s ease,color .18s ease,border-color .18s ease;z-index:3;
@@ -708,7 +743,7 @@ table.rtable tbody tr{cursor:pointer;}
   .rchart-grid{grid-template-columns:1fr;}
   #reports-overlay{padding:0;}
   #reports-modal{max-height:none;border-radius:0;}
-  .rcell-comment{max-width:140px;}
+  .rcell-comment span{max-width:140px;}
   /* Tab bar wraps into uneven multi-line buttons on narrow screens —
      scroll horizontally as a single row instead, like a mobile tab strip. */
   .rtabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;
@@ -736,7 +771,7 @@ table.rtable tbody tr{cursor:pointer;}
       <img id="logo-img" src="logo.png"
            width="123" height="50" alt="PTT OR" onerror="this.style.display='none'">
       <div id="brand-text">
-        <div class="brand-app">EPT Pipeline Integrity Management System</div>
+        <div class="brand-app"><span class="full">EPT Pipeline Integrity Management System</span><span class="short">EPT Pipeline IMS</span></div>
         <div class="dept">Engineering &amp; Maintenance Department</div>
         <div class="company">PTT Oil and Retail Business Public Company Limited</div>
       </div>
@@ -747,10 +782,10 @@ table.rtable tbody tr{cursor:pointer;}
       <div id="kpi-row-label"><b>Survey&nbsp;Totals</b>22–23 Nov 2025 · fixed</div>
       <div class="kpi red">   <div class="v">1</div>     <div class="l">≤1 yr</div></div>
       <div class="kpi orange"><div class="v">2</div>     <div class="l">&lt;10 yr</div></div>
-      <div class="kpi yellow"><div class="v">2,012</div> <div class="l">&gt;10 yr</div></div>
+      <div class="kpi green"> <div class="v">2,012</div> <div class="l">&gt;10 yr</div></div>
       <div class="kpi blue">  <div class="v">2,014</div> <div class="l">Metal Loss</div></div>
       <div class="kpi blue">  <div class="v">1,139</div> <div class="l">Laminations</div></div>
-      <div class="kpi green"> <div class="v">0</div>     <div class="l">ERF ≥ 1.0</div></div>
+      <div class="kpi neutral"><div class="v">0</div>    <div class="l">ERF ≥ 1.0</div></div>
     </div>
   </div>
 </div>
@@ -778,23 +813,23 @@ table.rtable tbody tr{cursor:pointer;}
       <div class="card">
         <div class="card-title">Repair Priority</div>
         <div style="display:flex;flex-direction:column;gap:2px;">
-          <label class="filter-row" data-repair="<=1yr">
+          <label class="filter-row" data-repair="<=1yr" role="switch" aria-checked="true" tabindex="0">
             <div class="cb-track on"></div><span class="pill red"></span>
             <span>Repair ≤ 1 year</span><span class="filter-count">1</span>
           </label>
-          <label class="filter-row" data-repair="5-7yr">
+          <label class="filter-row" data-repair="5-7yr" role="switch" aria-checked="true" tabindex="0">
             <div class="cb-track on"></div><span class="pill orange"></span>
             <span>Repair 5–7 years</span><span class="filter-count">1</span>
           </label>
-          <label class="filter-row" data-repair="7-10yr">
+          <label class="filter-row" data-repair="7-10yr" role="switch" aria-checked="true" tabindex="0">
             <div class="cb-track on"></div><span class="pill yellow"></span>
             <span>Repair 7–10 years</span><span class="filter-count">1</span>
           </label>
-          <label class="filter-row" data-repair=">10yr">
+          <label class="filter-row" data-repair=">10yr" role="switch" aria-checked="true" tabindex="0">
             <div class="cb-track on"></div><span class="pill green"></span>
             <span>Repair &gt; 10 years</span><span class="filter-count">2,012</span>
           </label>
-          <label class="filter-row" data-repair="monitored">
+          <label class="filter-row" data-repair="monitored" role="switch" aria-checked="true" tabindex="0">
             <div class="cb-track on"></div><span class="pill teal"></span>
             <span>Monitored</span><span class="filter-count">0</span>
           </label>
@@ -937,7 +972,6 @@ table.rtable tbody tr{cursor:pointer;}
         </div>
         <span class="rcd-val"><b id="chart-depth-val">0</b>% WT</span>
       </div>
-      <span class="rcf-div"></span>
       <div class="rcf-group rchart-types">
         <span class="rcf-label">Type</span>
         <div class="rchips" id="chip-types"></div>
@@ -970,7 +1004,7 @@ table.rtable tbody tr{cursor:pointer;}
         <div class="rchart-card pm-card">
           <button class="rc-fs" aria-label="Fullscreen this chart" title="Fullscreen"><i data-lucide="maximize-2"></i></button>
           <div class="rc-title">Pipe Development — Unrolled Damage Map</div>
-          <div class="rc-sub">The pipe skin unrolled: axial distance × clock position. Each box is a real-scale corrosion feature (true axial length × circumferential width), coloured by depth (% WT). Drag the blue window on the overview to scan a section. (Note: shows feature footprint &amp; depth — a true river-bottom profile needs the detailed Pipetally grid export.)</div>
+          <div class="rc-sub">Pipe skin unrolled (distance × clock position), true-scale boxes coloured by depth % WT. Drag the blue window on the overview strip to scan.<span class="rc-info" title="Each box is a real-scale corrosion feature (true axial length × circumferential width). Shows feature footprint &amp; depth only — a true river-bottom profile needs the detailed Pipetally grid export." aria-label="More about this chart"><i data-lucide="info"></i></span></div>
           <canvas id="pm-overview"></canvas>
           <div class="pm-toolbar">
             <span class="rcd-label">Window:</span>
@@ -1111,7 +1145,7 @@ const valveIco = L.divIcon({
 let valveLayers=[];
 REFS.forEach(r=>{
   const m=L.marker([r.lat,r.lon],{icon:valveIco})
-    .bindTooltip(`<b style="color:#cfd8df">${r.comment||'Valve'}</b><br><span style="opacity:.6">${r.dist.toFixed(0)} m</span>`,{direction:'top'});
+    .bindTooltip(`<b style="color:#cfd8df">${r.comment||'Valve'}</b><br><span style="color:var(--text2)">${r.dist.toFixed(0)} m</span>`,{direction:'top'});
   valveLayers.push(m); m.addTo(map);
 });
 
@@ -1126,6 +1160,13 @@ const depthColor  = d => d>=60?'#ff453a':d>=40?'#ff9f0a':d>=20?'#ffd60a':'#30d15
 const repairLabel = r => ({'<=1yr':'🔴 Repair ≤ 1 year','5-7yr':'🟠 Repair 5–7 years',
                            '7-10yr':'🟡 Repair 7–10 years','>10yr':'🟢 Repair > 10 years',
                            'monitored':'🩵 Monitored'}[r]||r);
+
+// Display-only formatters (raw values stay untouched for sorting/search/CSV)
+const fmtNum = n => (+n||0).toLocaleString('en-US');
+const fmtType = t => t==='dent smooth' ? 'Dent (smooth)'
+  : t ? t.charAt(0).toUpperCase()+t.slice(1) : 'Corrosion';
+const prioShort = r => ({'<=1yr':'≤ 1 yr','5-7yr':'5–7 yr','7-10yr':'7–10 yr','>10yr':'> 10 yr','monitored':'Monitored'}[r]||r);
+const isDentF = a => a.type==='dent smooth';
 
 // ── Altitude zone ─────────────────────────────────────────
 function altZone(alt) {
@@ -1144,9 +1185,9 @@ function makeTooltip(a,col){
   const bar=d?`<div style="background:rgba(255,255,255,.1);border-radius:2px;height:4px;width:100%;margin:4px 0;"><div style="height:100%;width:${Math.min(d,100)}%;background:${depthColor(d)};border-radius:2px;"></div></div>`:'';
   return `<div style="min-width:175px;font-family:var(--display);">
     <div style="font-weight:600;font-size:13px;color:${col};margin-bottom:2px;">#${a.id}</div>
-    <div style="font-size:11px;opacity:.6;margin-bottom:4px;">${(+a.dist).toFixed(1)} m · ${a.location}</div>
+    <div style="font-size:11px;color:var(--text2);margin-bottom:4px;">${(+a.dist).toFixed(1)} m · ${a.location}</div>
     ${d?`<div style="color:${depthColor(d)};font-size:14px;font-weight:700;">${d}% WT</div>${bar}`:''}
-    ${a.erf?`<div style="font-size:11px;opacity:.6;">ERF ${(+a.erf).toFixed(3)}</div>`:''}
+    ${a.erf?`<div style="font-size:11px;color:var(--text2);">ERF ${(+a.erf).toFixed(3)}</div>`:''}
     <div style="font-size:11px;margin-top:4px;">${repairLabel(a.repair||'>10yr')}</div>
   </div>`;
 }
@@ -1156,6 +1197,8 @@ function closeDetailPanel(){
   dp.classList.add('closing');
   setTimeout(()=>{dp.style.display='none';dp.classList.remove('closing');},120);
   clearSelectedPoint();
+  const lg=document.querySelector('.legend-box');
+  if(lg && lg.dataset.autoCollapsed){ lg.classList.remove('collapsed'); delete lg.dataset.autoCollapsed; }
 }
 
 function showDetail(a,col){
@@ -1163,7 +1206,7 @@ function showDetail(a,col){
   markSelectedPoint(a,col);
   document.getElementById('dp-title').innerHTML=
     `<span style="color:${col}">#${a.id}</span>&nbsp;`+
-    `<span style="font-weight:400;color:var(--text2);font-size:11px;">${a.type||'Corrosion'}</span>`;
+    `<span style="font-weight:400;color:var(--text2);font-size:11px;">${fmtType(a.type)}</span>`;
   const d=a.depth;
   const isDent=a.type==='dent smooth';
   const barLabel=isDent?'Dent Depth':'Wall Loss';
@@ -1189,8 +1232,8 @@ function showDetail(a,col){
   const rows=[
     ['Distance',(+a.dist).toFixed(2)+' m'],['Surface',a.location||''],
     ['Classification',a.dim||''],['Orientation',a.orient||''],
-    ['WT',(+(a.wt||0)).toFixed(2)+' mm'],['Axial',(a.axLen||0)+' mm'],
-    ['Width',(a.width||0)+' mm'],['Depth mm',a.depthMm?(+(a.depthMm)).toFixed(2)+' mm':''],
+    ['Wall Thickness',(+(a.wt||0)).toFixed(2)+' mm'],['Axial Length',(a.axLen||0)+' mm'],
+    ['Width',(a.width||0)+' mm'],['Depth',a.depthMm?(+(a.depthMm)).toFixed(2)+' mm':''],
     ['ERF',a.erf?(+(a.erf)).toFixed(3):''],['GPS',(+a.lat).toFixed(6)+', '+(+a.lon).toFixed(6)],
   ].filter(([,v])=>v&&v!=='0.00 mm'&&v!=='0 mm'&&v!=='0');
 
@@ -1207,15 +1250,13 @@ function showDetail(a,col){
     rows.map(([l,v])=>`<div class="dp-row"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('')+
     rlHtml+
     `<div><span class="dp-badge" style="background:${col}1a;color:${col};border:1px solid ${col}44;">${repairLabel(a.repair||'>10yr')}</span></div>`+
-    (a.comment&&a.comment!=='None'&&a.comment?`<div style="margin-top:8px;font-size:11px;line-height:1.5;color:var(--text2);font-style:italic;">${a.comment}</div>`:'')+
-    `<button onclick="showFeatureOnPipeMap(window._dpFeature)" style="
-      margin-top:12px;width:100%;padding:8px 0;border:none;border-radius:8px;
-      background:var(--sel-bg);color:var(--sel-txt);
-      font-family:var(--display);font-size:12px;font-weight:600;
-      cursor:pointer;letter-spacing:.3px;
-      display:flex;align-items:center;justify-content:center;gap:6px;">
-      View on Damage Map
-    </button>`;
+    (a.comment&&a.comment!=='None'?`<div class="dp-comment">${a.comment}</div>`:'')+
+    `<button class="dp-action" onclick="showFeatureOnPipeMap(window._dpFeature)"><i data-lucide="map"></i> View on Damage Map</button>`;
+  if(window.lucide) lucide.createIcons();
+  // Legend and detail panel share the right edge — fold the legend while the
+  // panel is open so it isn't half-covered; restored in closeDetailPanel().
+  const lg=document.querySelector('.legend-box');
+  if(lg && !lg.classList.contains('collapsed')){ lg.classList.add('collapsed'); lg.dataset.autoCollapsed='1'; }
   const dp=document.getElementById('detail-panel');
   dp.classList.remove('closing');
   dp.style.display='block';
@@ -1249,8 +1290,8 @@ DENTS.forEach(d=>{
   m.bindTooltip(`<div style="font-family:var(--display);min-width:160px;">
     <div style="font-weight:600;color:#ff375f;font-size:13px;">🔺 DENT #${d.id}</div>
     <div style="color:#ff453a;font-weight:600;margin:3px 0;">⚠ Repair by Nov 2026</div>
-    <div style="font-size:11px;opacity:.6;">${(+d.dist).toFixed(1)} m · ${d.depth}% OD</div>
-    <div style="font-size:10px;line-height:1.5;opacity:.5;margin-top:3px;font-style:italic;">${d.comment}</div>
+    <div style="font-size:11px;color:var(--text2);">${(+d.dist).toFixed(1)} m · ${d.depth}% OD</div>
+    <div style="font-size:10px;line-height:1.5;color:var(--text3);margin-top:3px;font-style:italic;">${d.comment}</div>
   </div>`,{direction:'top',sticky:true});
   m.on('click',()=>showDetail(d,'#ff375f'));
   m.addTo(dentLayer);
@@ -1338,8 +1379,12 @@ rebuildMarkers();
 document.querySelectorAll('.filter-row[data-repair]').forEach(row=>{
   const key=row.dataset.repair;
   const track=row.querySelector('.cb-track');
+  row.addEventListener('keydown',e=>{
+    if(e.key===' '||e.key==='Enter'){ e.preventDefault(); row.click(); }
+  });
   row.addEventListener('click',()=>{
     const on=track.classList.toggle('on');
+    row.setAttribute('aria-checked',on);
     on ? activeRepair.add(key) : activeRepair.delete(key);
     rebuildMarkers();
     syncDentLayer();  // dent visibility depends on <=1yr being active
@@ -1427,11 +1472,14 @@ document.getElementById('search-input').addEventListener('input',function(){
   document.getElementById('search-clear').classList.toggle('show',this.value.length>0);
   sr.innerHTML='';
   if(!q) return;
-  const matches=ANOMALIES.filter(a=>
+  const matches=REPORT_FEATURES.filter(a=>
     a.id.toLowerCase().includes(q)||
     String(Math.round(a.dist)).includes(q)||
     (a.type||'').toLowerCase().includes(q)
   );
+  // ID hits first (exact, then partial) so a typed feature ID isn't buried under distance matches
+  const idRank=a=>{const id=a.id.toLowerCase().replace(/^#/,'');return id===q.replace(/^#/,'')?0:id.includes(q)?1:2;};
+  matches.sort((x,y)=>idRank(x)-idRank(y));
   if(!matches.length){
     const empty=document.createElement('div');
     empty.style.cssText='padding:8px;font-size:11px;color:var(--text3);';
@@ -1443,7 +1491,8 @@ document.getElementById('search-input').addEventListener('input',function(){
     const col=repairColor(a);
     const d=document.createElement('div');
     d.className='sr-item';
-    d.innerHTML=`<b style="color:${col}">#${a.id}</b><span style="opacity:.5"> · ${(+a.dist).toFixed(1)}m · ${a.location} · </span><b style="color:${depthColor(a.depth||0)}">${a.depth||'?'}%</b>`;
+    const dent=isDentF(a);
+    d.innerHTML=`<b style="color:${col}">#${a.id}</b><span class="sr-meta"> · ${(+a.dist).toFixed(1)} m · ${dent?'Dent':a.location} · </span><b style="color:${dent?'#ff375f':depthColor(a.depth||0)}">${a.depth!=null?a.depth:'?'}% ${dent?'OD':'WT'}</b>`;
     d.onclick=()=>{
       map.setView([a.lat,a.lon],19);
       showDetail(a,col);
@@ -1452,6 +1501,12 @@ document.getElementById('search-input').addEventListener('input',function(){
     };
     sr.appendChild(d);
   });
+  if(matches.length>10){
+    const more=document.createElement('div');
+    more.className='sr-more';
+    more.textContent=`+${fmtNum(matches.length-10)} more — refine the search`;
+    sr.appendChild(more);
+  }
 });
 document.getElementById('search-clear').addEventListener('click',()=>{
   const inp=document.getElementById('search-input');
@@ -1495,11 +1550,12 @@ legend.onAdd=()=>{
       <div class="leg-row"><span class="leg-dot" style="background:#ffd60a;"></span>Repair 7–10 years</div>
       <div class="leg-row"><span class="leg-dot" style="background:#30d158;"></span>Repair &gt; 10 years</div>
       <div class="leg-row"><span class="leg-dot" style="background:#5ac8fa;"></span>Monitored</div>
-      <div class="leg-row"><span class="leg-sq"  style="background:#ff375f;"></span>Dent</div>
+      <div class="leg-row"><span class="leg-dot" style="background:#ff375f;"></span>Dent</div>
       <div class="leg-row"><span class="leg-sq"  style="background:#cfd8df;"></span>Valve</div>
       <div class="leg-row"><span class="leg-line"style="background:#3b82f6;"></span>Pipeline Route</div>
       <div class="legend-note">Marker size ∝ depth % WT<br>Click any marker for details</div>
     </div>`;
+  if(window.innerWidth<=640) d.classList.add('collapsed');   // don't cover the map on phones
   L.DomEvent.disableClickPropagation(d);
   return d;
 };
@@ -1723,12 +1779,18 @@ function drawElev(){
   ctx.fillText('0 m',PAD.left-4,slY+3);
 
   // Y grid & labels
-  [-5,-10,-15,-20,-25].forEach(alt=>{
+  // Label only every Nth line when the panel is short so labels never collide
+  const pxPer5=Math.abs(toY(-5)-toY(0));
+  const lblEvery=pxPer5>=14?1:pxPer5>=7?2:4;
+  let lastLblY=slY;
+  [-5,-10,-15,-20,-25].forEach((alt,i)=>{
     const y=toY(alt);if(y<PAD.top||y>PAD.top+cH)return;
     ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(PAD.left,y);ctx.lineTo(PAD.left+cW,y);ctx.stroke();
-    ctx.fillStyle='rgba(235,235,245,0.3)';ctx.font="11px 'Google Sans',sans-serif";ctx.textAlign='right';
-    ctx.fillText(`${alt}m`,PAD.left-4,y+3);
+    if((i+1)%lblEvery!==0 || Math.abs(y-lastLblY)<12) return;
+    ctx.fillStyle='#94a3b8';ctx.font="11px 'Google Sans',sans-serif";ctx.textAlign='right';
+    ctx.fillText(`${alt} m`,PAD.left-4,y+3);
+    lastLblY=y;
   });
 
   // X axis ticks — derived from route dist values
@@ -1913,9 +1975,9 @@ function orientClock(o){
 const RCOLS=[
   {k:'id',     l:'ID',         a:'l'},
   {k:'dist',   l:'Dist (m)',   fmt:v=>(+v).toFixed(1)},
-  {k:'type',   l:'Type',       a:'l'},
+  {k:'type',   l:'Type',       a:'l', fmt:v=>fmtType(v)},
   {k:'location',l:'Surface',   a:'l'},
-  {k:'depth',  l:'Depth %',    fmt:v=>v==null?'—':v},
+  {k:'depth',  l:'Depth %',    fmt:(v,a)=>v==null?'—':isDentF(a)?v+' OD':v},
   {k:'depthMm',l:'Depth mm',   fmt:v=>v==null?'—':v},
   {k:'wt',     l:'WT mm',      fmt:v=>v==null?'—':v},
   {k:'axLen',  l:'Axial mm',   fmt:v=>v==null?'—':v},
@@ -1923,7 +1985,7 @@ const RCOLS=[
   {k:'erf',    l:'ERF',        fmt:v=>v==null?'—':(+v).toFixed(3)},
   {k:'orient', l:'Orient',     a:'l', fmt:v=>v||'—'},
   {k:'remainLife',l:'Life yr', fmt:v=>v==null?'—':v},
-  {k:'repair', l:'Priority',   a:'l', fmt:(v,a)=>`<span class="rprio-dot" style="color:${repairColor(a)}"></span>${(v||'>10yr')}`},
+  {k:'repair', l:'Priority',   a:'l', fmt:(v,a)=>`<span class="rprio-dot" style="color:${repairColor(a)}"></span>${prioShort(v||'>10yr')}`},
   {k:'comment',l:'Comment',    a:'l', cls:'rcell-comment', fmt:v=>v||''}
 ];
 const PRIOS=['<=1yr','5-7yr','7-10yr','monitored','>10yr'].filter(p=>REPORT_FEATURES.some(a=>(a.repair||'>10yr')===p));
@@ -1997,17 +2059,20 @@ function renderTable(){
       if(c.cls) td.classList.add(c.cls);
       const raw=a[c.k];
       const val=c.fmt?c.fmt(raw,a):(raw==null?'':raw);
-      if(c.fmt && /<[a-z]/i.test(String(val))) td.innerHTML=val; // trusted markup (priority dot)
+      if(c.cls==='rcell-comment'){ const s=document.createElement('span'); s.textContent=val; td.appendChild(s); }
+      else if(c.fmt && /<[a-z]/i.test(String(val))) td.innerHTML=val; // trusted markup (priority dot)
       else td.textContent=val;
-      if(c.k==='depth'&&raw!=null) td.style.color=depthColor(raw);
+      if(c.k==='depth'&&raw!=null) td.style.color=isDentF(a)?'#ff375f':depthColor(raw);
       if(c.k==='comment'&&raw) td.title=raw;
       tr.appendChild(td);
     });
+    tr._f=a;
+    if(a===pmHighlight) tr.classList.add('sel');
     tr.addEventListener('click',()=>showFeatureOnPipeMap(a));
     frag.appendChild(tr);
   });
   body.innerHTML=''; body.appendChild(frag);
-  document.getElementById('rtable-count').textContent=`${rows.length} of ${REPORT_FEATURES.length} features`;
+  document.getElementById('rtable-count').textContent=`${fmtNum(rows.length)} of ${fmtNum(REPORT_FEATURES.length)} features`;
 }
 function buildChips(){
   const wrap=document.getElementById('rtable-chips');
@@ -2606,6 +2671,8 @@ function drawPipeMap(){ drawPipeOverview(); drawPipeDetail(); updateStepLabel();
 // (so its nearby neighbours are visible), then switch to the Damage Map tab.
 function showFeatureOnPipeMap(a){
   pmHighlight=a;
+  // keep the last-opened row marked in the action list for when the user comes back
+  document.querySelectorAll('#rtable-body tr').forEach(tr=>tr.classList.toggle('sel',tr._f===a));
   const [d0,d1]=distExtent();
   if(pmWinWidth<(d1-d0)) pmWinStart=a.dist-pmWinWidth/2;
   pmClamp();
@@ -2623,7 +2690,9 @@ function pmStep(dir){
 function updateStepLabel(){
   const el=document.getElementById('pm-step-label'); if(!el) return;
   const list=rSorted(), idx=list.indexOf(pmHighlight);
-  el.textContent = idx<0 ? `${list.length} items` : `#${list[idx].id} · ${list[idx].depth||'?'}% (${idx+1}/${list.length})`;
+  const it=list[idx];
+  el.textContent = idx<0 ? `— / ${fmtNum(list.length)}`
+    : `#${it.id} · ${it.depth!=null?it.depth:'?'}% ${isDentF(it)?'OD':'WT'} (${fmtNum(idx+1)} / ${fmtNum(list.length)})`;
 }
 
 function drawAllCharts(){ drawPipeMap(); drawDepthChart(); drawDepthHistChart(); drawErfChart(); drawDensityChart(); drawOrientChart(); drawRoseChart(); drawTypeChart(); }
